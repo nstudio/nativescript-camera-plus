@@ -1,8 +1,8 @@
 # NativeScript Camera Plus
 
 ![nStudio Plugin](https://img.shields.io/badge/nStudio-Plugin-orange.svg)
-[![npm](https://img.shields.io/npm/v/nativescript-camera-plus.svg)](https://www.npmjs.com/package/nativescript-camera-plus)
-[![npm](https://img.shields.io/npm/dt/nativescript-camera-plus.svg?label=npm%20downloads)](https://www.npmjs.com/package/nativescript-camera-plus)
+[![npm](https://img.shields.io/npm/v/@nstudio/nativescript-camera-plus.svg)](https://www.npmjs.com/package/@nstudio/nativescript-camera-plus)
+[![npm](https://img.shields.io/npm/dt/@nstudio/nativescript-camera-plus.svg?label=npm%20downloads)](https://www.npmjs.com/package/@nstudio/nativescript-camera-plus)
 
 A NativeScript camera with all the bells and whistles which can be embedded inside a view. This plugin was sponsored by [LiveShopper](https://liveshopper.com).
 
