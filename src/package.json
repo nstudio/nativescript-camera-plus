@@ -1,7 +1,7 @@
 {
-  "name": "nativescript-camera-plus",
-  "version": "2.2.7",
-  "description": "An advanced camera for NativeScript.",
+  "name": "@nstudio/nativescript-camera-plus",
+  "version": "1.0.0",
+  "description": "An advanced, embeddable camera for NativeScript.",
   "main": "camera-plus",
   "typings": "index.d.ts",
   "nativescript": {
@@ -64,6 +64,10 @@
     {
       "name": "Brad Martin",
       "email": "bmartin@nstudio.io"
+    },
+    {
+      "name": "Nathanael Anderson",
+      "email": "nanderson@nstudio.io"
     }
   ],
   "bugs": {
@@ -75,12 +79,12 @@
   "devDependencies": {
     "husky": "^0.13.4",
     "lint-staged": "^3.6.1",
-    "prettier": "^1.4.4",
-    "tns-core-modules": "~3.3.0",
-    "tns-platform-declarations": "~3.3.0",
+    "prettier": "^1.10.2",
+    "tns-core-modules": "~3.4.0",
+    "tns-platform-declarations": "~3.4.0",
     "rimraf": "^2.5.0",
-    "tslint": "~5.4.3",
-    "typescript": "~2.5.3",
+    "tslint": "~5.9.1",
+    "typescript": "~2.6.2",
     "prompt": "^1.0.0"
   },
   "dependencies": {
