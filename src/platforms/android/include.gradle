@@ -1,0 +1,11 @@
+android {
+    productFlavors {
+        "cameraplus" {
+            dimension "cameraplus"
+        }
+    }
+}
+
+dependencies {
+    compile "com.android.support:exifinterface:+"
+}
