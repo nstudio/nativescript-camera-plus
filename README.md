@@ -1,6 +1,6 @@
 # NativeScript Camera Plus
 
-![nStudio Plugin](https://img.shields.io/badge/nStudio-Plugin-orange.svg)
+[![nStudio Plugin](https://img.shields.io/badge/nStudio-Plugin-orange.svg)](http://nstudio.io)
 [![npm](https://img.shields.io/npm/v/@nstudio/nativescript-camera-plus.svg)](https://www.npmjs.com/package/@nstudio/nativescript-camera-plus)
 [![npm](https://img.shields.io/npm/dt/@nstudio/nativescript-camera-plus.svg?label=npm%20downloads)](https://www.npmjs.com/package/@nstudio/nativescript-camera-plus)
 
