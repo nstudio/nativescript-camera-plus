@@ -107,12 +107,8 @@ npm run demo.ng.android.device
 
 ---
 
-## License
-
-[Commercial](./src/LICENSE)
-
 ## [nStudio, LLC](http://nstudio.io)
 
 [![nStudio](./src/logos/nstudio-banner.png "nStudio")](http://nStudio.io)
 
-Do you need assistance on your project or plugin? Contact the nStudio team anytime at <mailto:team@nstudio.io>
+Do you need assistance on your project or plugin? Contact the nStudio team anytime at [team@nstudio.io](<mailto:team@nstudio.io>)
