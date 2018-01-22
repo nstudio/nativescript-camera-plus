@@ -11,8 +11,12 @@ A NativeScript camera with all the bells and whistles which can be embedded insi
 ## Installation
 
 ```bash
-tns plugin add nativescript-camera-plus
+tns plugin add @nstudio/nativescript-camera-plus
 ```
+
+## Sample
+
+![Camera Plus](screens/camplus1.gif)
 
 ## Demo
 
