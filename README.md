@@ -6,7 +6,7 @@
 
 A NativeScript camera with all the bells and whistles which can be embedded inside a view. This plugin was sponsored by [LiveShopper](https://liveshopper.com).
 
-[![LiveShopper](./logos/liveshopper.svg "LiveShopper")](https://liveshopper.com/).
+[![LiveShopper](./src/logos/liveshopper.svg "LiveShopper")](https://liveshopper.com/).
 
 ## Installation
 
@@ -109,10 +109,10 @@ npm run demo.ng.android.device
 
 ## License
 
-[Commercial](/LICENSE)
+[Commercial](./src/LICENSE)
 
 ## [nStudio, LLC](http://nstudio.io)
 
-[![nStudio](./logos/nstudio-banner.png "nStudio")](http://nStudio.io)
+[![nStudio](./src/logos/nstudio-banner.png "nStudio")](http://nStudio.io)
 
-Do you need assistance on your project or plugin? We are passionate about NativeScript. Contact the nStudio team anytime at <mailto:team@nstudio.io>
+Do you need assistance on your project or plugin? Contact the nStudio team anytime at <mailto:team@nstudio.io>
