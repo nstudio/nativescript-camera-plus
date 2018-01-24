@@ -14,7 +14,8 @@ A NativeScript camera with all the bells and whistles which can be embedded insi
 tns plugin add @nstudio/nativescript-camera-plus
 ```
 
-## Sample
+## Sample 
+ - Yes the camera is rotated because it's a webcam and it's just the way life works.
 
 ![Camera Plus](screens/camplus1.gif)
 
