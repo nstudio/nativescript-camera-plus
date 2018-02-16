@@ -5,7 +5,7 @@ import { fromAsset, fromUrl } from "tns-core-modules/image-source";
 import { Image } from "tns-core-modules/ui/image";
 import { ImageAsset } from "tns-core-modules/image-asset";
 import { screen } from "tns-core-modules/platform";
-import { CameraPlus } from "nativescript-camera-plus";
+import { CameraPlus } from "@nstudio/nativescript-camera-plus";
 import { ObservableProperty } from "./observable-property";
 
 export class HelloWorldModel extends Observable {

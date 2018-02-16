@@ -4,7 +4,7 @@ import { ActivatedRoute } from "@angular/router";
 import { Item } from "./item";
 import { ItemService } from "./item.service";
 
-import { CameraPlus } from "nativescript-camera-plus";
+import { CameraPlus } from "@nstudio/nativescript-camera-plus";
 import { fromAsset } from "tns-core-modules/image-source";
 
 @Component({
