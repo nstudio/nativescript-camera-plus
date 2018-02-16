@@ -392,7 +392,7 @@ export class CameraPlus extends CameraPlusBase {
     }
   }
 
-  private _prepareVideoRecorder(options?: IVideoOptions): boolean {
+  private _prepareVideoRecorder(options?: IVideoOptions) {
     if (!this._mediaRecorder) {
       this._mediaRecorder = new android.media.MediaRecorder() as android.media.MediaRecorder;
       CLog(`this._mediaRecorder`, this._mediaRecorder);
@@ -467,7 +467,7 @@ export class CameraPlus extends CameraPlusBase {
       const hasStoragePerm = this.hasStoragePermissions();
       if (!hasStoragePerm) {
         CLog(`Application does not have storage permission to save file.`);
-        return;
+        return null;
       }
 
       fileName = `VID_${Date.now()}.mp4`;
@@ -887,7 +887,7 @@ export class CameraPlus extends CameraPlusBase {
   public getFlashMode() {
     if (this.camera === null || this.camera === undefined) {
       CLog("no camera");
-      return;
+      return null;
     }
 
     const params = this.camera.getParameters();
@@ -995,11 +995,14 @@ export class CameraPlus extends CameraPlusBase {
     this._toggleCamBtn.setImageResource(switchCameraDrawable);
     const shape = CamHelpers.createTransparentCircleDrawable();
     this._toggleCamBtn.setBackgroundDrawable(shape);
-    this._toggleCamBtn.setOnClickListener({
-      onClick: (view: android.view.View) => {
-        this.toggleCamera();
-      }
-    });
+    this._toggleCamBtn.setOnClickListener(
+      new android.view.View.OnClickListener({
+        onClick: (view: android.view.View) => {
+          this.toggleCamera();
+        }
+      })
+    );
+
     const toggleCamParams = new android.widget.RelativeLayout.LayoutParams(
       WRAP_CONTENT,
       WRAP_CONTENT
