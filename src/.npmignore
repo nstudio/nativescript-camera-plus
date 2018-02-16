@@ -11,6 +11,7 @@ logos/
 *.log
 *.map
 *.ts
+references.d.ts
 !index.d.ts
 *.tgz
 *.zip

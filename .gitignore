@@ -2,6 +2,7 @@
 *.js.map
 *.log
 *.d.ts
+!references.d.ts
 *.tgz
 *.zip
 *.DS_Store

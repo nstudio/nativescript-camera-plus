@@ -1,0 +1,6 @@
+{
+  "name": "camplus-root",
+  "scripts": {
+    "precommit": "cd src && lint-staged"
+  }
+}
