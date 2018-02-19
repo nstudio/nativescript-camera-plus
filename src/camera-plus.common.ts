@@ -25,7 +25,7 @@ export abstract class CameraPlusBase extends ContentView
   public set debug(value: boolean) {
     CameraUtil.debug = value;
   }
-  public events: ICameraPlusEvents;
+  public events: any /*ICameraPlusEvents*/;
 
   /**
    * Video Support (off by default)
