@@ -36,16 +36,10 @@ const ALIGN_PARENT_RIGHT = 11;
 const CENTER_HORIZONTAL = 14;
 const DIRECTORY_PICTURES = "DIRECTORY_PICTURES";
 const DIRECTORY_MOVIES = "DIRECTORY_MOVIES";
-const CAMERA = (android as any).Manifest.permission.CAMERA;
-const RECORD_AUDIO = (android as any).Manifest.permission.RECORD_AUDIO;
 const FOCUS_MODE_AUTO = "auto";
 const FOCUS_MODE_EDOF = "edof";
 const FOCUS_MODE_CONTINUOUS_PICTURE = "continuous-picture";
 const FOCUS_MODE_CONTINUOUS_VIDEO = "continuous-video";
-const READ_EXTERNAL_STORAGE = (android as any).Manifest.permission
-  .READ_EXTERNAL_STORAGE;
-const WRITE_EXTERNAL_STORAGE = (android as any).Manifest.permission
-  .WRITE_EXTERNAL_STORAGE;
 const FLASH_MODE_ON = "on";
 const FLASH_MODE_OFF = "off";
 const CAMERA_FACING_FRONT = 1; // front camera
@@ -53,8 +47,24 @@ const CAMERA_FACING_BACK = 0; // rear camera
 const RESULT_CODE_PICKER_IMAGES = 415161;
 const RESULT_OK = -1;
 
+// Snapshot-friendly functions
+const CAMERA = () => (android as any).Manifest.permission.CAMERA;
+const RECORD_AUDIO = () => (android as any).Manifest.permission.RECORD_AUDIO;
+const READ_EXTERNAL_STORAGE = () =>
+  (android as any).Manifest.permission.READ_EXTERNAL_STORAGE;
+const WRITE_EXTERNAL_STORAGE = () =>
+  (android as any).Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 export class CameraPlus extends CameraPlusBase {
-  @GetSetProperty() public camera: android.hardware.Camera;
+  // @GetSetProperty() public camera: android.hardware.Camera;
+  // Snapshot-friendly, since the decorator will include the snapshot-unknown object "android"
+  private _camera: android.hardware.Camera;
+  public get camera(): android.hardware.Camera {
+    return this._camera;
+  }
+  public set camera(camera: android.hardware.Camera) {
+    this._camera = camera;
+  }
   @GetSetProperty() public cameraId;
   @GetSetProperty() public autoFocus: boolean = true;
   @GetSetProperty() public flashOnIcon: string = "ic_flash_on_white";
@@ -138,7 +148,7 @@ export class CameraPlus extends CameraPlusBase {
       // nativeView = new android.widget.RelativeLayout(this._context);
       this._nativeView = new android.widget.RelativeLayout(this._context);
 
-      permissions.requestPermission(CAMERA).then(
+      permissions.requestPermission(CAMERA()).then(
         () => {
           // create the TextureView that will render the camera preview
           this._textureView = new android.view.TextureView(this._context);
@@ -157,7 +167,7 @@ export class CameraPlus extends CameraPlusBase {
 
             // setup SurfaceTextureListener
             this._textureView.setSurfaceTextureListener(
-              new android.view.TextureView.SurfaceTextureListener({
+              new android.view.TextureView.SurfaceTextureListener(<any>{
                 get owner() {
                   return that.get();
                 },
@@ -185,7 +195,7 @@ export class CameraPlus extends CameraPlusBase {
                     this._initDefaultButtons();
                   } else {
                     permissions
-                      .requestPermission(CAMERA)
+                      .requestPermission(CAMERA())
                       .then(() => {
                         this._initCamera(this.cameraId);
                         this._initDefaultButtons();
@@ -452,7 +462,6 @@ export class CameraPlus extends CameraPlusBase {
       CLog("Exception preparing MediaRecorder", e);
       this._releaseMediaRecorder();
       this.isRecording = false;
-      return false;
     }
   }
 
@@ -648,7 +657,10 @@ export class CameraPlus extends CameraPlusBase {
           createThePickerIntent();
         } else {
           permissions
-            .requestPermissions([READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE])
+            .requestPermissions([
+              READ_EXTERNAL_STORAGE(),
+              WRITE_EXTERNAL_STORAGE()
+            ])
             .then(() => {
               createThePickerIntent();
             });
@@ -702,7 +714,7 @@ export class CameraPlus extends CameraPlusBase {
   public requestCameraPermissions(explanation: string = ""): Promise<boolean> {
     return new Promise((resolve, reject) => {
       permissions
-        .requestPermission(CAMERA, explanation)
+        .requestPermission(CAMERA(), explanation)
         .then(() => {
           resolve(true);
         })
@@ -721,7 +733,7 @@ export class CameraPlus extends CameraPlusBase {
    * Returns true if the CAMERA permission has been granted.
    */
   public hasCameraPermission(): boolean {
-    return permissions.hasPermission(CAMERA);
+    return permissions.hasPermission(CAMERA());
   }
 
   /**
@@ -731,7 +743,7 @@ export class CameraPlus extends CameraPlusBase {
   public requestAudioPermissions(explanation: string = ""): Promise<boolean> {
     return new Promise((resolve, reject) => {
       permissions
-        .requestPermission(RECORD_AUDIO, explanation)
+        .requestPermission(RECORD_AUDIO(), explanation)
         .then(() => {
           resolve(true);
         })
@@ -750,7 +762,7 @@ export class CameraPlus extends CameraPlusBase {
    * Returns true if the RECORD_AUDIO permission has been granted.
    */
   public hasAudioPermission(): boolean {
-    return permissions.hasPermission(RECORD_AUDIO);
+    return permissions.hasPermission(RECORD_AUDIO());
   }
 
   /**
@@ -761,7 +773,7 @@ export class CameraPlus extends CameraPlusBase {
     return new Promise((resolve, reject) => {
       permissions
         .requestPermissions(
-          [WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE],
+          [WRITE_EXTERNAL_STORAGE(), READ_EXTERNAL_STORAGE()],
           explanation
         )
         .then(() => {
@@ -782,8 +794,8 @@ export class CameraPlus extends CameraPlusBase {
    * Returns true if the WRITE_EXTERNAL_STORAGE && READ_EXTERNAL_STORAGE permissions have been granted.
    */
   public hasStoragePermissions(): boolean {
-    const writePerm = permissions.hasPermission(WRITE_EXTERNAL_STORAGE);
-    const readPerm = permissions.hasPermission(READ_EXTERNAL_STORAGE);
+    const writePerm = permissions.hasPermission(WRITE_EXTERNAL_STORAGE());
+    const readPerm = permissions.hasPermission(READ_EXTERNAL_STORAGE());
     if (writePerm === true && readPerm === true) {
       return true;
     } else {
@@ -796,7 +808,10 @@ export class CameraPlus extends CameraPlusBase {
   ): Promise<boolean> {
     return new Promise(async (resolve, reject) => {
       permissions
-        .requestPermissions([WRITE_EXTERNAL_STORAGE, RECORD_AUDIO], explanation)
+        .requestPermissions(
+          [WRITE_EXTERNAL_STORAGE(), RECORD_AUDIO()],
+          explanation
+        )
         .then(() => {
           resolve(true);
         })
@@ -812,8 +827,8 @@ export class CameraPlus extends CameraPlusBase {
   }
 
   public hasVideoRecordingPermissions() {
-    const writePerm = permissions.hasPermission(WRITE_EXTERNAL_STORAGE);
-    const audio = permissions.hasPermission(RECORD_AUDIO);
+    const writePerm = permissions.hasPermission(WRITE_EXTERNAL_STORAGE());
+    const audio = permissions.hasPermission(RECORD_AUDIO());
     if (writePerm === true && audio === true) {
       return true;
     } else {
