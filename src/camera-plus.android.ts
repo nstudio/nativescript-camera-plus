@@ -1014,7 +1014,7 @@ export class CameraPlus extends CameraPlusBase {
    */
   private _initCamera(id?): void {
     try {
-      CLog(`*** _initCamera ***\nthis.cameraId = ${this.cameraId}`);
+      CLog(`*** _initCamera ***\nthis.cameraId = ${this.cameraId} --- ${DEVICE_INFO_STRING}`);
       if (this.camera === null) {
         this.cameraId = CAMERA_FACING_BACK;
       }
@@ -1044,24 +1044,7 @@ export class CameraPlus extends CameraPlusBase {
       }
 
       // setup autoFocus
-      if (this.autoFocus === true && this.camera) {
-        const params = this.camera.getParameters();
-        const supportedFocusModes = params.getSupportedFocusModes();
-        CLog(`supported focus modes = ${supportedFocusModes}`);
-        if (supportedFocusModes.contains(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE as any)) {
-          CLog(`setting focus mode to FOCUS_MODE_CONTINUOUS_PICTURE`);
-          params.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-          this.camera.setParameters(params);
-        } else if (supportedFocusModes.contains(android.hardware.Camera.Parameters.FOCUS_MODE_AUTO as any)) {
-          CLog(`setting focus mode to FOCUS_MODE_AUTO`);
-          params.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_AUTO);
-          this.camera.setParameters(params);
-        } else if (supportedFocusModes.contains(android.hardware.Camera.Parameters.FOCUS_MODE_FIXED as any)) {
-          CLog(`setting focus mode to FOCUS_MODE_FIXED`);
-          params.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_FIXED);
-          this.camera.setParameters(params);
-        }
-      }
+      this._ensureFocusMode();
 
       this._setCameraDisplayOrientation(app.android.foregroundActivity, this.cameraId, this.camera);
       this.camera.setPreviewTexture(this._surface);
