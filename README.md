@@ -1,12 +1,36 @@
-# NativeScript Camera Plus
+<a align="center" href="https://www.npmjs.com/package/@nstudio/nativescript-camera-plus">
+    <h3 align="center">NativeScript Camera Plus</h3>
+</a>
+<h4 align="center">A NativeScript camera with all the bells and whistles which can be embedded inside a view. This plugin was sponsored by <a href="https://liveshopper.com">LiveShopper<a></h4>
 
-[![nStudio Plugin](https://img.shields.io/badge/nStudio-Plugin-orange.svg)](http://nstudio.io)
-[![npm](https://img.shields.io/npm/v/@nstudio/nativescript-camera-plus.svg)](https://www.npmjs.com/package/@nstudio/nativescript-camera-plus)
-[![npm](https://img.shields.io/npm/dt/@nstudio/nativescript-camera-plus.svg?label=npm%20downloads)](https://www.npmjs.com/package/@nstudio/nativescript-camera-plus)
+<p align="center">
+    <img align="center" src="./src/logos/liveshopper.png" alt="LiveShopper Logo"/>
+</p>
 
-A NativeScript camera with all the bells and whistles which can be embedded inside a view. This plugin was sponsored by [LiveShopper](https://liveshopper.com).
+<p align="center">
+    <a href="https://www.npmjs.com/package/@nstudio/nativescript-camera-plus">
+        <img src="https://img.shields.io/npm/v/@nstudio/nativescript-camera-plus.svg" alt="npm">
+    </a>
+    <a href="https://www.npmjs.com/package/@nstudio/nativescript-camera-plus">
+        <img src="https://img.shields.io/npm/dt/@nstudio/nativescript-camera-plus.svg?label=npm%20downloads" alt="npm">
+    </a>
+    <a href="https://github.com/nstudio/nativescript-camera-plus/stargazers">
+        <img src="https://img.shields.io/github/stars/nstudio/nativescript-camera-plus.svg" alt="stars">
+    </a>
+     <a href="https://github.com/nstudio/nativescript-camera-plus/network">
+        <img src="https://img.shields.io/github/forks/nstudio/nativescript-camera-plus.svg" alt="forks">
+    </a>
+    <a href="https://github.com/nstudio/nativescript-camera-plus/blob/master/LICENSE.md">
+        <img src="https://img.shields.io/github/license/nstudio/nativescript-camera-plus.svg" alt="license">
+    </a>
+    <a href="http://nstudio.io">
+      <img src="./images/nstudio-banner.png" alt="nStudio banner">
+    </a>
+    <h5 align="center">Do you need assistance on your project or plugin? Contact the nStudio team anytime at <a href="mailto:team@nstudio.io">team@nstudio.io</a> to get up to speed with the best practices in mobile and web app development.
+    </h5>
+</p>
 
-[![LiveShopper](./src/logos/liveshopper.svg "LiveShopper")](https://liveshopper.com/).
+---
 
 ## Installation
 
@@ -14,10 +38,11 @@ A NativeScript camera with all the bells and whistles which can be embedded insi
 tns plugin add @nstudio/nativescript-camera-plus
 ```
 
-## Sample 
- _Yes the camera is rotated because it's a webcam to an emulator and it's just the way life works_
+## Sample
 
-![Camera Plus](screens/camplus1.gif)
+_Yes the camera is rotated because it's a webcam to an emulator and it's just the way life works_
+
+![Camera Plus](images/camplus1.gif)
 
 ## Demo
 
@@ -109,11 +134,3 @@ npm run demo.ng.android.device
 | **photoCapturedEvent**  | Executes when a photo is taken.                                    |
 | **toggleCameraEvent**   | Executes when the device camera is toggled.                        |
 | **imagesSelectedEvent** | Executes when images are selected from the device library/gallery. |
-
----
-
-## [nStudio, LLC](http://nstudio.io)
-
-[![nStudio](./src/logos/nstudio-banner.png "nStudio")](http://nStudio.io)
-
-Do you need assistance on your project or plugin? Contact the nStudio team anytime at [team@nstudio.io](<mailto:team@nstudio.io>)
