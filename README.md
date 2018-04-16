@@ -90,6 +90,7 @@ npm run demo.ng.android.device
 | **showToggleIcon**    | boolean | If true the default camera toggle (front/back) icon button will show on the Camera Plus layout. Default is true.                       |
 | **showCaptureIcon**   | boolean | If true the default capture (take picture) icon/button will show on the Camera Plus layout. Default is true.                           |
 | **showGalleryIcon**   | boolean | If true the choose from gallery/library icon/button will show on the Camera Plus layout. Default is true.                              |
+| **enableVideo**       | boolean | If true the CameraPlus instance can record video.                                                                                      |
 
 ## Android Only Properties
 
@@ -118,6 +119,8 @@ npm run demo.ng.android.device
 | **chooseFromLibrary(opts?: IChooseOptions)** | Opens the device gallery (image library) for selecting images.                                                                                              |
 | **takePicture()**                            | Takes a picture of the current preview in the CameraPlus.                                                                                                   |
 | **getFlashMode(): string**                   | Android: various strings possible: https://developer.android.com/reference/android/hardware/Camera.Parameters.html#getFlashMode() iOS: either 'on' or 'off' |
+| **record(opts?: IVideoOptions)**             | Starts recording a video.                                                                                                                                   |
+| **stop()**                                   | Stops the video recording, when stopped the `videoRecordingReadyEvent` event will be emitted.                                                               |
 
 ## Android Only Public Methods
 
