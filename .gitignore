@@ -9,8 +9,7 @@
 .idea/
 .vscode/
 !index.d.ts
-!src/typings/objc!QBImagePickerController.d.ts
-!src/typings/objc!SwiftyCam.d.ts
+!src/typings/*d.ts
 !scripts/*.js
 demo/app/*.js
 !demo/karma.conf.js
