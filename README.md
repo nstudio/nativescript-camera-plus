@@ -23,7 +23,10 @@
     <a href="https://github.com/nstudio/nativescript-camera-plus/blob/master/LICENSE.md">
         <img src="https://img.shields.io/github/license/nstudio/nativescript-camera-plus.svg" alt="license">
     </a>
-    <a href="http://nstudio.io">
+</p>
+
+<p align="center">
+    <a align="center" href="http://nstudio.io">
       <img src="./images/nstudio-banner.png" alt="nStudio banner">
     </a>
     <h5 align="center">Do you need assistance on your project or plugin? Contact the nStudio team anytime at <a href="mailto:team@nstudio.io">team@nstudio.io</a> to get up to speed with the best practices in mobile and web app development.
