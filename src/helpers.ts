@@ -1,6 +1,6 @@
-import * as app from "tns-core-modules/application";
-import { ImageAsset } from "tns-core-modules/image-asset";
-import { CLog } from "./camera-plus.common";
+import * as app from 'tns-core-modules/application';
+import { ImageAsset } from 'tns-core-modules/image-asset';
+import { CLog } from './camera-plus.common';
 
 /**
  * Helper method to get the drawable of an app_resource icon for the ImageButtons 'image'
@@ -9,11 +9,7 @@ import { CLog } from "./camera-plus.common";
 export function getImageDrawable(iconName: string) {
   const drawableId = app.android.context
     .getResources()
-    .getIdentifier(
-      iconName,
-      "drawable",
-      app.android.context.getPackageName()
-    ) as number;
+    .getIdentifier(iconName, 'drawable', app.android.context.getPackageName()) as number;
   return drawableId;
 }
 
@@ -21,9 +17,7 @@ export function getImageDrawable(iconName: string) {
  * Helper method to create android ImageButton
  */
 export function createImageButton(): android.widget.ImageButton {
-  const btn = new android.widget.ImageButton(
-    app.android.context
-  ) as android.widget.ImageButton;
+  const btn = new android.widget.ImageButton(app.android.context) as android.widget.ImageButton;
   btn.setPadding(24, 24, 24, 24);
   btn.setMaxHeight(48);
   btn.setMaxWidth(48);
@@ -45,17 +39,13 @@ export function createTransparentCircleDrawable(): android.graphics.drawable.Gra
  * Create date time stamp similar to Java Date()
  */
 export function createDateTimeStamp() {
-  let result = "";
+  let result = '';
   const date = new Date();
   result =
     date.getFullYear().toString() +
-    (date.getMonth() + 1 < 10
-      ? "0" + (date.getMonth() + 1).toString()
-      : (date.getMonth() + 1).toString()) +
-    (date.getDate() < 10
-      ? "0" + date.getDate().toString()
-      : date.getDate().toString()) +
-    "_" +
+    (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1).toString() : (date.getMonth() + 1).toString()) +
+    (date.getDate() < 10 ? '0' + date.getDate().toString() : date.getDate().toString()) +
+    '_' +
     date.getHours().toString() +
     date.getMinutes().toString() +
     date.getSeconds().toString();
@@ -69,12 +59,7 @@ export function createDateTimeStamp() {
  * @param height
  * @param keepAspectRatio
  */
-export function assetFromPath(
-  path,
-  width,
-  height,
-  keepAspectRatio
-): ImageAsset {
+export function assetFromPath(path, width, height, keepAspectRatio): ImageAsset {
   const asset = new ImageAsset(path);
   asset.options = {
     width,
@@ -92,7 +77,7 @@ export function assetFromPath(
  * @param height
  */
 export function getOptimalPreviewSize(
-  sizes: java.util.List<android.hardware.Camera.Size>,
+  sizes: java.util.List,
   width: number,
   height: number
 ): android.hardware.Camera.Size {
@@ -109,7 +94,7 @@ export function getOptimalPreviewSize(
   CLog(`targetHeight = ${targetHeight}`);
 
   for (var i = 0; i < sizes.size(); i++) {
-    const element = sizes.get(i);
+    const element = sizes.get(i) as android.hardware.Camera.Size;
     CLog(`size.width = ${element.width}, size.height = ${element.height}`);
     const ratio = element.width / element.height;
     CLog(`ratio = ${ratio}`);
@@ -124,7 +109,7 @@ export function getOptimalPreviewSize(
     // minDiff = Double.MAX_VALUE;
     minDiff = Number.MAX_SAFE_INTEGER;
     for (var i = 0; i < sizes.size(); i++) {
-      const element = sizes.get(i);
+      const element = sizes.get(i) as android.hardware.Camera.Size;
       CLog(`size.width = ${element.width}, size.height = ${element.height}`);
       if (Math.abs(element.height - targetHeight) < minDiff) {
         optimalSize = element;
@@ -133,9 +118,7 @@ export function getOptimalPreviewSize(
     }
   }
   CLog(
-    `optimalSize = ${optimalSize}, optimalSize.width = ${
-      optimalSize.width
-    }, optimalSize.height = ${optimalSize.height}`
+    `optimalSize = ${optimalSize}, optimalSize.width = ${optimalSize.width}, optimalSize.height = ${optimalSize.height}`
   );
   return optimalSize;
 }
@@ -156,10 +139,7 @@ export function calculateInSampleSize(
 
     // Calculate the largest inSampleSize value that is a power of 2 and keeps both
     // height and width larger than the requested height and width.
-    while (
-      halfHeight / inSampleSize >= reqHeight &&
-      halfWidth / inSampleSize >= reqWidth
-    ) {
+    while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
       inSampleSize *= 2;
     }
   }
@@ -184,7 +164,7 @@ export function getOrientationFromBytes(data): number {
   try {
     inputStream.close();
   } catch (ex) {
-    CLog("byteArrayInputStream.close error", ex);
+    CLog('byteArrayInputStream.close error', ex);
   }
   if (this.cameraId === 1) {
     if (orientation === 1) {
@@ -196,7 +176,7 @@ export function getOrientationFromBytes(data): number {
     }
   }
 
-  CLog("Orientation: ", orientation);
+  CLog('Orientation: ', orientation);
   return orientation;
 }
 
@@ -215,37 +195,21 @@ export function createImageConfirmationDialog(data): Promise<boolean> {
         })
       );
 
-      const layout = new android.widget.LinearLayout(
-        app.android.context
-      ) as android.widget.LinearLayout;
+      const layout = new android.widget.LinearLayout(app.android.context) as android.widget.LinearLayout;
       layout.setOrientation(1);
 
       // - Brad - working on OOM issue - use better Bitmap creation
       // https://developer.android.com/topic/performance/graphics/load-bitmap.html
       const bitmapFactoryOpts = new android.graphics.BitmapFactory.Options();
       bitmapFactoryOpts.inJustDecodeBounds = true;
-      let picture = android.graphics.BitmapFactory.decodeByteArray(
-        data,
-        0,
-        data.length,
-        bitmapFactoryOpts
-      );
+      let picture = android.graphics.BitmapFactory.decodeByteArray(data, 0, data.length, bitmapFactoryOpts);
 
-      bitmapFactoryOpts.inSampleSize = calculateInSampleSize(
-        bitmapFactoryOpts,
-        300,
-        300
-      );
+      bitmapFactoryOpts.inSampleSize = calculateInSampleSize(bitmapFactoryOpts, 300, 300);
 
       // decode with inSampleSize set now
       bitmapFactoryOpts.inJustDecodeBounds = false;
 
-      picture = android.graphics.BitmapFactory.decodeByteArray(
-        data,
-        0,
-        data.length,
-        bitmapFactoryOpts
-      );
+      picture = android.graphics.BitmapFactory.decodeByteArray(data, 0, data.length, bitmapFactoryOpts);
 
       const img = new android.widget.ImageView(app.android.context);
 
@@ -253,7 +217,7 @@ export function createImageConfirmationDialog(data): Promise<boolean> {
       layout.addView(img);
       alert.setView(layout);
       alert.setNegativeButton(
-        "Retake",
+        'Retake',
         new android.content.DialogInterface.OnClickListener({
           onClick: (dialog, which) => {
             resolve(false);
@@ -262,7 +226,7 @@ export function createImageConfirmationDialog(data): Promise<boolean> {
       );
 
       alert.setPositiveButton(
-        "Save",
+        'Save',
         new android.content.DialogInterface.OnClickListener({
           onClick: (dialog, which) => {
             resolve(true);

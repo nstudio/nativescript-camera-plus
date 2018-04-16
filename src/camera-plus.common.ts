@@ -5,8 +5,8 @@
  * Version 1.0.0                                        			   team@nStudio.io
  **********************************************************************************/
 
-import { ContentView } from "tns-core-modules/ui/content-view";
-import { CameraPlus as CameraPlusDefinition } from ".";
+import { ContentView } from 'tns-core-modules/ui/content-view';
+import { CameraPlus as CameraPlusDefinition } from '.';
 
 export class CameraUtil {
   public static debug: boolean = false;
@@ -14,14 +14,13 @@ export class CameraUtil {
 
 export const CLog = (...args) => {
   if (CameraUtil.debug) {
-    console.log("CameraPlus", args);
+    console.log('NativeScript-CameraPlus ---', args);
   }
 };
 
-export type CameraTypes = "front" | "rear";
+export type CameraTypes = 'front' | 'rear';
 
-export abstract class CameraPlusBase extends ContentView
-  implements CameraPlusDefinition {
+export abstract class CameraPlusBase extends ContentView implements CameraPlusDefinition {
   public set debug(value: boolean) {
     CameraUtil.debug = value;
   }
@@ -39,42 +38,42 @@ export abstract class CameraPlusBase extends ContentView
   /**
    * Default camera: must be set early before constructor to default the camera correctly on launch (default to rear)
    */
-  public static defaultCamera: CameraTypes = "rear";
+  public static defaultCamera: CameraTypes = 'rear';
 
   /*
    * String value for hooking into the errorEvent. This event fires when an error is emitted from CameraPlus.
    */
-  public static errorEvent = "errorEvent";
+  public static errorEvent = 'errorEvent';
 
   /**
    * String value for hooking into the photoCapturedEvent. This event fires when a photo is taken.
    */
-  public static photoCapturedEvent = "photoCapturedEvent";
+  public static photoCapturedEvent = 'photoCapturedEvent';
 
   /**
    * String value for hooking into the toggleCameraEvent. This event fires when the device camera is toggled.
    */
-  public static toggleCameraEvent = "toggleCameraEvent";
+  public static toggleCameraEvent = 'toggleCameraEvent';
 
   /**
    * String value when hooking into the imagesSelectedEvent. This event fires when images are selected from the device library/gallery.
    */
-  public static imagesSelectedEvent = "imagesSelectedEvent";
+  public static imagesSelectedEvent = 'imagesSelectedEvent';
 
   /**
    * String value when hooking into the videoRecordingStartedEvent. This event fires when video starts recording.
    */
-  public static videoRecordingStartedEvent = "videoRecordingStartedEvent";
+  public static videoRecordingStartedEvent = 'videoRecordingStartedEvent';
 
   /**
    * String value when hooking into the videoRecordingFinishedEvent. This event fires when video stops recording but has not processed yet.
    */
-  public static videoRecordingFinishedEvent = "videoRecordingFinishedEvent";
+  public static videoRecordingFinishedEvent = 'videoRecordingFinishedEvent';
 
   /**
    * String value when hooking into the videoRecordingReadyEvent. This event fires when video has completed processing and is ready to be used.
    */
-  public static videoRecordingReadyEvent = "videoRecordingReadyEvent";
+  public static videoRecordingReadyEvent = 'videoRecordingReadyEvent';
 
   /**
    * If true the default take picture event will present a confirmation dialog. Default is true.
@@ -94,8 +93,7 @@ export abstract class CameraPlusBase extends ContentView
   /**
    * The gallery/library selection mode. 'single' allows one image to be selected. 'multiple' allows multiple images. Default is 'multiple'
    */
-  @GetSetProperty()
-  public galleryPickerMode: "single" | "multiple" = "multiple";
+  @GetSetProperty() public galleryPickerMode: 'single' | 'multiple' = 'multiple';
 
   /**
    * If true the default flash toggle icon/button will show on the Camera Plus layout. Default is true.
@@ -120,27 +118,27 @@ export abstract class CameraPlusBase extends ContentView
   /**
    * *ANDROID ONLY* - allows setting a custom app_resource drawable icon for the Toggle Flash button icon when flash is on (enabled).
    */
-  @GetSetProperty() public flashOnIcon: string = "";
+  @GetSetProperty() public flashOnIcon: string = '';
 
   /**
    * *ANDROID ONLY* - allows setting a custom app_resource drawable icon for the Toggle Flash button icon when flash is off (disabled).
    */
-  @GetSetProperty() public flashOffIcon: string = "";
+  @GetSetProperty() public flashOffIcon: string = '';
 
   /**
    * *ANDROID ONLY* - allows setting a custom app_resource drawable icon for the Toggle Flash button icon when flash is off (disabled).
    */
-  @GetSetProperty() public toggleCameraIcon: string = "";
+  @GetSetProperty() public toggleCameraIcon: string = '';
 
   /**
    * *ANDROID ONLY* - allows setting a custom app_resource drawable icon for the Capture button icon.
    */
-  @GetSetProperty() public takePicIcon: string = "";
+  @GetSetProperty() public takePicIcon: string = '';
 
   /**
    * *ANDROID ONLY* - allows setting a custom app_resource drawable icon for the Open Gallery button icon.
    */
-  @GetSetProperty() public galleryIcon: string = "";
+  @GetSetProperty() public galleryIcon: string = '';
 
   /**
    * *ANDROID ONLY* - If true the camera will auto focus to capture the image. Default is true.
@@ -207,8 +205,8 @@ export abstract class CameraPlusBase extends ContentView
   /**
    * Returns current camera <front | rear>
    */
-  getCurrentCamera(): "rear" | "front" {
-    return "rear";
+  getCurrentCamera(): 'rear' | 'front' {
+    return 'rear';
   }
 
   /**
@@ -329,18 +327,18 @@ export function GetSetProperty() {
   return (target, propertyKey: string) => {
     Object.defineProperty(target, propertyKey, {
       get: function() {
-        return this["_" + propertyKey];
+        return this['_' + propertyKey];
       },
       set: function(value) {
-        if (this["_" + propertyKey] === value) {
+        if (this['_' + propertyKey] === value) {
           return;
         }
-        if (value === "true") {
+        if (value === 'true') {
           value = true;
-        } else if (value === "false") {
+        } else if (value === 'false') {
           value = false;
         }
-        this["_" + propertyKey] = value;
+        this['_' + propertyKey] = value;
       },
       enumerable: true,
       configurable: true

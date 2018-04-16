@@ -4,10 +4,11 @@
  *
  * Version 1.0.0                                        			   team@nStudio.io
  **********************************************************************************/
+/// <reference path="./typings/android27.d.ts" />
 
-import { ImageSource } from "tns-core-modules/image-source";
-import { ImageAsset } from "tns-core-modules/image-asset";
-import * as application from "tns-core-modules/application";
+import { ImageSource } from 'tns-core-modules/image-source';
+import { ImageAsset } from 'tns-core-modules/image-asset';
+import * as application from 'tns-core-modules/application';
 
 // declare var java, android: any;
 
@@ -35,13 +36,10 @@ export class SelectedAsset extends ImageAsset {
   }
 
   data(): Promise<any> {
-    return Promise.reject(new Error("Not implemented."));
+    return Promise.reject(new Error('Not implemented.'));
   }
 
-  getImage(options?: {
-    maxWidth: number;
-    maxHeight: number;
-  }): Promise<ImageSource> {
+  getImage(options?: { maxWidth: number; maxHeight: number }): Promise<ImageSource> {
     return new Promise<ImageSource>((resolve, reject) => {
       try {
         resolve(this.decodeUri(this._uri, options));
@@ -79,7 +77,7 @@ export class SelectedAsset extends ImageAsset {
 
   protected setThumbAsset(value: ImageAsset): void {
     this._thumbAsset = value;
-    this.notifyPropertyChange("thumbAsset", value);
+    this.notifyPropertyChange('thumbAsset', value);
   }
 
   get uri(): string {
@@ -96,20 +94,15 @@ export class SelectedAsset extends ImageAsset {
   private static _calculateFileUri(uri: android.net.Uri) {
     const isKitKat = android.os.Build.VERSION.SDK_INT >= 19; // android.os.Build.VERSION_CODES.KITKAT
 
-    if (
-      isKitKat &&
-      DocumentsContract().isDocumentUri(application.android.context, uri)
-    ) {
+    if (isKitKat && DocumentsContract().isDocumentUri(application.android.context, uri)) {
       // externalStorageProvider
       if (SelectedAsset.isExternalStorageDocument(uri)) {
         const docId = DocumentsContract().getDocumentId(uri);
-        const id = docId.split(":")[1];
-        const type = docId.split(":")[0];
+        const id = docId.split(':')[1];
+        const type = docId.split(':')[0];
 
-        if ("primary" === type.toLowerCase()) {
-          return (
-            android.os.Environment.getExternalStorageDirectory() + "/" + id
-          );
+        if ('primary' === type.toLowerCase()) {
+          return android.os.Environment.getExternalStorageDirectory() + '/' + id;
         }
 
         // tODO handle non-primary volumes
@@ -117,7 +110,7 @@ export class SelectedAsset extends ImageAsset {
         // downloadsProvider
         const id = DocumentsContract().getDocumentId(uri);
         const contentUri = android.content.ContentUris.withAppendedId(
-          android.net.Uri.parse("content://downloads/public_downloads"),
+          android.net.Uri.parse('content://downloads/public_downloads'),
           long(id)
         );
 
@@ -125,33 +118,29 @@ export class SelectedAsset extends ImageAsset {
       } else if (SelectedAsset.isMediaDocument(uri)) {
         // mediaProvider
         const docId = DocumentsContract().getDocumentId(uri);
-        const split = docId.split(":");
+        const split = docId.split(':');
         const type = split[0];
         const id = split[1];
 
         let contentUri: android.net.Uri = null;
-        if ("image" === type) {
+        if ('image' === type) {
           contentUri = MediaStore().Images.Media.EXTERNAL_CONTENT_URI;
-        } else if ("video" === type) {
+        } else if ('video' === type) {
           contentUri = MediaStore().Video.Media.EXTERNAL_CONTENT_URI;
-        } else if ("audio" === type) {
+        } else if ('audio' === type) {
           contentUri = MediaStore().Audio.Media.EXTERNAL_CONTENT_URI;
         }
 
-        const selection = "_id=?";
+        const selection = '_id=?';
         const selectionArgs = [id];
 
-        return SelectedAsset.getDataColumn(
-          contentUri,
-          selection,
-          selectionArgs
-        );
+        return SelectedAsset.getDataColumn(contentUri, selection, selectionArgs);
       }
     } else {
       // mediaStore (and general)
-      if ("content" === uri.getScheme()) {
+      if ('content' === uri.getScheme()) {
         return SelectedAsset.getDataColumn(uri, null, null);
-      } else if ("file" === uri.getScheme()) {
+      } else if ('file' === uri.getScheme()) {
         // file
         return uri.getPath();
       }
@@ -167,13 +156,7 @@ export class SelectedAsset extends ImageAsset {
     let filePath;
 
     try {
-      cursor = this.getContentResolver().query(
-        uri,
-        columns,
-        selection,
-        selectionArgs,
-        null
-      );
+      cursor = this.getContentResolver().query(uri, columns, selection, selectionArgs, null);
       if (cursor != null && cursor.moveToFirst()) {
         const column_index = cursor.getColumnIndexOrThrow(columns[0]);
         filePath = cursor.getString(column_index);
@@ -193,13 +176,13 @@ export class SelectedAsset extends ImageAsset {
   }
 
   private static isExternalStorageDocument(uri: android.net.Uri) {
-    return "com.android.externalstorage.documents" === uri.getAuthority();
+    return 'com.android.externalstorage.documents' === uri.getAuthority();
   }
   private static isDownloadsDocument(uri: android.net.Uri) {
-    return "com.android.providers.downloads.documents" === uri.getAuthority();
+    return 'com.android.providers.downloads.documents' === uri.getAuthority();
   }
   private static isMediaDocument(uri: android.net.Uri) {
-    return "com.android.providers.media.documents" === uri.getAuthority();
+    return 'com.android.providers.media.documents' === uri.getAuthority();
   }
 
   private decodeThumbUri(): void {
@@ -211,7 +194,7 @@ export class SelectedAsset extends ImageAsset {
 
     // decode with scale
     this._thumb = this.decodeUri(this._uri, REQUIRED_SIZE);
-    this.notifyPropertyChange("thumb", this._thumb);
+    this.notifyPropertyChange('thumb', this._thumb);
   }
 
   private decodeThumbAssetUri(): void {
@@ -223,7 +206,7 @@ export class SelectedAsset extends ImageAsset {
 
     // decode with scale
     this._thumbAsset = this.decodeUriForImageAsset(this._uri, REQUIRED_SIZE);
-    this.notifyPropertyChange("thumbAsset", this._thumbAsset);
+    this.notifyPropertyChange('thumbAsset', this._thumbAsset);
   }
 
   /**
@@ -232,17 +215,10 @@ export class SelectedAsset extends ImageAsset {
    * @param uri The URI of the image that should be scaled.
    * @param options The options that should be used to produce the correct image scale.
    */
-  private getSampleSize(
-    uri: android.net.Uri,
-    options?: { maxWidth: number; maxHeight: number }
-  ): number {
+  private getSampleSize(uri: android.net.Uri, options?: { maxWidth: number; maxHeight: number }): number {
     const boundsOptions = new android.graphics.BitmapFactory.Options();
     boundsOptions.inJustDecodeBounds = true;
-    BitmapFactory().decodeStream(
-      this.openInputStream(uri),
-      null,
-      boundsOptions
-    );
+    BitmapFactory().decodeStream(this.openInputStream(uri), null, boundsOptions);
 
     // find the correct scale value. It should be the power of 2.
     let outWidth = boundsOptions.outWidth;
@@ -252,16 +228,8 @@ export class SelectedAsset extends ImageAsset {
       // tODO: Refactor to accomodate different scaling options
       //       right now, it just selects the smallest of the two sizes
       //       and scales the image proportionally to that.
-      const targetSize =
-        options.maxWidth < options.maxHeight
-          ? options.maxWidth
-          : options.maxHeight;
-      while (
-        !(
-          this.matchesSize(targetSize, outWidth) ||
-          this.matchesSize(targetSize, outHeight)
-        )
-      ) {
+      const targetSize = options.maxWidth < options.maxHeight ? options.maxWidth : options.maxHeight;
+      while (!(this.matchesSize(targetSize, outWidth) || this.matchesSize(targetSize, outHeight))) {
         outWidth /= 2;
         outHeight /= 2;
         scale *= 2;
@@ -279,17 +247,10 @@ export class SelectedAsset extends ImageAsset {
    * @param uri The URI that should be decoded into an ImageSource.
    * @param options The options that should be used to decode the image.
    */
-  private decodeUri(
-    uri: android.net.Uri,
-    options?: { maxWidth: number; maxHeight: number }
-  ): ImageSource {
+  private decodeUri(uri: android.net.Uri, options?: { maxWidth: number; maxHeight: number }): ImageSource {
     const downsampleOptions = new android.graphics.BitmapFactory.Options();
     downsampleOptions.inSampleSize = this.getSampleSize(uri, options);
-    const bitmap = BitmapFactory().decodeStream(
-      this.openInputStream(uri),
-      null,
-      downsampleOptions
-    );
+    const bitmap = BitmapFactory().decodeStream(this.openInputStream(uri), null, downsampleOptions);
     const image = new ImageSource();
     image.setNativeSource(bitmap);
     return image;
@@ -300,17 +261,10 @@ export class SelectedAsset extends ImageAsset {
    * @param uri The URI that should be decoded into an ImageAsset.
    * @param options The options that should be used to decode the image.
    */
-  private decodeUriForImageAsset(
-    uri: android.net.Uri,
-    options?: { maxWidth: number; maxHeight: number }
-  ): ImageAsset {
+  private decodeUriForImageAsset(uri: android.net.Uri, options?: { maxWidth: number; maxHeight: number }): ImageAsset {
     const downsampleOptions = new android.graphics.BitmapFactory.Options();
     downsampleOptions.inSampleSize = this.getSampleSize(uri, options);
-    const bitmap = BitmapFactory().decodeStream(
-      this.openInputStream(uri),
-      null,
-      downsampleOptions
-    );
+    const bitmap = BitmapFactory().decodeStream(this.openInputStream(uri), null, downsampleOptions);
     return new ImageAsset(bitmap);
   }
 
@@ -320,22 +274,17 @@ export class SelectedAsset extends ImageAsset {
   private getByteBuffer(uri: android.net.Uri): java.nio.ByteBuffer {
     let file: android.content.res.AssetFileDescriptor = null;
     try {
-      file = SelectedAsset.getContentResolver().openAssetFileDescriptor(
-        uri,
-        "r"
-      );
+      file = SelectedAsset.getContentResolver().openAssetFileDescriptor(uri, 'r');
 
       // determine how many bytes to allocate in memory based on the file length
       const length: number = file.getLength();
-      const buffer: java.nio.ByteBuffer = java.nio.ByteBuffer.allocateDirect(
-        length
-      );
+      const buffer: java.nio.ByteBuffer = java.nio.ByteBuffer.allocateDirect(length);
       const bytes = buffer.array();
       const stream = file.createInputStream();
 
       // buffer the data in 4KiB amounts
       const reader = new java.io.BufferedInputStream(stream, 4096);
-      reader.read(bytes, 0, bytes.length);
+      reader.read(bytes as any, 0, (bytes as any).length);
       return buffer;
     } finally {
       if (file) {
