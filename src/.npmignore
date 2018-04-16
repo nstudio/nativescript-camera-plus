@@ -17,3 +17,8 @@ references.d.ts
 *.zip
 tsconfig.json
 package-lock.json
+
+platforms/android/*
+!platforms/android/include.gradle
+!platforms/android/*.aar
+!platforms/android/*.jar
