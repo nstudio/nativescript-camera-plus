@@ -1,8 +1,7 @@
 /**********************************************************************************
  * (c) 2017, nStudio, LLC & LiveShopper, LLC
- * Licensed under a Commercial license.
  *
- * Version 1.0.0                                        			   team@nStudio.io
+ * Version 1.0.0                                                   team@nStudio.io
  **********************************************************************************/
 
 import { ContentView } from 'tns-core-modules/ui/content-view';
