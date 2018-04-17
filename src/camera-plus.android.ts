@@ -47,13 +47,15 @@ const CAMERA_FACING_FRONT = 1; // front camera
 const CAMERA_FACING_BACK = 0; // rear camera
 const RESULT_CODE_PICKER_IMAGES = 415161;
 const RESULT_OK = -1;
-const DEVICE_INFO_STRING = `device: ${device.manufacturer} ${device.model} on SDK: ${device.sdkVersion}`;
 
 // Snapshot-friendly functions
 const CAMERA = () => (android as any).Manifest.permission.CAMERA;
 const RECORD_AUDIO = () => (android as any).Manifest.permission.RECORD_AUDIO;
 const READ_EXTERNAL_STORAGE = () => (android as any).Manifest.permission.READ_EXTERNAL_STORAGE;
 const WRITE_EXTERNAL_STORAGE = () => (android as any).Manifest.permission.WRITE_EXTERNAL_STORAGE;
+// Since these device.* properties resolve directly to the android.* namespace,
+// the snapshot will fail if they resolve during import, so must be done via a function
+const DEVICE_INFO_STRING = () => `device: ${device.manufacturer} ${device.model} on SDK: ${device.sdkVersion}`;
 
 export class CameraPlus extends CameraPlusBase {
   // @GetSetProperty() public camera: android.hardware.Camera;
@@ -811,7 +813,7 @@ export class CameraPlus extends CameraPlusBase {
     if (this.autoFocus === true && this.camera) {
       const params = this.camera.getParameters();
       const supportedFocusModes = params.getSupportedFocusModes();
-      CLog(`supported focus modes = ${supportedFocusModes} --- ${DEVICE_INFO_STRING}`);
+      CLog(`supported focus modes = ${supportedFocusModes} --- ${DEVICE_INFO_STRING()}`);
       if (supportedFocusModes.contains(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE as any)) {
         CLog(`setting focus mode to FOCUS_MODE_CONTINUOUS_PICTURE`);
         params.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
@@ -825,7 +827,7 @@ export class CameraPlus extends CameraPlusBase {
       // autofocus not set so if we have camera then try to set to FIXED if device has fixed focus mode
       const params = this.camera.getParameters();
       const supportedFocusModes = params.getSupportedFocusModes();
-      CLog(`supported focus modes = ${supportedFocusModes} --- ${DEVICE_INFO_STRING}`);
+      CLog(`supported focus modes = ${supportedFocusModes} --- ${DEVICE_INFO_STRING()}`);
       if (supportedFocusModes.contains(android.hardware.Camera.Parameters.FOCUS_MODE_FIXED as any)) {
         CLog(`setting focus mode to FOCUS_MODE_FIXED`);
         params.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_FIXED);
@@ -1013,7 +1015,7 @@ export class CameraPlus extends CameraPlusBase {
    */
   private _initCamera(id?): void {
     try {
-      CLog(`*** _initCamera ***\nthis.cameraId = ${this.cameraId} --- ${DEVICE_INFO_STRING}`);
+      CLog(`*** _initCamera ***\nthis.cameraId = ${this.cameraId} --- ${DEVICE_INFO_STRING()}`);
       if (this.camera === null) {
         this.cameraId = CAMERA_FACING_BACK;
       }
