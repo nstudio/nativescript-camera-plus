@@ -1,5 +1,5 @@
-import { EventData } from "tns-core-modules/data/observable";
-import { ContentView } from "tns-core-modules/ui/content-view";
+import { EventData } from 'tns-core-modules/data/observable';
+import { ContentView } from 'tns-core-modules/ui/content-view';
 
 export declare class CameraPlus extends ContentView {
   events: ICameraPlusEvents;
@@ -16,7 +16,7 @@ export declare class CameraPlus extends ContentView {
   /**
    * Default camera: must be set early before constructor to default the camera correctly on launch (default to 'rear')
    */
-  public static defaultCamera: "front" | "rear";
+  public static defaultCamera: 'front' | 'rear';
 
   /**
    * String value for hooking into the errorEvent. This event fires when an error is emitted from Camera Plus.
@@ -66,7 +66,7 @@ export declare class CameraPlus extends ContentView {
   /**
    * The gallery/library selection mode. 'single' allows one image to be selected. 'multiple' allows multiple images. Default is 'multiple'
    */
-  galleryPickerMode: "single" | "multiple";
+  galleryPickerMode: 'single' | 'multiple';
 
   /**
    * If true the default flash toggle icon/button will show on the Camera Plus layout. Default is true.
@@ -172,7 +172,7 @@ export declare class CameraPlus extends ContentView {
   /**
    * Returns current camaer <front | rear>
    */
-  getCurrentCamera(): "rear" | "front";
+  getCurrentCamera(): 'rear' | 'front';
 
   /**
    * * ANDROID ONLY * - will prompt the user for runtime permission to use the device Camera.
@@ -239,6 +239,8 @@ export interface ICameraOptions {
   height?: number;
   width?: number;
   autoSquareCrop?: boolean;
+  confirmRetakeText?: string;
+  confirmSaveText?: string;
 }
 
 export interface IVideoOptions {

@@ -80,6 +80,16 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
   @GetSetProperty() public confirmPhotos: boolean = true;
 
   /**
+   * When confirming capture this text will be presented to the user to retake the photo. Default is 'Retake'
+   */
+  @GetSetProperty() public confirmRetakeText?: string;
+
+  /**
+   * When confirming capture this text will be presented to the user to save the photo. Default is 'Save'
+   */
+  @GetSetProperty() public confirmSaveText?: string;
+
+  /**
    * If true the default videorecordingready event will present a confirmation dialog. Default is false.
    */
   @GetSetProperty() public confirmVideo: boolean = false;
@@ -298,6 +308,8 @@ export interface ICameraOptions {
   height?: number;
   width?: number;
   autoSquareCrop?: boolean;
+  confirmRetakeText?: string;
+  confirmSaveText?: string;
 }
 
 export interface IChooseOptions {

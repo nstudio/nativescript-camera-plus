@@ -180,7 +180,7 @@ export function getOrientationFromBytes(data): number {
   return orientation;
 }
 
-export function createImageConfirmationDialog(data): Promise<boolean> {
+export function createImageConfirmationDialog(data, retakeText = null, saveText = null): Promise<boolean> {
   return new Promise((resolve, reject) => {
     try {
       debugger;
@@ -217,7 +217,7 @@ export function createImageConfirmationDialog(data): Promise<boolean> {
       layout.addView(img);
       alert.setView(layout);
       alert.setNegativeButton(
-        'Retake',
+        retakeText,
         new android.content.DialogInterface.OnClickListener({
           onClick: (dialog, which) => {
             resolve(false);
@@ -226,7 +226,7 @@ export function createImageConfirmationDialog(data): Promise<boolean> {
       );
 
       alert.setPositiveButton(
-        'Save',
+        saveText,
         new android.content.DialogInterface.OnClickListener({
           onClick: (dialog, which) => {
             resolve(true);
