@@ -2,29 +2,30 @@
 </ActionBar>
 <ScrollView>
 	<GridLayout rows="250, auto, *">
-
-		<CameraPlus debug="true" 
+		<CameraPlus height="250" debug="true" 
 			galleryPickerMode="single" 
 			showFlashIcon="true" 
 			showToggleIcon="true" 
 			showCaptureIcon="true" 
 			showGalleryIcon="true"
+			confirmSaveText="CONFIRM!"
+			confirmRetakeText="RETAKE!"
 			(loaded)="camLoaded($event)" 
 			(toggleCameraEvent)="toggleCameraEvent($event)" 
 			(photoCapturedEvent)="photoCapturedEvent($event)"
 			(imagesSelectedEvent)="imagesSelectedEvent($event)">
 			
-			<!-- OVERLAY CONTENT-->
-			<GridLayout rows="*, auto, *" columns="*, auto, *">
+			<!-- OVERLAY CONTENT -->
+			<!-- <GridLayout rows="*, auto, *" columns="*, auto, *">
 				<GridLayout colSpan="3" class="bg-overlay"></GridLayout>
 				<GridLayout row="1" class="bg-overlay"></GridLayout>
 				<GridLayout row="1" col="2" class="bg-overlay"></GridLayout>
 				<GridLayout row="2" colSpan="3" class="bg-overlay"></GridLayout>
 				<Label row="1" col="1" class="overlay-label" text="📷➕"></Label>
 				<Image src="https://d2odgkulk9w7if.cloudfront.net/images/default-source/default-album/nativescript.png" row="1" col="1" stretch="aspectFill"
-				    class="overlay"></Image>
+				    class="overlay" width="20" height="20"></Image>
 				<Image src="res://nativescript" row="1" col="1" stretch="aspectFill" class="overlay"></Image>
-			</GridLayout>
+			</GridLayout> -->
 
 		</CameraPlus>
 

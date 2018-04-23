@@ -1200,6 +1200,8 @@ export class CameraPlus extends CameraPlusBase {
    */
   private async _finishSavingAndConfirmingPicture(options: ICameraOptions, data) {
     let confirmPic;
+    let confirmPicRetakeText;
+    let confirmPicSaveText;
     let saveToGallery;
     let reqWidth;
     let reqHeight;
@@ -1209,6 +1211,8 @@ export class CameraPlus extends CameraPlusBase {
     const density = utils.layout.getDisplayDensity();
     if (options) {
       confirmPic = options.confirm ? true : false;
+      confirmPicRetakeText = options.confirmRetakeText ? options.confirmRetakeText : this.confirmRetakeText;
+      confirmPicSaveText = options.confirmSaveText ? options.confirmSaveText : this.confirmSaveText;
       saveToGallery = options.saveToGallery ? true : false;
       reqWidth = options.width ? options.width * density : 0;
       reqHeight = options.height ? options.height * density : reqWidth;
@@ -1360,7 +1364,11 @@ export class CameraPlus extends CameraPlusBase {
     CLog('nativeFile', nativeFile);
 
     if (saveToGallery === true && confirmPic === true) {
-      const result = await CamHelpers.createImageConfirmationDialog(data).catch(ex => {
+      const result = await CamHelpers.createImageConfirmationDialog(
+        data,
+        confirmPicRetakeText,
+        confirmPicSaveText
+      ).catch(ex => {
         CLog('Error createImageConfirmationDialog', ex);
       });
 
