@@ -376,7 +376,7 @@ export class CameraPlus extends CameraPlusBase {
     this._mediaRecorder.setAudioSource(android.media.MediaRecorder.AudioSource.CAMCORDER);
     this._mediaRecorder.setVideoSource(android.media.MediaRecorder.VideoSource.CAMERA);
     // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
-    this._mediaRecorder.setProfile(android.media.CamcorderProfile.get(android.media.CamcorderProfile.QUALITY_HIGH));
+    this._mediaRecorder.setProfile(android.media.CamcorderProfile.get(this.cameraId, android.media.CamcorderProfile.QUALITY_HIGH));
     // Step 4: Set output file
     const videoPath = this._getOutputMediaFile(2).toString();
     this._videoPath = videoPath;
