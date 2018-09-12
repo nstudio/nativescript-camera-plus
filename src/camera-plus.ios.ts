@@ -236,7 +236,7 @@ export class MySwifty extends SwiftyCamViewController {
   }
 
   public closePicker() {
-    rootVC().dismissViewControllerAnimatedCompletion(true, () => {
+    this.getParentViewController().dismissViewControllerAnimatedCompletion(true, () => {
       this.pickerDelegate = null;
     });
   }
@@ -450,6 +450,15 @@ export class MySwifty extends SwiftyCamViewController {
     return UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera);
   }
 
+  public getParentViewController() {
+    var responder: UIResponder = this.view;
+    do {
+      responder = responder.nextResponder;
+    } while (responder && !(NSStringFromClass(responder.class()) === 'UIViewControllerImpl'));
+
+    return <UIViewController>responder;
+  }
+
   public chooseFromLibrary(options?: IChooseOptions): Promise<any> {
     return new Promise((resolve, reject) => {
       this._pickerDelegate = null;
@@ -493,7 +502,7 @@ export class MySwifty extends SwiftyCamViewController {
 
       imagePickerController.modalPresentationStyle = UIModalPresentationStyle.CurrentContext;
 
-      rootVC().presentViewControllerAnimatedCompletion(imagePickerController, true, null);
+      this.getParentViewController().presentViewControllerAnimatedCompletion(imagePickerController, true, null);
     });
   }
 
@@ -732,11 +741,6 @@ export class CameraPlus extends CameraPlusBase {
     return this._swifty.isCameraAvailable();
   }
 }
-
-const rootVC = function() {
-  let appWindow = UIApplication.sharedApplication.keyWindow;
-  return appWindow.rootViewController;
-};
 
 const createButton = function(
   target: any,
