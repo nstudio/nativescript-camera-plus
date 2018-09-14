@@ -112,7 +112,7 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
           cnt++;
           if (cnt === assets.count) {
             this._callback(images);
-            this._owner.get().closePicker();
+            // this._owner.get().closePicker();
           } else {
             requestImg(cnt);
           }
