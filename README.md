@@ -149,13 +149,15 @@ _Note: These properties need set before the initialization of the camera. Users 
 
 | Name                    | Description                                                        |
 | ----------------------- | ------------------------------------------------------------------ |
-| **errorEvent**          | Executes when an error is emitted from CameraPlu                   |
+| **errorEvent**          | Executes when an error is emitted from CameraPlus                   |
 | **photoCapturedEvent**  | Executes when a photo is taken.                                    |
 | **toggleCameraEvent**   | Executes when the device camera is toggled.                        |
 | **imagesSelectedEvent** | Executes when images are selected from the device library/gallery. |
 | **videoRecordingStartedEvent** | Executes when video starts recording. |
 | **videoRecordingFinishedEvent** | Executes when video stops recording but has not process yet. |
 | **videoRecordingReadyEvent** | Executes when video has completed processing and is ready to be used. |
+| **confirmScreenShownEvent** | Executes when  the picture confirm dialog is shown.. |
+| **confirmScreenDismissedEvent** | Executes when the picture confirm dialog is dismissed either by Retake or Save button. |
 
 
 ## Option Interfaces
