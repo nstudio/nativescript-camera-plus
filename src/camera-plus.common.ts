@@ -75,6 +75,16 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
   public static videoRecordingReadyEvent = 'videoRecordingReadyEvent';
 
   /**
+   * String value when hooking into the confirmScreenShownEvent. This event fires when the picture confirm dialog is shown.
+   */
+  public static confirmScreenShownEvent = 'confirmScreenShownEvent';
+
+  /**
+   * String value when hooking into the confirmScreenDismissedEvent. This event fires when the picture confirm dialog is dismissed either by Retake or Save button.
+   */
+  public static confirmScreenDismissedEvent = 'confirmScreenDismissedEvent';
+
+  /**
    * If true the default take picture event will present a confirmation dialog. Default is true.
    */
   @GetSetProperty() public confirmPhotos: boolean = true;
@@ -325,6 +335,8 @@ export interface ICameraPlusEvents {
   videoRecordingStartedEvent: any;
   videoRecordingFinishedEvent: any;
   videoRecordingReadyEvent: any;
+  confirmScreenShownEvent: any;
+  confirmScreenDismissedEvent: any;
 }
 
 export interface IVideoOptions {
