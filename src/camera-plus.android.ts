@@ -513,10 +513,43 @@ export class CameraPlus extends CameraPlusBase {
         const createThePickerIntent = () => {
           const intent = new android.content.Intent() as android.content.Intent;
           intent.setType("*/*");
-          const mimetypes = Array.create(java.lang.String, 2);
-          mimetypes[0] = "image/*";
-          mimetypes[1] = "video/*";
+
+          if (!options) {
+            options = {
+              showImages: true,
+              showVideos: true
+            }
+          }
+
+          if (options.showImages === undefined) {
+            options.showImages = true;
+          }
+
+          if (options.showVideos === undefined) {
+            options.showVideos = true;
+          }
+
+          let length = 0;
+          if (options.showImages) {
+            length++;
+          }
+
+          if (options.showVideos) {
+            length++;
+          }
+
+          const mimetypes = Array.create(java.lang.String, length);
+          let index = 0;
+          if (options.showImages) {
+            mimetypes[index] = "image/*";
+            index++;
+          }
+          if (options.showVideos) {
+            mimetypes[index] = "video/*";
+          }
+
           intent.putExtra(android.content.Intent.EXTRA_MIME_TYPES, mimetypes);
+
           intent.setAction('android.intent.action.GET_CONTENT');
           // set the multiple picker mode
           if (this.galleryPickerMode === 'multiple') {

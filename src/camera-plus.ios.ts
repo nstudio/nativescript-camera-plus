@@ -493,6 +493,27 @@ export class MySwifty extends SwiftyCamViewController {
 
       imagePickerController.modalPresentationStyle = UIModalPresentationStyle.CurrentContext;
 
+      let mediaType = QBImagePickerMediaType.Any;
+
+      if (options.showImages === undefined) {
+        options.showImages = true;
+      }
+
+      if (options.showVideos === undefined) {
+        options.showVideos = true;
+      }
+
+      if (!options.showImages && options.showVideos) {
+        mediaType = QBImagePickerMediaType.Video;
+      }
+      else {
+        if (options.showImages && !options.showVideos) {
+          mediaType = QBImagePickerMediaType.Image;
+        }
+      }
+
+      imagePickerController.mediaType = mediaType;
+
       rootVC().presentViewControllerAnimatedCompletion(imagePickerController, true, null);
     });
   }
