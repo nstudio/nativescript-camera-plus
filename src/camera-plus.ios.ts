@@ -17,6 +17,7 @@ import { Color } from 'tns-core-modules/color';
 import { screen } from 'tns-core-modules/platform';
 import * as utils from 'tns-core-modules/utils/utils';
 import * as dialogs from 'tns-core-modules/ui/dialogs';
+import * as fs from 'tns-core-modules/file-system/file-system';
 import {
   CameraPlusBase,
   GetSetProperty,
@@ -83,7 +84,7 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
   }
 
   qb_imagePickerControllerDidFinishPickingAssets(picker, assets: NSArray<any>): void {
-    let images = [];
+    let selection = [];
     let manager = PHImageManager.defaultManager();
     // let scale = UIScreen.mainScreen.scale;
     let targetSize = PHImageManagerMaximumSize;
@@ -93,31 +94,64 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
     requestOptions.deliveryMode = PHImageRequestOptionsDeliveryMode.HighQualityFormat;
     requestOptions.normalizedCropRect = CGRectMake(0, 0, 1, 1);
     let cnt = 0;
+
+    const next = function() {
+      cnt++;
+      if (cnt === assets.count) {
+        this._callback(selection);
+        this._owner.get().closePicker();
+      } else {
+        requestImg(cnt);
+      }
+    };
+
     const requestImg = (i: number) => {
       // Do something with the asset
       let asset = <PHAsset>assets.objectAtIndex(i);
-      manager.requestImageForAssetTargetSizeContentModeOptionsResultHandler(
-        asset,
-        targetSize,
-        PHImageContentMode.AspectFill,
-        requestOptions,
-        (image: UIImage, info: NSDictionary<any, any>) => {
-          let imageAsset = new ImageAsset(image);
-          // imageAsset.options = {
-          //   keepAspectRatio: this._keepAspectRatio
-          // };
-          if (this._width) imageAsset.options.width = this._width;
-          if (this._height) imageAsset.options.height = this._height;
-          images.push(imageAsset);
-          cnt++;
-          if (cnt === assets.count) {
-            this._callback(images);
-            this._owner.get().closePicker();
-          } else {
-            requestImg(cnt);
+      if (asset.mediaType == PHAssetMediaType.Image) {
+        manager.requestImageForAssetTargetSizeContentModeOptionsResultHandler(
+          asset,
+          targetSize,
+          PHImageContentMode.AspectFill,
+          requestOptions,
+          (image: UIImage, info: NSDictionary<any, any>) => {
+            let imageAsset = new ImageAsset(image);
+            // imageAsset.options = {
+            //   keepAspectRatio: this._keepAspectRatio
+            // };=
+            if (this._width) imageAsset.options.width = this._width;
+            if (this._height) imageAsset.options.height = this._height;
+            selection.push(imageAsset);
+            next.call(this);
           }
-        }
-      );
+        );
+      } else if (asset.mediaType == PHAssetMediaType.Video) {
+        manager.requestAVAssetForVideoOptionsResultHandler(asset, null, (videoAsset: AVAsset, audioMix, info) => {
+          if (videoAsset.isKindOfClass(AVURLAsset.class())) {
+            const docsPath = fs.knownFolders.documents();
+
+            const pathParts = (<AVURLAsset>videoAsset).URL.toString().split(fs.path.separator);
+            const filename = pathParts[pathParts.length - 1];
+            const localFilePath = fs.path.join(docsPath.path, 'camera-plus-videos', filename);
+
+            let targetURL = NSURL.fileURLWithPath(localFilePath);
+
+            if (fs.File.exists(localFilePath)) {
+              docsPath.getFile('camera-plus-videos/' + filename).remove();
+            }
+
+            const result = NSFileManager.defaultManager.copyItemAtURLToURLError(
+              (<AVURLAsset>videoAsset).URL,
+              targetURL
+            );
+
+            if (result) {
+              selection.push(localFilePath);
+            }
+          }
+          next.call(this);
+        });
+      }
     };
     requestImg(0);
   }
@@ -505,8 +539,7 @@ export class MySwifty extends SwiftyCamViewController {
 
       if (!options.showImages && options.showVideos) {
         mediaType = QBImagePickerMediaType.Video;
-      }
-      else {
+      } else {
         if (options.showImages && !options.showVideos) {
           mediaType = QBImagePickerMediaType.Image;
         }
