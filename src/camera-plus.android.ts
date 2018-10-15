@@ -376,7 +376,9 @@ export class CameraPlus extends CameraPlusBase {
     this._mediaRecorder.setAudioSource(android.media.MediaRecorder.AudioSource.CAMCORDER);
     this._mediaRecorder.setVideoSource(android.media.MediaRecorder.VideoSource.CAMERA);
     // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
-    this._mediaRecorder.setProfile(android.media.CamcorderProfile.get(this.cameraId, android.media.CamcorderProfile.QUALITY_HIGH));
+    this._mediaRecorder.setProfile(
+      android.media.CamcorderProfile.get(this.cameraId, android.media.CamcorderProfile.QUALITY_HIGH)
+    );
     // Step 4: Set output file
     const videoPath = this._getOutputMediaFile(2).toString();
     this._videoPath = videoPath;
@@ -512,13 +514,13 @@ export class CameraPlus extends CameraPlusBase {
       try {
         const createThePickerIntent = () => {
           const intent = new android.content.Intent() as android.content.Intent;
-          intent.setType("*/*");
+          intent.setType('*/*');
 
           if (!options) {
             options = {
               showImages: true,
               showVideos: true
-            }
+            };
           }
 
           if (options.showImages === undefined) {
@@ -541,11 +543,11 @@ export class CameraPlus extends CameraPlusBase {
           const mimetypes = Array.create(java.lang.String, length);
           let index = 0;
           if (options.showImages) {
-            mimetypes[index] = "image/*";
+            mimetypes[index] = 'image/*';
             index++;
           }
           if (options.showVideos) {
-            mimetypes[index] = "video/*";
+            mimetypes[index] = 'video/*';
           }
 
           intent.putExtra(android.content.Intent.EXTRA_MIME_TYPES, mimetypes);
@@ -1181,7 +1183,15 @@ export class CameraPlus extends CameraPlusBase {
     }
 
     this.camera.setParameters(params); // set the parameters for the camera
-    camera.setDisplayOrientation(result);
+    this.camera.setDisplayOrientation(result);
+
+    if (this.enableVideo === true) {
+      if (info.facing === CAMERA_FACING_FRONT) {
+        this._mediaRecorder.setOrientationHint(180 + result);
+      } else {
+        this._mediaRecorder.setOrientationHint(result);
+      }
+    }
   }
 
   /**
