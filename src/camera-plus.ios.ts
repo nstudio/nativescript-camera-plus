@@ -246,23 +246,20 @@ export class MySwifty extends SwiftyCamViewController {
   private _pickerDelegate: any;
   private _resized: boolean;
 
-  public static initWithOwner(
-    owner: WeakRef<CameraPlus>,
-    enableVideo: boolean = false,
-    defaultCamera: CameraTypes = 'rear'
-  ) {
+  public static initWithOwner(owner: WeakRef<CameraPlus>, defaultCamera: CameraTypes = 'rear') {
     CLog('MySwifty initWithOwner');
     let ctrl = <MySwifty>MySwifty.new();
     CLog('ctrl', ctrl);
     ctrl._owner = owner;
-    ctrl._enableVideo = enableVideo;
-    // disable audio if no video support
-    ctrl.disableAudio = enableVideo === false;
     // set default camera
     ctrl.defaultCamera = defaultCamera === 'rear' ? CameraSelection.Rear : CameraSelection.Front;
     CLog('ctrl.disableAudio:', ctrl.disableAudio);
     CLog('ctrl.defaultCamera:', defaultCamera);
     return ctrl;
+  }
+
+  public set enableVideo(value: boolean) {
+    this._enableVideo = value;
   }
 
   public set pickerDelegate(value: any) {
@@ -407,7 +404,8 @@ export class MySwifty extends SwiftyCamViewController {
     let width = this._owner.get().galleryPickerWidth;
     let height = this._owner.get().galleryPickerHeight;
     let keepAspectRatio = this._owner.get().keepAspectRatio;
-    this.chooseFromLibrary({ width, height, keepAspectRatio });
+    let showVideos = this._enableVideo;
+    this.chooseFromLibrary({ width, height, keepAspectRatio, showVideos });
   }
 
   // public thisImageHasBeenSavedInPhotoAlbumWithErrorUsingContextInfo(image, error, context) {
@@ -495,6 +493,11 @@ export class MySwifty extends SwiftyCamViewController {
         reqWidth = options.width || reqWidth;
         reqHeight = options.height || reqHeight;
         keepAspectRatio = types.isNullOrUndefined(options.keepAspectRatio) ? true : options.keepAspectRatio;
+      } else {
+        options = {
+          showImages: true,
+          showVideos: this._enableVideo
+        };
       }
 
       let authStatus = PHPhotoLibrary.authorizationStatus();
@@ -531,10 +534,6 @@ export class MySwifty extends SwiftyCamViewController {
 
       if (options.showImages === undefined) {
         options.showImages = true;
-      }
-
-      if (options.showVideos === undefined) {
-        options.showVideos = true;
       }
 
       if (!options.showImages && options.showVideos) {
@@ -635,6 +634,8 @@ export class CameraPlus extends CameraPlusBase {
   // swiftyviewcontroller
   private _swifty: MySwifty;
 
+  @GetSetProperty()
+  public enableVideo: boolean;
   // library picker handling
   private _galleryMax: number = 3;
   private _galleryPickerWidth: number;
@@ -644,17 +645,25 @@ export class CameraPlus extends CameraPlusBase {
   constructor() {
     super();
     CLog('CameraPlus constructor');
-    this._swifty = MySwifty.initWithOwner(new WeakRef(this), CameraPlus.enableVideo, CameraPlus.defaultCamera);
+    this._swifty = MySwifty.initWithOwner(new WeakRef(this), CameraPlus.defaultCamera);
 
     // experimenting with static flag (this is usually explicitly false)
     // enable device orientation
     this._swifty.shouldUseDeviceOrientation = CameraPlus.useDeviceOrientation;
   }
 
+  private isVideoEnabled() {
+    return this.enableVideo === true || CameraPlus.enableVideo;
+  }
+
   createNativeView() {
+    this._swifty.enableVideo = this.isVideoEnabled();
+    // disable audio if no video support
+    this._swifty.disableAudio = !this.isVideoEnabled();
     this.nativeView = this._swifty.view;
+
     CLog('CameraPlus createNativeView');
-    CLog('video enabled:', CameraPlus.enableVideo);
+    CLog('video enabled:', this.isVideoEnabled());
     CLog('default camera:', CameraPlus.defaultCamera);
     CLog(this.nativeView);
     return this.nativeView;
