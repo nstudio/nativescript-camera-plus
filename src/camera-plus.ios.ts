@@ -450,6 +450,7 @@ export class MySwifty extends SwiftyCamViewController {
       this._imageConfirmBg.addSubview(retakeBtn);
       this._imageConfirmBg.addSubview(saveBtn);
       this.view.addSubview(this._imageConfirmBg);
+      this._owner.get().sendEvent(CameraPlus.confirmScreenShownEvent);
     } else {
       // no confirmation - just save
       this.savePhoto();
@@ -461,6 +462,7 @@ export class MySwifty extends SwiftyCamViewController {
     if (this._imageConfirmBg) {
       this._imageConfirmBg.removeFromSuperview();
       this._imageConfirmBg = null;
+      this._owner.get().sendEvent(CameraPlus.confirmScreenDismissedEvent);
     }
   }
 

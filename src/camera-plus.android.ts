@@ -1428,6 +1428,7 @@ export class CameraPlus extends CameraPlusBase {
     CLog('nativeFile', nativeFile);
 
     if (saveToGallery === true && confirmPic === true) {
+      this.sendEvent(CameraPlus.confirmScreenShownEvent);
       const result = await CamHelpers.createImageConfirmationDialog(
         data,
         confirmPicRetakeText,
@@ -1435,6 +1436,8 @@ export class CameraPlus extends CameraPlusBase {
       ).catch(ex => {
         CLog('Error createImageConfirmationDialog', ex);
       });
+
+      this.sendEvent(CameraPlus.confirmScreenDismissedEvent);
 
       CLog(`confirmation result = ${result}`);
       if (result !== true) {
