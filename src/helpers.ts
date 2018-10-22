@@ -77,7 +77,7 @@ export function assetFromPath(path, width, height, keepAspectRatio): ImageAsset 
  * @param height
  */
 export function getOptimalPreviewSize(
-  sizes: java.util.List,
+  sizes: java.util.List<android.hardware.Camera.Size>,
   width: number,
   height: number
 ): android.hardware.Camera.Size {
@@ -131,12 +131,11 @@ export function getOptimalPreviewSize(
  * @param height
  */
 export function getOptimalPictureSize(
-  sizes: java.util.List,
+  sizes: java.util.List<android.hardware.Camera.Size>,
   width: number,
   height: number
 ): android.hardware.Camera.Size {
   let sizeSet: boolean = false;
-
 
   if (sizes === null) return null;
 
@@ -163,8 +162,8 @@ export function getOptimalPictureSize(
 
     if (size.width > desiredMinimumWidth && size.width < desiredMaximumWidth && size.height < size.width) {
       optimalSize = size;
-      CLog("setting size width", size.width + "");
-      CLog("setting size height", size.height + "");
+      CLog('setting size width', size.width + '');
+      CLog('setting size height', size.height + '');
       sizeSet = true;
       break;
     }
@@ -185,7 +184,9 @@ export function getOptimalPictureSize(
   }
 
   CLog(
-    `optimalPictureSize = ${optimalSize}, optimalPictureSize.width = ${optimalSize.width}, optimalPictureSize.height = ${optimalSize.height}`
+    `optimalPictureSize = ${optimalSize}, optimalPictureSize.width = ${
+      optimalSize.width
+    }, optimalPictureSize.height = ${optimalSize.height}`
   );
   return optimalSize;
 }
@@ -247,10 +248,9 @@ export function getOrientationFromBytes(data): number {
   return orientation;
 }
 
-export function createImageConfirmationDialog(data, retakeText = null, saveText = null): Promise<boolean> {
+export function createImageConfirmationDialog(data, retakeText = 'Retake', saveText = 'Save'): Promise<boolean> {
   return new Promise((resolve, reject) => {
     try {
-      debugger;
       const alert = new android.app.AlertDialog.Builder(
         app.android.foregroundActivity
       ) as android.app.AlertDialog.Builder;
