@@ -1,4 +1,3 @@
-import { EventData } from 'tns-core-modules/data/observable';
 import { ContentView } from 'tns-core-modules/ui/content-view';
 
 export declare class CameraPlus extends ContentView {
@@ -264,7 +263,7 @@ export interface IChooseOptions {
   width?: number;
   height?: number;
   keepAspectRatio?: boolean;
-  showImages?:  boolean;
+  showImages?: boolean;
   showVideos?: boolean;
 }
 
