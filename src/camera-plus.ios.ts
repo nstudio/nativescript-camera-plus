@@ -1,33 +1,22 @@
 /**********************************************************************************
  * (c) 2017, nStudio, LLC & LiveShopper, LLC
  *
- * Version 1.0.0                                                   team@nStudio.io
+ * Version 1.1.0                                                    team@nStudio.io
  **********************************************************************************/
 
-import types = require('tns-core-modules/utils/types');
-import { ImageAsset } from 'tns-core-modules/image-asset';
-import { EventData } from 'tns-core-modules/data/observable';
-import { topmost } from 'tns-core-modules/ui/frame';
-import { View } from 'tns-core-modules/ui/core/view';
-import { ContentView } from 'tns-core-modules/ui/content-view';
-import { StackLayout } from 'tns-core-modules/ui/layouts/stack-layout';
-import { Button } from 'tns-core-modules/ui/button';
-import { Image } from 'tns-core-modules/ui/image';
 import { Color } from 'tns-core-modules/color';
-import { screen } from 'tns-core-modules/platform';
-import * as utils from 'tns-core-modules/utils/utils';
-import * as dialogs from 'tns-core-modules/ui/dialogs';
 import * as fs from 'tns-core-modules/file-system/file-system';
+import { ImageAsset } from 'tns-core-modules/image-asset';
+import { screen } from 'tns-core-modules/platform';
+import * as types from 'tns-core-modules/utils/types';
 import {
   CameraPlusBase,
-  GetSetProperty,
-  CameraUtil,
+  CameraTypes,
   CLog,
+  GetSetProperty,
   ICameraOptions,
   IChooseOptions,
-  ICameraPlusEvents,
-  IVideoOptions,
-  CameraTypes
+  IVideoOptions
 } from './camera-plus.common';
 
 /**
@@ -72,23 +61,23 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
 
   // create date from a string with format yyyy:MM:dd HH:mm:ss (like the format used in image description)
   private createDateFromString(value: string): Date {
-    let year = parseInt(value.substr(0, 4));
-    let month = parseInt(value.substr(5, 2));
-    let date = parseInt(value.substr(8, 2));
+    const year = parseInt(value.substr(0, 4));
+    const month = parseInt(value.substr(5, 2));
+    const date = parseInt(value.substr(8, 2));
 
-    let hour = parseInt(value.substr(11, 2));
-    let minutes = parseInt(value.substr(14, 2));
-    let seconds = parseInt(value.substr(17, 2));
+    const hour = parseInt(value.substr(11, 2));
+    const minutes = parseInt(value.substr(14, 2));
+    const seconds = parseInt(value.substr(17, 2));
 
     return new Date(year, month - 1, date, hour, minutes, seconds);
   }
 
   qb_imagePickerControllerDidFinishPickingAssets(picker, assets: NSArray<any>): void {
-    let selection = [];
-    let manager = PHImageManager.defaultManager();
+    const selection = [];
+    const manager = PHImageManager.defaultManager();
     // let scale = UIScreen.mainScreen.scale;
-    let targetSize = PHImageManagerMaximumSize;
-    let requestOptions = PHImageRequestOptions.alloc().init();
+    const targetSize = PHImageManagerMaximumSize;
+    const requestOptions = PHImageRequestOptions.alloc().init();
     requestOptions.resizeMode = PHImageRequestOptionsResizeMode.Exact;
     requestOptions.synchronous = false;
     requestOptions.deliveryMode = PHImageRequestOptionsDeliveryMode.HighQualityFormat;
@@ -107,15 +96,15 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
 
     const requestImg = (i: number) => {
       // Do something with the asset
-      let asset = <PHAsset>assets.objectAtIndex(i);
-      if (asset.mediaType == PHAssetMediaType.Image) {
+      const asset = <PHAsset>assets.objectAtIndex(i);
+      if (asset.mediaType === PHAssetMediaType.Image) {
         manager.requestImageForAssetTargetSizeContentModeOptionsResultHandler(
           asset,
           targetSize,
           PHImageContentMode.AspectFill,
           requestOptions,
           (image: UIImage, info: NSDictionary<any, any>) => {
-            let imageAsset = new ImageAsset(image);
+            const imageAsset = new ImageAsset(image);
             // imageAsset.options = {
             //   keepAspectRatio: this._keepAspectRatio
             // };=
@@ -125,7 +114,7 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
             next.call(this);
           }
         );
-      } else if (asset.mediaType == PHAssetMediaType.Video) {
+      } else if (asset.mediaType === PHAssetMediaType.Video) {
         manager.requestAVAssetForVideoOptionsResultHandler(asset, null, (videoAsset: AVAsset, audioMix, info) => {
           if (videoAsset.isKindOfClass(AVURLAsset.class())) {
             const docsPath = fs.knownFolders.documents();
@@ -134,7 +123,7 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
             const filename = pathParts[pathParts.length - 1];
             const localFilePath = fs.path.join(docsPath.path, 'camera-plus-videos', filename);
 
-            let targetURL = NSURL.fileURLWithPath(localFilePath);
+            const targetURL = NSURL.fileURLWithPath(localFilePath);
 
             if (fs.File.exists(localFilePath)) {
               docsPath.getFile('camera-plus-videos/' + filename).remove();
@@ -169,7 +158,7 @@ export class SwiftyDelegate extends NSObject {
   private _owner: WeakRef<MySwifty>;
 
   public static initWithOwner(owner: WeakRef<MySwifty>) {
-    let delegate = <SwiftyDelegate>SwiftyDelegate.new();
+    const delegate = <SwiftyDelegate>SwiftyDelegate.new();
     delegate._owner = owner;
     return delegate;
   }
@@ -248,7 +237,7 @@ export class MySwifty extends SwiftyCamViewController {
 
   public static initWithOwner(owner: WeakRef<CameraPlus>, defaultCamera: CameraTypes = 'rear') {
     CLog('MySwifty initWithOwner');
-    let ctrl = <MySwifty>MySwifty.new();
+    const ctrl = <MySwifty>MySwifty.new();
     CLog('ctrl', ctrl);
     ctrl._owner = owner;
     // set default camera
@@ -401,10 +390,10 @@ export class MySwifty extends SwiftyCamViewController {
 
   public openGallery() {
     CLog('CameraPlus openGallery');
-    let width = this._owner.get().galleryPickerWidth;
-    let height = this._owner.get().galleryPickerHeight;
-    let keepAspectRatio = this._owner.get().keepAspectRatio;
-    let showVideos = this._enableVideo;
+    const width = this._owner.get().galleryPickerWidth;
+    const height = this._owner.get().galleryPickerHeight;
+    const keepAspectRatio = this._owner.get().keepAspectRatio;
+    const showVideos = this._enableVideo;
     this.chooseFromLibrary({ width, height, keepAspectRatio, showVideos });
   }
 
@@ -421,27 +410,27 @@ export class MySwifty extends SwiftyCamViewController {
 
     if (this._snapPicOptions && this._snapPicOptions.confirm) {
       // show the confirmation
-      let width = this.view.bounds.size.width;
-      let height = this.view.bounds.size.height;
+      const width = this.view.bounds.size.width;
+      const height = this.view.bounds.size.height;
       this._imageConfirmBg = UIView.alloc().initWithFrame(CGRectMake(0, 0, width, height));
       this._imageConfirmBg.backgroundColor = UIColor.blackColor;
 
       // confirm user wants to keep photo
-      let imageConfirm = UIImageView.alloc().init();
+      const imageConfirm = UIImageView.alloc().init();
       imageConfirm.contentMode = UIViewContentMode.ScaleAspectFit;
       imageConfirm.image = photo;
       imageConfirm.frame = CGRectMake(0, 50, width, height - 40);
       // add 'Retake' in bottom left and 'Save Photo' in bottom right
-      let retakeBtn = createButton(
+      const retakeBtn = createButton(
         this,
         CGRectMake(10, 10, 75, 50),
-        this._snapPicOptions.confirmRetakeText,
+        this._snapPicOptions.confirmRetakeText ? this._snapPicOptions.confirmRetakeText : 'Retake',
         'resetPreview'
       );
-      let saveBtn = createButton(
+      const saveBtn = createButton(
         this,
         CGRectMake(width - 170, 10, 150, 50),
-        this._snapPicOptions.confirmSaveText,
+        this._snapPicOptions.confirmSaveText ? this._snapPicOptions.confirmSaveText : 'Save',
         'savePhoto',
         'right'
       );
@@ -487,7 +476,7 @@ export class MySwifty extends SwiftyCamViewController {
   public chooseFromLibrary(options?: IChooseOptions): Promise<any> {
     return new Promise((resolve, reject) => {
       this._pickerDelegate = null;
-      let imagePickerController = QBImagePickerController.new();
+      const imagePickerController = QBImagePickerController.new();
       let reqWidth = 0;
       let reqHeight = 0;
       let keepAspectRatio = true;
@@ -502,7 +491,7 @@ export class MySwifty extends SwiftyCamViewController {
         };
       }
 
-      let authStatus = PHPhotoLibrary.authorizationStatus();
+      const authStatus = PHPhotoLibrary.authorizationStatus();
 
       if (reqWidth && reqHeight) {
         this._pickerDelegate = QBImagePickerControllerDelegateImpl.new().initWithCallbackAndOptions(
@@ -522,9 +511,9 @@ export class MySwifty extends SwiftyCamViewController {
         });
       }
       imagePickerController.delegate = this._pickerDelegate;
-      let galleryPickerMode = this._owner.get().galleryPickerMode;
+      const galleryPickerMode = this._owner.get().galleryPickerMode;
       CLog('galleryPickerMode:', galleryPickerMode);
-      let galleryMax = this._owner.get().galleryMax;
+      const galleryMax = this._owner.get().galleryMax;
       CLog('galleryMax:', galleryMax);
       imagePickerController.allowsMultipleSelection = galleryPickerMode === 'multiple';
       imagePickerController.maximumNumberOfSelection = galleryMax;
@@ -554,12 +543,12 @@ export class MySwifty extends SwiftyCamViewController {
 
   private _addButtons() {
     CLog('adding buttons...');
-    let width = this.view.bounds.size.width;
-    let height = this.view.bounds.size.height;
+    const width = this.view.bounds.size.width;
+    const height = this.view.bounds.size.height;
 
     if (this._owner.get().showToggleIcon) {
       CLog('adding toggle/switch camera button...');
-      let switchCameraBtn = createButton(
+      const switchCameraBtn = createButton(
         this,
         CGRectMake(width - 100, 20, 100, 50),
         null,
@@ -574,7 +563,7 @@ export class MySwifty extends SwiftyCamViewController {
     this._flashBtnHandler();
 
     if (this._owner.get().showGalleryIcon === true) {
-      let galleryBtn = createButton(
+      const galleryBtn = createButton(
         this,
         CGRectMake(20, height - 80, 50, 50),
         null,
@@ -587,7 +576,7 @@ export class MySwifty extends SwiftyCamViewController {
     }
 
     if (this._owner.get().showCaptureIcon) {
-      let picOutline = createButton(
+      const picOutline = createButton(
         this,
         CGRectMake(width / 2 - 20, height - 80, 50, 50),
         null,
@@ -597,7 +586,7 @@ export class MySwifty extends SwiftyCamViewController {
       );
       picOutline.transform = CGAffineTransformMakeScale(1.5, 1.5);
       this.view.addSubview(picOutline);
-      let takePicBtn = createButton(
+      const takePicBtn = createButton(
         this,
         CGRectMake(width / 2 - 21.5, height - 80.7, 50, 50),
         null,
@@ -676,12 +665,12 @@ export class CameraPlus extends CameraPlusBase {
     CLog('xml width/height:', this.width + 'x' + this.height);
 
     let changedDimensions = false;
-    if (this.width == 'auto') {
+    if (this.width === 'auto') {
       CLog('no width set, defaulting to mainScreen.widthDIPs');
       this.width = screen.mainScreen.widthDIPs;
       changedDimensions = true;
     }
-    if (this.height == 'auto') {
+    if (this.height === 'auto') {
       CLog('no height set, defaulting to mainScreen.heightDIPs');
       this.height = screen.mainScreen.heightDIPs;
       changedDimensions = true;
@@ -799,7 +788,7 @@ export class CameraPlus extends CameraPlusBase {
 }
 
 const rootVC = function() {
-  let appWindow = UIApplication.sharedApplication.keyWindow;
+  const appWindow = UIApplication.sharedApplication.keyWindow;
   return appWindow.rootViewController;
 };
 
@@ -831,7 +820,7 @@ const createButton = function(
   }
   if (align) {
     btn.contentHorizontalAlignment =
-      align == 'right' ? UIControlContentHorizontalAlignment.Right : UIControlContentHorizontalAlignment.Left;
+      align === 'right' ? UIControlContentHorizontalAlignment.Right : UIControlContentHorizontalAlignment.Left;
     // if (align == 'right') {
     //   btn.contentEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 0);
     // }
@@ -880,16 +869,16 @@ const createIcon = function(
       drawGallery(color);
       break;
   }
-  let img = UIGraphicsGetImageFromCurrentImageContext();
+  const img = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
   return img;
 };
 
 const drawFlash = function(color: string) {
-  let iconColor = new Color(color || '#fff').ios;
+  const iconColor = new Color(color || '#fff').ios;
 
   //// Bezier Drawing
-  let bezierPath = UIBezierPath.bezierPath();
+  const bezierPath = UIBezierPath.bezierPath();
   bezierPath.moveToPoint(CGPointMake(23.17, 0.58));
   bezierPath.addCurveToPointControlPoint1ControlPoint2(
     CGPointMake(11.19, 13.65),
@@ -968,10 +957,10 @@ const drawFlash = function(color: string) {
 };
 
 const drawFlashOff = function(color: string) {
-  let iconColor = new Color(color || '#fff').ios;
+  const iconColor = new Color(color || '#fff').ios;
 
   //// Bezier Drawing
-  let bezierPath = UIBezierPath.bezierPath();
+  const bezierPath = UIBezierPath.bezierPath();
   bezierPath.moveToPoint(CGPointMake(21.13, 4.5));
   bezierPath.addCurveToPointControlPoint1ControlPoint2(
     CGPointMake(15.1, 12.28),
@@ -1053,7 +1042,7 @@ const drawFlashOff = function(color: string) {
   bezierPath.fill();
 
   // other half
-  let bezier2Path = UIBezierPath.bezierPath();
+  const bezier2Path = UIBezierPath.bezierPath();
   bezier2Path.moveToPoint(CGPointMake(7.18, 22.6));
   bezier2Path.addCurveToPointControlPoint1ControlPoint2(
     CGPointMake(4.59, 26.7),
@@ -1109,10 +1098,10 @@ const drawFlashOff = function(color: string) {
 };
 
 const drawToggle = function(color: string) {
-  let iconColor = new Color(color || '#fff').ios;
+  const iconColor = new Color(color || '#fff').ios;
 
   //// Bezier Drawing
-  let bezierPath = UIBezierPath.bezierPath();
+  const bezierPath = UIBezierPath.bezierPath();
   bezierPath.moveToPoint(CGPointMake(17.91, 3.03));
   bezierPath.addCurveToPointControlPoint1ControlPoint2(
     CGPointMake(14.69, 6.2),
@@ -1212,7 +1201,7 @@ const drawToggle = function(color: string) {
   bezierPath.fill();
 
   //// Bezier 2 Drawing
-  let bezier2Path = UIBezierPath.bezierPath();
+  const bezier2Path = UIBezierPath.bezierPath();
   bezier2Path.moveToPoint(CGPointMake(28.28, 11.26));
   bezier2Path.addCurveToPointControlPoint1ControlPoint2(
     CGPointMake(21.77, 14.43),
@@ -1281,7 +1270,7 @@ const drawToggle = function(color: string) {
   bezier2Path.fill();
 
   //// Bezier 3 Drawing
-  let bezier3Path = UIBezierPath.bezierPath();
+  const bezier3Path = UIBezierPath.bezierPath();
   bezier3Path.moveToPoint(CGPointMake(15.14, 20.91));
   bezier3Path.addCurveToPointControlPoint1ControlPoint2(
     CGPointMake(12.06, 24.74),
@@ -1348,11 +1337,11 @@ const drawToggle = function(color: string) {
 };
 
 const drawPicOutline = function(color: string) {
-  let iconColor = new Color(color || '#fff').ios;
+  const iconColor = new Color(color || '#fff').ios;
 
   //// Bezier Drawing
   // Outer ring
-  let bezierPath = UIBezierPath.bezierPath();
+  const bezierPath = UIBezierPath.bezierPath();
   bezierPath.moveToPoint(CGPointMake(17.13, 0.63));
   bezierPath.addCurveToPointControlPoint1ControlPoint2(
     CGPointMake(6.13, 7.21),
@@ -1462,10 +1451,10 @@ const drawPicOutline = function(color: string) {
 };
 
 const drawCircle = function(color: string) {
-  let iconColor = new Color(color || '#fff').ios;
+  const iconColor = new Color(color || '#fff').ios;
 
   // inner circle
-  let bezier2Path = UIBezierPath.bezierPath();
+  const bezier2Path = UIBezierPath.bezierPath();
   bezier2Path.moveToPoint(CGPointMake(17.88, 0.51));
   bezier2Path.addCurveToPointControlPoint1ControlPoint2(
     CGPointMake(0, 23.08),
@@ -1504,10 +1493,10 @@ const drawCircle = function(color: string) {
 };
 
 const drawGallery = function(color: string) {
-  let iconColor = new Color(color || '#fff').ios;
+  const iconColor = new Color(color || '#fff').ios;
 
   //// Bezier Drawing
-  let bezierPath = UIBezierPath.bezierPath();
+  const bezierPath = UIBezierPath.bezierPath();
   bezierPath.moveToPoint(CGPointMake(1.42, 0.13));
   bezierPath.addCurveToPointControlPoint1ControlPoint2(
     CGPointMake(0.11, 1.46),
@@ -1617,7 +1606,7 @@ const drawGallery = function(color: string) {
   bezierPath.fill();
 
   //// Bezier 2 Drawing
-  let bezier2Path = UIBezierPath.bezierPath();
+  const bezier2Path = UIBezierPath.bezierPath();
   bezier2Path.moveToPoint(CGPointMake(17.8, 12.38));
   bezier2Path.addCurveToPointControlPoint1ControlPoint2(
     CGPointMake(15.42, 15.92),
@@ -1655,7 +1644,7 @@ const drawGallery = function(color: string) {
   bezier2Path.fill();
 
   //// Bezier 3 Drawing
-  let bezier3Path = UIBezierPath.bezierPath();
+  const bezier3Path = UIBezierPath.bezierPath();
   bezier3Path.moveToPoint(CGPointMake(33.75, 17.49));
   bezier3Path.addCurveToPointControlPoint1ControlPoint2(
     CGPointMake(29.87, 22.24),
