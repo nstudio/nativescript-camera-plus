@@ -17,6 +17,7 @@ import { Color } from 'tns-core-modules/color';
 import { screen } from 'tns-core-modules/platform';
 import * as utils from 'tns-core-modules/utils/utils';
 import * as dialogs from 'tns-core-modules/ui/dialogs';
+import * as fs from 'tns-core-modules/file-system/file-system';
 import {
   CameraPlusBase,
   GetSetProperty,
@@ -83,7 +84,7 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
   }
 
   qb_imagePickerControllerDidFinishPickingAssets(picker, assets: NSArray<any>): void {
-    let images = [];
+    let selection = [];
     let manager = PHImageManager.defaultManager();
     // let scale = UIScreen.mainScreen.scale;
     let targetSize = PHImageManagerMaximumSize;
@@ -93,31 +94,64 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
     requestOptions.deliveryMode = PHImageRequestOptionsDeliveryMode.HighQualityFormat;
     requestOptions.normalizedCropRect = CGRectMake(0, 0, 1, 1);
     let cnt = 0;
+
+    const next = function() {
+      cnt++;
+      if (cnt === assets.count) {
+        this._callback(selection);
+        this._owner.get().closePicker();
+      } else {
+        requestImg(cnt);
+      }
+    };
+
     const requestImg = (i: number) => {
       // Do something with the asset
       let asset = <PHAsset>assets.objectAtIndex(i);
-      manager.requestImageForAssetTargetSizeContentModeOptionsResultHandler(
-        asset,
-        targetSize,
-        PHImageContentMode.AspectFill,
-        requestOptions,
-        (image: UIImage, info: NSDictionary<any, any>) => {
-          let imageAsset = new ImageAsset(image);
-          // imageAsset.options = {
-          //   keepAspectRatio: this._keepAspectRatio
-          // };
-          if (this._width) imageAsset.options.width = this._width;
-          if (this._height) imageAsset.options.height = this._height;
-          images.push(imageAsset);
-          cnt++;
-          if (cnt === assets.count) {
-            this._callback(images);
-            this._owner.get().closePicker();
-          } else {
-            requestImg(cnt);
+      if (asset.mediaType == PHAssetMediaType.Image) {
+        manager.requestImageForAssetTargetSizeContentModeOptionsResultHandler(
+          asset,
+          targetSize,
+          PHImageContentMode.AspectFill,
+          requestOptions,
+          (image: UIImage, info: NSDictionary<any, any>) => {
+            let imageAsset = new ImageAsset(image);
+            // imageAsset.options = {
+            //   keepAspectRatio: this._keepAspectRatio
+            // };=
+            if (this._width) imageAsset.options.width = this._width;
+            if (this._height) imageAsset.options.height = this._height;
+            selection.push(imageAsset);
+            next.call(this);
           }
-        }
-      );
+        );
+      } else if (asset.mediaType == PHAssetMediaType.Video) {
+        manager.requestAVAssetForVideoOptionsResultHandler(asset, null, (videoAsset: AVAsset, audioMix, info) => {
+          if (videoAsset.isKindOfClass(AVURLAsset.class())) {
+            const docsPath = fs.knownFolders.documents();
+
+            const pathParts = (<AVURLAsset>videoAsset).URL.toString().split(fs.path.separator);
+            const filename = pathParts[pathParts.length - 1];
+            const localFilePath = fs.path.join(docsPath.path, 'camera-plus-videos', filename);
+
+            let targetURL = NSURL.fileURLWithPath(localFilePath);
+
+            if (fs.File.exists(localFilePath)) {
+              docsPath.getFile('camera-plus-videos/' + filename).remove();
+            }
+
+            const result = NSFileManager.defaultManager.copyItemAtURLToURLError(
+              (<AVURLAsset>videoAsset).URL,
+              targetURL
+            );
+
+            if (result) {
+              selection.push(localFilePath);
+            }
+          }
+          next.call(this);
+        });
+      }
     };
     requestImg(0);
   }
@@ -212,23 +246,20 @@ export class MySwifty extends SwiftyCamViewController {
   private _pickerDelegate: any;
   private _resized: boolean;
 
-  public static initWithOwner(
-    owner: WeakRef<CameraPlus>,
-    enableVideo: boolean = false,
-    defaultCamera: CameraTypes = 'rear'
-  ) {
+  public static initWithOwner(owner: WeakRef<CameraPlus>, defaultCamera: CameraTypes = 'rear') {
     CLog('MySwifty initWithOwner');
     let ctrl = <MySwifty>MySwifty.new();
     CLog('ctrl', ctrl);
     ctrl._owner = owner;
-    ctrl._enableVideo = enableVideo;
-    // disable audio if no video support
-    ctrl.disableAudio = enableVideo === false;
     // set default camera
     ctrl.defaultCamera = defaultCamera === 'rear' ? CameraSelection.Rear : CameraSelection.Front;
     CLog('ctrl.disableAudio:', ctrl.disableAudio);
     CLog('ctrl.defaultCamera:', defaultCamera);
     return ctrl;
+  }
+
+  public set enableVideo(value: boolean) {
+    this._enableVideo = value;
   }
 
   public set pickerDelegate(value: any) {
@@ -373,7 +404,8 @@ export class MySwifty extends SwiftyCamViewController {
     let width = this._owner.get().galleryPickerWidth;
     let height = this._owner.get().galleryPickerHeight;
     let keepAspectRatio = this._owner.get().keepAspectRatio;
-    this.chooseFromLibrary({ width, height, keepAspectRatio });
+    let showVideos = this._enableVideo;
+    this.chooseFromLibrary({ width, height, keepAspectRatio, showVideos });
   }
 
   // public thisImageHasBeenSavedInPhotoAlbumWithErrorUsingContextInfo(image, error, context) {
@@ -463,6 +495,11 @@ export class MySwifty extends SwiftyCamViewController {
         reqWidth = options.width || reqWidth;
         reqHeight = options.height || reqHeight;
         keepAspectRatio = types.isNullOrUndefined(options.keepAspectRatio) ? true : options.keepAspectRatio;
+      } else {
+        options = {
+          showImages: true,
+          showVideos: this._enableVideo
+        };
       }
 
       let authStatus = PHPhotoLibrary.authorizationStatus();
@@ -494,6 +531,22 @@ export class MySwifty extends SwiftyCamViewController {
       imagePickerController.showsNumberOfSelectedAssets = true;
 
       imagePickerController.modalPresentationStyle = UIModalPresentationStyle.CurrentContext;
+
+      let mediaType = QBImagePickerMediaType.Any;
+
+      if (options.showImages === undefined) {
+        options.showImages = true;
+      }
+
+      if (!options.showImages && options.showVideos) {
+        mediaType = QBImagePickerMediaType.Video;
+      } else {
+        if (options.showImages && !options.showVideos) {
+          mediaType = QBImagePickerMediaType.Image;
+        }
+      }
+
+      imagePickerController.mediaType = mediaType;
 
       rootVC().presentViewControllerAnimatedCompletion(imagePickerController, true, null);
     });
@@ -583,6 +636,8 @@ export class CameraPlus extends CameraPlusBase {
   // swiftyviewcontroller
   private _swifty: MySwifty;
 
+  @GetSetProperty()
+  public enableVideo: boolean;
   // library picker handling
   private _galleryMax: number = 3;
   private _galleryPickerWidth: number;
@@ -592,17 +647,25 @@ export class CameraPlus extends CameraPlusBase {
   constructor() {
     super();
     CLog('CameraPlus constructor');
-    this._swifty = MySwifty.initWithOwner(new WeakRef(this), CameraPlus.enableVideo, CameraPlus.defaultCamera);
+    this._swifty = MySwifty.initWithOwner(new WeakRef(this), CameraPlus.defaultCamera);
 
     // experimenting with static flag (this is usually explicitly false)
     // enable device orientation
     this._swifty.shouldUseDeviceOrientation = CameraPlus.useDeviceOrientation;
   }
 
+  private isVideoEnabled() {
+    return this.enableVideo === true || CameraPlus.enableVideo;
+  }
+
   createNativeView() {
+    this._swifty.enableVideo = this.isVideoEnabled();
+    // disable audio if no video support
+    this._swifty.disableAudio = !this.isVideoEnabled();
     this.nativeView = this._swifty.view;
+
     CLog('CameraPlus createNativeView');
-    CLog('video enabled:', CameraPlus.enableVideo);
+    CLog('video enabled:', this.isVideoEnabled());
     CLog('default camera:', CameraPlus.defaultCamera);
     CLog(this.nativeView);
     return this.nativeView;

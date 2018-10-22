@@ -67,19 +67,32 @@ export class CameraPlus extends CameraPlusBase {
   public set camera(camera: android.hardware.Camera) {
     this._camera = camera;
   }
-  @GetSetProperty() public cameraId;
-  @GetSetProperty() public autoFocus: boolean = true;
-  @GetSetProperty() public flashOnIcon: string = 'ic_flash_on_white';
-  @GetSetProperty() public flashOffIcon: string = 'ic_flash_off_white';
-  @GetSetProperty() public toggleCameraIcon: string = 'ic_switch_camera_white';
-  @GetSetProperty() public confirmPhotos: boolean = true;
-  @GetSetProperty() public saveToGallery: boolean = false;
-  @GetSetProperty() public takePicIcon: string = 'ic_camera_alt_white';
-  @GetSetProperty() public galleryIcon: string = 'ic_photo_library_white';
-  @GetSetProperty() public insetButtons: boolean = false;
-  @GetSetProperty() public insetButtonsPercent: number = 0.1;
-  @GetSetProperty() public enableVideo: boolean;
-  @GetSetProperty() public isRecording: boolean;
+  @GetSetProperty()
+  public cameraId;
+  @GetSetProperty()
+  public autoFocus: boolean = true;
+  @GetSetProperty()
+  public flashOnIcon: string = 'ic_flash_on_white';
+  @GetSetProperty()
+  public flashOffIcon: string = 'ic_flash_off_white';
+  @GetSetProperty()
+  public toggleCameraIcon: string = 'ic_switch_camera_white';
+  @GetSetProperty()
+  public confirmPhotos: boolean = true;
+  @GetSetProperty()
+  public saveToGallery: boolean = false;
+  @GetSetProperty()
+  public takePicIcon: string = 'ic_camera_alt_white';
+  @GetSetProperty()
+  public galleryIcon: string = 'ic_photo_library_white';
+  @GetSetProperty()
+  public insetButtons: boolean = false;
+  @GetSetProperty()
+  public insetButtonsPercent: number = 0.1;
+  @GetSetProperty()
+  public enableVideo: boolean;
+  @GetSetProperty()
+  public isRecording: boolean;
   public events: ICameraPlusEvents;
   private _nativeView;
   private _owner: WeakRef<any>;
@@ -112,6 +125,10 @@ export class CameraPlus extends CameraPlusBase {
     this.galleryIcon = this.galleryIcon ? this.galleryIcon : 'ic_photo_library_white';
 
     this.cameraId = CameraPlus.defaultCamera === 'front' ? CAMERA_FACING_FRONT : CAMERA_FACING_BACK;
+  }
+
+  private isVideoEnabled() {
+    return this.enableVideo === true || CameraPlus.enableVideo;
   }
 
   /**
@@ -149,7 +166,7 @@ export class CameraPlus extends CameraPlusBase {
 
             // checking to see if this improves initial video recording
             // by creating the instance of mediaRecorder here - Brad
-            if (this.enableVideo === true) {
+            if (this.isVideoEnabled()) {
               this._mediaRecorder = new android.media.MediaRecorder() as android.media.MediaRecorder;
               CLog(`this._mediaRecorder`, this._mediaRecorder);
             }
@@ -206,7 +223,7 @@ export class CameraPlus extends CameraPlusBase {
         }
       );
 
-      CLog('video enabled:', CameraPlus.enableVideo);
+      CLog('video enabled:', this.isVideoEnabled());
       CLog('default camera:', CameraPlus.defaultCamera);
 
       return this._nativeView;
@@ -306,7 +323,7 @@ export class CameraPlus extends CameraPlusBase {
 
   public async record(options?: IVideoOptions) {
     try {
-      if (this.enableVideo) {
+      if (this.isVideoEnabled()) {
         // handle permissions in the method - no need to make user do it
         const permResult = await this.requestVideoRecordingPermissions();
 
@@ -338,7 +355,7 @@ export class CameraPlus extends CameraPlusBase {
    * Stop recording video
    */
   public stop(): void {
-    if (this.enableVideo) {
+    if (this.isVideoEnabled()) {
       this.stopRecording();
     }
   }
@@ -376,7 +393,9 @@ export class CameraPlus extends CameraPlusBase {
     this._mediaRecorder.setAudioSource(android.media.MediaRecorder.AudioSource.CAMCORDER);
     this._mediaRecorder.setVideoSource(android.media.MediaRecorder.VideoSource.CAMERA);
     // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
-    this._mediaRecorder.setProfile(android.media.CamcorderProfile.get(this.cameraId, android.media.CamcorderProfile.QUALITY_HIGH));
+    this._mediaRecorder.setProfile(
+      android.media.CamcorderProfile.get(this.cameraId, android.media.CamcorderProfile.QUALITY_HIGH)
+    );
     // Step 4: Set output file
     const videoPath = this._getOutputMediaFile(2).toString();
     this._videoPath = videoPath;
@@ -512,7 +531,44 @@ export class CameraPlus extends CameraPlusBase {
       try {
         const createThePickerIntent = () => {
           const intent = new android.content.Intent() as android.content.Intent;
-          intent.setType('image/*');
+          intent.setType('*/*');
+
+          if (!options) {
+            options = {
+              showImages: true,
+              showVideos: this.isVideoEnabled()
+            };
+          }
+
+          if (options.showImages === undefined) {
+            options.showImages = true;
+          }
+
+          if (options.showVideos === undefined) {
+            options.showVideos = true;
+          }
+
+          let length = 0;
+          if (options.showImages) {
+            length++;
+          }
+
+          if (options.showVideos) {
+            length++;
+          }
+
+          const mimetypes = Array.create(java.lang.String, length);
+          let index = 0;
+          if (options.showImages) {
+            mimetypes[index] = 'image/*';
+            index++;
+          }
+          if (options.showVideos) {
+            mimetypes[index] = 'video/*';
+          }
+
+          intent.putExtra(android.content.Intent.EXTRA_MIME_TYPES, mimetypes);
+
           intent.setAction('android.intent.action.GET_CONTENT');
           // set the multiple picker mode
           if (this.galleryPickerMode === 'multiple') {
@@ -1123,7 +1179,7 @@ export class CameraPlus extends CameraPlusBase {
     const mPreviewSize = CamHelpers.getOptimalPreviewSize(mSupportedPreviewSizes, layoutWidth, layoutHeight);
     CLog(`mPreviewSize = ${mPreviewSize}`);
     if (mPreviewSize) {
-      if (this.enableVideo) {
+      if (this.isVideoEnabled()) {
         // defaults for PNP specific
         let width = 1920;
         let height = 1080;
@@ -1144,7 +1200,15 @@ export class CameraPlus extends CameraPlusBase {
     }
 
     this.camera.setParameters(params); // set the parameters for the camera
-    camera.setDisplayOrientation(result);
+    this.camera.setDisplayOrientation(result);
+
+    if (this.isVideoEnabled()) {
+      if (info.facing === CAMERA_FACING_FRONT) {
+        this._mediaRecorder.setOrientationHint(180 + result);
+      } else {
+        this._mediaRecorder.setOrientationHint(result);
+      }
+    }
   }
 
   /**

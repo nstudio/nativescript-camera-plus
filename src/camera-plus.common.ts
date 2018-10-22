@@ -326,6 +326,8 @@ export interface IChooseOptions {
   width?: number;
   height?: number;
   keepAspectRatio?: boolean;
+  showImages?:  boolean;
+  showVideos?: boolean;
 }
 
 export interface ICameraPlusEvents {

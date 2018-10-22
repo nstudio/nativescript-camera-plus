@@ -94,10 +94,10 @@ npm run demo.ng.android.device
 | **showToggleIcon**    | boolean | If true the default camera toggle (front/back) icon button will show on the Camera Plus layout. Default is true.                       |
 | **showCaptureIcon**   | boolean | If true the default capture (take picture) icon/button will show on the Camera Plus layout. Default is true.                           |
 | **showGalleryIcon**   | boolean | If true the choose from gallery/library icon/button will show on the Camera Plus layout. Default is true.                              |
-| **enableVideo**       | boolean | If true the CameraPlus instance can record video.                                                                                      |
+| **enableVideo**       | boolean | If true the CameraPlus instance can record video and videos are shown in the gallery.|
 
 ## Static Properties
-_Note: These properties need set before the initialization of the camera. Users should set these in a component constructor before their view creates the component if the wish to change the default values._
+_Note: These properties need set before the initialization of the camera. Users should set these in a component constructor before their view creates the component if the wish to change the default values. In case of enableVideo, this will be true if either the static property or the component property is true._
 
 | Name               | Type        | Description                                                                                                                                      |
 | ------------------ | ----------  | ------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -178,6 +178,8 @@ export interface IChooseOptions {
   width?: number;
   height?: number;
   keepAspectRatio?: boolean;
+  showImages?:  boolean;
+  showVideos?: boolean;
 }
 ```
 
