@@ -1,32 +1,29 @@
 /**********************************************************************************
  * (c) 2017, nStudio, LLC & LiveShopper, LLC
  *
- * Version 1.0.0                                                    team@nStudio.io
+ * Version 1.1.0                                                    team@nStudio.io
  **********************************************************************************/
-/// <reference path="./typings/android27.d.ts" />
+/// <reference path="./node_modules/tns-platform-declarations/android.d.ts" />
 
-import './async-await'; // attach global async/await for NS
+import * as permissions from 'nativescript-permissions';
 import * as app from 'tns-core-modules/application';
 import * as fs from 'tns-core-modules/file-system';
-import * as utils from 'tns-core-modules/utils/utils';
-import * as types from 'tns-core-modules/utils/types';
-import * as permissions from 'nativescript-permissions';
-import { EventData } from 'tns-core-modules/data/observable';
 import { ImageAsset } from 'tns-core-modules/image-asset';
-import { confirm } from 'tns-core-modules/ui/dialogs';
 import { device } from 'tns-core-modules/platform';
-import { SelectedAsset } from './selected-asset';
+import * as types from 'tns-core-modules/utils/types';
+import * as utils from 'tns-core-modules/utils/utils';
+import './async-await'; // attach global async/await for NS
 import {
   CameraPlusBase,
-  GetSetProperty,
-  CameraUtil,
   CLog,
+  GetSetProperty,
   ICameraOptions,
-  IChooseOptions,
   ICameraPlusEvents,
+  IChooseOptions,
   IVideoOptions
 } from './camera-plus.common';
 import * as CamHelpers from './helpers';
+import { SelectedAsset } from './selected-asset';
 
 const REQUEST_VIDEO_CAPTURE = 999;
 const WRAP_CONTENT = -2;
@@ -100,10 +97,10 @@ export class CameraPlus extends CameraPlusBase {
   private _textureSurface: android.view.Surface;
   private _textureView: android.view.TextureView;
   private _surface: android.graphics.SurfaceTexture; // reference to surface to ensure toggling the camera works correctly
-  private _flashBtn = null; // reference to native flash button
-  private _takePicBtn = null; // reference to native take picture button
-  private _toggleCamBtn = null; // reference to native toggle camera button
-  private _galleryBtn = null; // reference to native open gallery button
+  private _flashBtn: android.widget.ImageButton = null; // reference to native flash button
+  private _takePicBtn: android.widget.ImageButton = null; // reference to native take picture button
+  private _toggleCamBtn: android.widget.ImageButton = null; // reference to native toggle camera button
+  private _galleryBtn: android.widget.ImageButton = null; // reference to native open gallery button
   private _videoOptions: IVideoOptions;
   private _videoPath: string;
   readonly _context; // defining this to pass TS warning, NS provides the context during lifecycle
@@ -136,7 +133,6 @@ export class CameraPlus extends CameraPlusBase {
    */
   public createNativeView() {
     try {
-      // let nativeView;
       // camera is not available on this android device
       if (this.isCameraAvailable() === false) {
         CLog(`No Camera on this device.`);
@@ -151,7 +147,6 @@ export class CameraPlus extends CameraPlusBase {
       this._owner = that;
 
       // create the Android RelativeLayout
-      // nativeView = new android.widget.RelativeLayout(this._context);
       this._nativeView = new android.widget.RelativeLayout(this._context);
 
       permissions.requestPermission(CAMERA()).then(
@@ -461,7 +456,7 @@ export class CameraPlus extends CameraPlusBase {
       nativeFile = new java.io.File(videoPath);
     } else {
       fileName = `VID_${Date.now()}.mp4`;
-      let sdkVersionInt = parseInt(device.sdkVersion);
+      const sdkVersionInt = parseInt(device.sdkVersion);
       if (sdkVersionInt > 21) {
         const folderPath =
           android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DCIM).toString() +
@@ -480,7 +475,7 @@ export class CameraPlus extends CameraPlusBase {
         //   "/Camera/" +
         //   fileName;
         nativeFile = new java.io.File(videoPath);
-        var tempPictureUri = (<any>android.support.v4.content).FileProvider.getUriForFile(
+        const tempPictureUri = (<any>android.support.v4.content).FileProvider.getUriForFile(
           app.android.currentContext,
           app.android.nativeApp.getPackageName() + '.provider',
           nativeFile
@@ -567,7 +562,8 @@ export class CameraPlus extends CameraPlusBase {
             mimetypes[index] = 'video/*';
           }
 
-          intent.putExtra(android.content.Intent.EXTRA_MIME_TYPES, mimetypes);
+          // not in platform-declaration typings
+          intent.putExtra((android.content.Intent as any).EXTRA_MIME_TYPES, mimetypes);
 
           intent.setAction('android.intent.action.GET_CONTENT');
           // set the multiple picker mode
@@ -579,7 +575,7 @@ export class CameraPlus extends CameraPlusBase {
           const onImagePickerResult = args => {
             if (args.requestCode === RESULT_CODE_PICKER_IMAGES && args.resultCode === RESULT_OK) {
               try {
-                let selectedImages = [];
+                const selectedImages = [];
                 const data = args.intent;
                 const clipData = data.getClipData();
 
@@ -651,12 +647,19 @@ export class CameraPlus extends CameraPlusBase {
 
       const params = this.camera.getParameters();
       const currentFlashMode = params.getFlashMode();
+      CLog('currentFlashMode', currentFlashMode);
+      // if flashmode is null then we can't do anything or errors will be thrown trying to set the mode
+      if (currentFlashMode === null) {
+        return;
+      }
 
       if (currentFlashMode === FLASH_MODE_OFF || currentFlashMode === null) {
-        params.setFlashMode(FLASH_MODE_ON);
+        // make sure we have the ON mode available
+        params.setFlashMode(android.hardware.Camera.Parameters.FLASH_MODE_ON);
       } else if (currentFlashMode === FLASH_MODE_ON) {
-        params.setFlashMode(FLASH_MODE_OFF);
+        params.setFlashMode(android.hardware.Camera.Parameters.FLASH_MODE_OFF);
       }
+
       CLog(`setting flash mode params`);
       this.camera.setParameters(params);
       this._ensureCorrectFlashIcon();
@@ -841,6 +844,10 @@ export class CameraPlus extends CameraPlusBase {
     }
 
     const params = this.camera.getParameters();
+
+    const supportedFlashModes = params.getSupportedFlashModes();
+    CLog(`supported flash modes = ${supportedFlashModes} --- ${DEVICE_INFO_STRING()}`);
+
     const currentFlashMode = params.getFlashMode();
     return currentFlashMode;
   }
@@ -850,15 +857,30 @@ export class CameraPlus extends CameraPlusBase {
    * Useful when toggling cameras.
    */
   private _ensureCorrectFlashIcon() {
-    // ensure flashBtn is here
+    // get current flash mode and set correct image drawable
+    const currentFlashMode = this.getFlashMode();
+    CLog('_ensureCorrectFlashIcon flash mode', currentFlashMode);
+
+    // if the flash mode is null then we need to remove the button from the parent layout
+    if (currentFlashMode === null) {
+      // if we have the button - remove it from parent
+      if (this._flashBtn) {
+        this._flashBtn.setVisibility(android.view.View.GONE);
+      }
+      return;
+    }
+
+    // ensure flashBtn is here - if currentFlashMode is null then don't show/assign the flash button
     if (this._flashBtn === undefined || this._flashBtn === null) {
       return;
     }
 
+    // make sure we have our flash icon button visible - sometimes toggling might set to GONE
+    this._flashBtn.setVisibility(android.view.View.VISIBLE);
+
     // reset the image in the button first
     this._flashBtn.setImageResource((android as any).R.color.transparent);
-    // get current flash mode and set correct image drawable
-    const currentFlashMode = this.getFlashMode();
+
     const flashIcon = currentFlashMode === FLASH_MODE_OFF ? this.flashOffIcon : this.flashOnIcon;
     const imageDrawable = CamHelpers.getImageDrawable(flashIcon);
     this._flashBtn.setImageResource(imageDrawable);
@@ -1185,7 +1207,7 @@ export class CameraPlus extends CameraPlusBase {
         let height = 1080;
         if (mSupportedPreviewSizes) {
           // use maximum size (first one)
-          let size = mSupportedPreviewSizes.get(0) as android.hardware.Camera.Size;
+          const size = mSupportedPreviewSizes.get(0) as android.hardware.Camera.Size;
           if (size) {
             width = size.width;
             height = size.height;
@@ -1203,12 +1225,12 @@ export class CameraPlus extends CameraPlusBase {
     const mPictureSize = CamHelpers.getOptimalPictureSize(mSupportedPictureSizes, layoutWidth, layoutHeight);
     CLog(`mPictureSize = ${mPictureSize}`);
 
-    params.setPictureSize(mPictureSize.width, mPictureSize.height); 
+    params.setPictureSize(mPictureSize.width, mPictureSize.height);
 
     this.camera.setParameters(params); // set the parameters for the camera
     this.camera.setDisplayOrientation(result);
 
-    if (this.isVideoEnabled()) {
+    if (this.isVideoEnabled() && this._mediaRecorder) {
       if (info.facing === CAMERA_FACING_FRONT) {
         this._mediaRecorder.setOrientationHint(180 + result);
       } else {
@@ -1383,7 +1405,7 @@ export class CameraPlus extends CameraPlusBase {
 
       CLog('recycling originalBmp...');
       originalBmp.recycle();
-      let outputStream = new java.io.ByteArrayOutputStream();
+      const outputStream = new java.io.ByteArrayOutputStream();
 
       CLog('compressing finalBmp...');
       finalBmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 100, outputStream);
