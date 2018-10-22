@@ -123,6 +123,73 @@ export function getOptimalPreviewSize(
   return optimalSize;
 }
 
+/**
+ * Helper method to get the optimal sizing for the picture from the camera.
+ * Android cameras support different sizes for taking picture.
+ * @param sizes
+ * @param width
+ * @param height
+ */
+export function getOptimalPictureSize(
+  sizes: java.util.List,
+  width: number,
+  height: number
+): android.hardware.Camera.Size {
+  let sizeSet: boolean = false;
+
+
+  if (sizes === null) return null;
+
+  let optimalSize = null as android.hardware.Camera.Size;
+  let minDiff = Number.MAX_SAFE_INTEGER;
+
+  const targetHeight = height;
+  CLog(`targetHeight = ${targetHeight}`);
+  const targetWidth = height;
+  CLog(`targetWidth = ${targetWidth}`);
+
+  for (var i = 0; i < sizes.size(); i++) {
+    let size = sizes.get(i) as android.hardware.Camera.Size;
+    let desiredMinimumWidth: number;
+    let desiredMaximumWidth: number;
+
+    if (width > 1000) {
+      desiredMinimumWidth = width - 200;
+      desiredMaximumWidth = width + 200;
+    } else {
+      desiredMinimumWidth = 800;
+      desiredMaximumWidth = 1200;
+    }
+
+    if (size.width > desiredMinimumWidth && size.width < desiredMaximumWidth && size.height < size.width) {
+      optimalSize = size;
+      CLog("setting size width", size.width + "");
+      CLog("setting size height", size.height + "");
+      sizeSet = true;
+      break;
+    }
+  }
+
+  if (!sizeSet) {
+    // minDiff = Double.MAX_VALUE;
+    minDiff = Number.MAX_SAFE_INTEGER;
+    for (var i = 0; i < sizes.size(); i++) {
+      const element = sizes.get(i) as android.hardware.Camera.Size;
+      CLog(`size.width = ${element.width}, size.height = ${element.height}`);
+      if (Math.abs(element.height - targetHeight) < minDiff) {
+        optimalSize = element;
+        minDiff = Math.abs(element.height - targetHeight);
+      }
+    }
+    sizeSet = true;
+  }
+
+  CLog(
+    `optimalPictureSize = ${optimalSize}, optimalPictureSize.width = ${optimalSize.width}, optimalPictureSize.height = ${optimalSize.height}`
+  );
+  return optimalSize;
+}
+
 export function calculateInSampleSize(
   options: android.graphics.BitmapFactory.Options,
   reqWidth: number,

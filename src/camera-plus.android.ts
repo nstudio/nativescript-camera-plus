@@ -1199,6 +1199,12 @@ export class CameraPlus extends CameraPlusBase {
       }
     }
 
+    const mSupportedPictureSizes = params.getSupportedPictureSizes();
+    const mPictureSize = CamHelpers.getOptimalPictureSize(mSupportedPictureSizes, layoutWidth, layoutHeight);
+    CLog(`mPictureSize = ${mPictureSize}`);
+
+    params.setPictureSize(mPictureSize.width, mPictureSize.height); 
+
     this.camera.setParameters(params); // set the parameters for the camera
     this.camera.setDisplayOrientation(result);
 
