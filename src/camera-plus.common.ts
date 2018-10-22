@@ -1,7 +1,7 @@
 /**********************************************************************************
  * (c) 2017, nStudio, LLC & LiveShopper, LLC
  *
- * Version 1.0.0                                                   team@nStudio.io
+ * Version 1.1.0                                                   team@nStudio.io
  **********************************************************************************/
 
 import { ContentView } from 'tns-core-modules/ui/content-view';
@@ -87,90 +87,108 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
   /**
    * If true the default take picture event will present a confirmation dialog. Default is true.
    */
-  @GetSetProperty() public confirmPhotos: boolean = true;
+  @GetSetProperty()
+  public confirmPhotos: boolean = true;
 
   /**
    * When confirming capture this text will be presented to the user to retake the photo. Default is 'Retake'
    */
-  @GetSetProperty() public confirmRetakeText?: string;
+  @GetSetProperty()
+  public confirmRetakeText?: string;
 
   /**
    * When confirming capture this text will be presented to the user to save the photo. Default is 'Save'
    */
-  @GetSetProperty() public confirmSaveText?: string;
+  @GetSetProperty()
+  public confirmSaveText?: string;
 
   /**
    * If true the default videorecordingready event will present a confirmation dialog. Default is false.
    */
-  @GetSetProperty() public confirmVideo: boolean = false;
+  @GetSetProperty()
+  public confirmVideo: boolean = false;
 
   /**
    * If true the default take picture event will save to device gallery. Default is true.
    */
-  @GetSetProperty() public saveToGallery: boolean = true;
+  @GetSetProperty()
+  public saveToGallery: boolean = true;
 
   /**
    * The gallery/library selection mode. 'single' allows one image to be selected. 'multiple' allows multiple images. Default is 'multiple'
    */
-  @GetSetProperty() public galleryPickerMode: 'single' | 'multiple' = 'multiple';
+  @GetSetProperty()
+  public galleryPickerMode: 'single' | 'multiple' = 'multiple';
 
   /**
    * If true the default flash toggle icon/button will show on the Camera Plus layout. Default is true.
    */
-  @GetSetProperty() public showFlashIcon: boolean = true;
+  @GetSetProperty()
+  public showFlashIcon: boolean = true;
 
   /**
    * If true the default camera toggle (front/back) icon/button will show on the Camera Plus layout. Default is true.
    */
-  @GetSetProperty() public showToggleIcon: boolean = true;
+  @GetSetProperty()
+  public showToggleIcon: boolean = true;
 
   /**
    * If true the default capture (take picture) icon/button will show on the Camera Plus layout. Default is true.
    */
-  @GetSetProperty() public showCaptureIcon: boolean = true;
+  @GetSetProperty()
+  public showCaptureIcon: boolean = true;
 
   /**
    * If true the choose from gallery/library icon/button will show on the Camera Plus layout. Default is true.
    */
-  @GetSetProperty() public showGalleryIcon: boolean = true;
+  @GetSetProperty()
+  public showGalleryIcon: boolean = true;
 
   /**
    * *ANDROID ONLY* - allows setting a custom app_resource drawable icon for the Toggle Flash button icon when flash is on (enabled).
    */
-  @GetSetProperty() public flashOnIcon: string = '';
+  @GetSetProperty()
+  public flashOnIcon: string = '';
 
   /**
    * *ANDROID ONLY* - allows setting a custom app_resource drawable icon for the Toggle Flash button icon when flash is off (disabled).
    */
-  @GetSetProperty() public flashOffIcon: string = '';
+  @GetSetProperty()
+  public flashOffIcon: string = '';
 
   /**
    * *ANDROID ONLY* - allows setting a custom app_resource drawable icon for the Toggle Flash button icon when flash is off (disabled).
    */
-  @GetSetProperty() public toggleCameraIcon: string = '';
+  @GetSetProperty()
+  public toggleCameraIcon: string = '';
 
   /**
    * *ANDROID ONLY* - allows setting a custom app_resource drawable icon for the Capture button icon.
    */
-  @GetSetProperty() public takePicIcon: string = '';
+  @GetSetProperty()
+  public takePicIcon: string = '';
 
   /**
    * *ANDROID ONLY* - allows setting a custom app_resource drawable icon for the Open Gallery button icon.
    */
-  @GetSetProperty() public galleryIcon: string = '';
+  @GetSetProperty()
+  public galleryIcon: string = '';
 
   /**
    * *ANDROID ONLY* - If true the camera will auto focus to capture the image. Default is true.
    */
-  @GetSetProperty() public autoFocus: boolean = true;
+  @GetSetProperty()
+  public autoFocus: boolean = true;
 
   /**
    * *iOS ONLY* - Enable/disable double tap gesture to switch camera. (enabled)
    */
-  @GetSetProperty() public doubleTapCameraSwitch: boolean = true;
+  @GetSetProperty()
+  public doubleTapCameraSwitch: boolean = true;
 
   /** If true it will crop the picture to the center square **/
-  @GetSetProperty() public autoSquareCrop: boolean = false;
+  @GetSetProperty()
+  public autoSquareCrop: boolean = false;
 
   /**
    * Toggles the device camera (front/back).
@@ -326,7 +344,7 @@ export interface IChooseOptions {
   width?: number;
   height?: number;
   keepAspectRatio?: boolean;
-  showImages?:  boolean;
+  showImages?: boolean;
   showVideos?: boolean;
 }
 
