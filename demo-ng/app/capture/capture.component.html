@@ -2,19 +2,11 @@
 </ActionBar>
 <ScrollView>
 	<GridLayout rows="250, auto, *">
-		<CameraPlus height="250" debug="true" 
-			galleryPickerMode="single" 
-			showFlashIcon="true" 
-			showToggleIcon="true" 
-			showCaptureIcon="true" 
-			showGalleryIcon="true"
-			confirmSaveText="CONFIRM!"
-			confirmRetakeText="RETAKE!"
-			(loaded)="camLoaded($event)" 
-			(toggleCameraEvent)="toggleCameraEvent($event)" 
-			(photoCapturedEvent)="photoCapturedEvent($event)"
-			(imagesSelectedEvent)="imagesSelectedEvent($event)">
-			
+		<CameraPlus height="250" debug="true" galleryPickerMode="single" showFlashIcon="true" showToggleIcon="true"
+		 showCaptureIcon="true" showGalleryIcon="true" confirmSaveText="CONFIRM!" confirmRetakeText="RETAKE!" (loaded)="camLoaded($event)"
+		 (toggleCameraEvent)="toggleCameraEvent($event)" (photoCapturedEvent)="photoCapturedEvent($event)"
+		 (imagesSelectedEvent)="imagesSelectedEvent($event)">
+
 			<!-- OVERLAY CONTENT -->
 			<!-- <GridLayout rows="*, auto, *" columns="*, auto, *">
 				<GridLayout colSpan="3" class="bg-overlay"></GridLayout>

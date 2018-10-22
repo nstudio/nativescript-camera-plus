@@ -1,24 +1,26 @@
-import { Observable } from "tns-core-modules/data/observable";
-import { topmost } from "tns-core-modules/ui/frame";
-import { Page } from "tns-core-modules/ui/page";
-import { fromAsset, fromUrl } from "tns-core-modules/image-source";
-import { Image } from "tns-core-modules/ui/image";
-import { ImageAsset } from "tns-core-modules/image-asset";
-import { screen } from "tns-core-modules/platform";
-import { CameraPlus } from "@nstudio/nativescript-camera-plus";
-import { ObservableProperty } from "./observable-property";
+import { CameraPlus } from '@nstudio/nativescript-camera-plus';
+import { Observable } from 'tns-core-modules/data/observable';
+import { ImageAsset } from 'tns-core-modules/image-asset';
+import { fromAsset } from 'tns-core-modules/image-source';
+import { screen } from 'tns-core-modules/platform';
+import { topmost } from 'tns-core-modules/ui/frame';
+import { Image } from 'tns-core-modules/ui/image';
+import { Page } from 'tns-core-modules/ui/page';
+import { ObservableProperty } from './observable-property';
 
 export class HelloWorldModel extends Observable {
   private _counter: number = 0;
-  @ObservableProperty() public cam: CameraPlus;
-  @ObservableProperty() public cameraHeight: number;
+  @ObservableProperty()
+  public cam: CameraPlus;
+  @ObservableProperty()
+  public cameraHeight: number;
 
   constructor(page: Page) {
     super();
 
     this.cameraHeight = screen.mainScreen.heightDIPs * 0.45;
 
-    this.cam = page.getViewById("camPlus") as CameraPlus;
+    this.cam = page.getViewById('camPlus') as CameraPlus;
 
     // hide a default icon button here
     // this.cam.showGalleryIcon = false
@@ -28,7 +30,7 @@ export class HelloWorldModel extends Observable {
     }
 
     this.cam.on(CameraPlus.errorEvent, args => {
-      console.log("*** CameraPlus errorEvent ***", args);
+      console.log('*** CameraPlus errorEvent ***', args);
     });
 
     this.cam.on(CameraPlus.toggleCameraEvent, (args: any) => {
@@ -39,7 +41,7 @@ export class HelloWorldModel extends Observable {
       console.log(`photoCapturedEvent listener on main-view-model.ts  ${args}`);
       console.log((<any>args).data);
       fromAsset((<any>args).data).then(res => {
-        const testImg = topmost().getViewById("testImagePickResult") as Image;
+        const testImg = topmost().getViewById('testImagePickResult') as Image;
         testImg.src = res;
       });
     });
@@ -98,18 +100,16 @@ export class HelloWorldModel extends Observable {
   public openCamPlusLibrary() {
     this.cam.chooseFromLibrary().then(
       (images: Array<ImageAsset>) => {
-        console.log("Images selected from library total:", images.length);
+        console.log('Images selected from library total:', images.length);
         for (let source of images) {
           console.log(`source = ${source}`);
         }
-        const testImg = topmost().getViewById("testImagePickResult") as Image;
+        const testImg = topmost().getViewById('testImagePickResult') as Image;
         const firstImg = images[0];
         console.log(firstImg);
         fromAsset(firstImg)
           .then(res => {
-            const testImg = topmost().getViewById(
-              "testImagePickResult"
-            ) as Image;
+            const testImg = topmost().getViewById('testImagePickResult') as Image;
             testImg.src = res;
           })
           .catch(err => {
@@ -117,12 +117,17 @@ export class HelloWorldModel extends Observable {
           });
       },
       err => {
-        console.log("Error -> " + err.message);
+        console.log('Error -> ' + err.message);
       }
     );
   }
 
   public takePicFromCam() {
-    this.cam.takePicture({ saveToGallery: true });
+    this.cam.requestCameraPermissions().then(() => {
+      if (!this.cam) {
+        this.cam = new CameraPlus();
+      }
+      this.cam.takePicture({ saveToGallery: true });
+    });
   }
 }

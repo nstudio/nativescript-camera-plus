@@ -1,5 +1,4 @@
-<Page 
-  xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" class="page" 
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" class="page" 
   xmlns:Cam="@nstudio/nativescript-camera-plus">
   <Page.actionBar>
     <ActionBar title="Camera Plus Demo" icon=""></ActionBar>
@@ -9,27 +8,10 @@
       <StackLayout class="p-10">
         <Label text="Anything else can go in your page or you can let the camera take up entire page layout. You can also add layout containers inside the CameraPlus to overlay view elements over the camera preview if needed." textWrap="true" />
       </StackLayout>
-      <Cam:CameraPlus id="camPlus" 
-      loaded="camLoaded" 
-      height="{{ cameraHeight }}" 
-      galleryPickerMode="multiple"
-      enableVideo="true"
-      confirmVideo="false"
-      saveToGallery="true"
-      showCaptureIcon="true"
-      showGalleryIcon="true"
-      showToggleIcon="true" 
-      showFlashIcon="true" 
-      confirmPhotos="true" 
-      flashOffIcon="icon" 
-      autoSquareCrop="true" 
-      insetButtons="true" 
-      insetButtonsPercent="0.02" 
-      imagesSelectedEvent="{{ imagesSelectedBinding }}" 
-      debug="true">
+      <Cam:CameraPlus id="camPlus" loaded="camLoaded" height="{{ cameraHeight }}" galleryPickerMode="multiple" enableVideo="true" confirmVideo="false" saveToGallery="true" showCaptureIcon="true" showGalleryIcon="true" showToggleIcon="true" showFlashIcon="true" confirmPhotos="true" flashOffIcon="icon" autoSquareCrop="true" insetButtons="true" insetButtonsPercent="0.02" imagesSelectedEvent="{{ imagesSelectedBinding }}" debug="true">
         <!--<GridLayout rows="auto, *, auto" columns="auto, *, auto"><Button row="0" col="0" text="Flash" class="btn-transparent" tap="{{ toggleFlash }}" /><Button row="0" col="2" text="Camera" class="btn-transparent" tap="{{ toggleCamera }}" /><Image row="1" col="1" horizontalAlignment="center" verticalAlignment="center" src="https://img.clipartfest.com/4ec5e2315cea92482da5546e1e7fca89_-pinterest-cute-clipart-snowman-clipart-transparent-background_300-300.png" stretch="none" /><Button row="2" col="0" text="Gallery" class="btn-transparent" tap="{{ openGallery }}" /><Button row="2" col="2" text="Take" class="btn-transparent" tap="{{ takePic }}" /></GridLayout>-->
       </Cam:CameraPlus>
-      <Image height="100" id="testImagePickResult" src="{{ testImage }}" stretch="none" />
+      <Image height="100" id="testImagePickResult" src="{{ testImage }}" stretch="aspectFit" />
       <StackLayout class="p-10">
         <Label text="The buttons below are using the public methods for the Camera Plus." textWrap="true" />
       </StackLayout>
