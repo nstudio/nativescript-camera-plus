@@ -593,9 +593,10 @@ export class MySwifty extends SwiftyCamViewController {
     }
 
     if (this._owner.get().showCaptureIcon) {
+      const heightOffset = this._owner.get().isIPhoneX ? 160 : 80;
       const picOutline = createButton(
         this,
-        CGRectMake(width / 2 - 20, height - 80, 50, 50),
+        CGRectMake(width / 2 - 20, height - heightOffset, 50, 50),
         null,
         null,
         null,
@@ -605,7 +606,7 @@ export class MySwifty extends SwiftyCamViewController {
       this.view.addSubview(picOutline);
       const takePicBtn = createButton(
         this,
-        CGRectMake(width / 2 - 21.5, height - 80.7, 50, 50),
+        CGRectMake(width / 2 - 21.5, height - (heightOffset + 0.7), 50, 50),
         null,
         this._enableVideo ? 'recordVideo' : 'snapPicture',
         null,
@@ -641,6 +642,7 @@ export class CameraPlus extends CameraPlusBase {
   public static useDeviceOrientation: boolean = false; // experimental
   // swiftyviewcontroller
   private _swifty: MySwifty;
+  private _isIPhoneX: boolean;
 
   @GetSetProperty()
   public enableVideo: boolean;
@@ -658,6 +660,7 @@ export class CameraPlus extends CameraPlusBase {
     // experimenting with static flag (this is usually explicitly false)
     // enable device orientation
     this._swifty.shouldUseDeviceOrientation = CameraPlus.useDeviceOrientation;
+    this._detectDevice();
   }
 
   private isVideoEnabled() {
@@ -698,6 +701,10 @@ export class CameraPlus extends CameraPlusBase {
       // won't properly update component dimensions without this timeout
       if (changedDimensions) this.requestLayout();
     });
+  }
+
+  public get isIPhoneX() {
+    return this._isIPhoneX;
   }
 
   public get galleryPickerWidth() {
@@ -801,6 +808,31 @@ export class CameraPlus extends CameraPlusBase {
    */
   public isCameraAvailable() {
     return this._swifty.isCameraAvailable();
+  }
+
+  private _detectDevice() {
+    if (typeof this._isIPhoneX === 'undefined') {
+      const _SYS_NAMELEN: number = 256;
+
+      /* tslint:disable-next-line: no-any */
+      const buffer: any = interop.alloc(5 * _SYS_NAMELEN);
+      uname(buffer);
+      let name: string = NSString.stringWithUTF8String(buffer.add(_SYS_NAMELEN * 4)).toString();
+
+      // Get machine name for Simulator
+      if (name === 'x86_64' || name === 'i386') {
+        name = NSProcessInfo.processInfo.environment.objectForKey('SIMULATOR_MODEL_IDENTIFIER');
+      }
+
+      // this._log.debug('isIPhoneX name:', name);
+      this._isIPhoneX =
+        name.indexOf('iPhone10,3') === 0 ||
+        name.indexOf('iPhone10,6') === 0 ||
+        name.indexOf('iPhone11,2') === 0 ||
+        name.indexOf('iPhone11,4') === 0 ||
+        name.indexOf('iPhone11,6') === 0 ||
+        name.indexOf('iPhone11,8') === 0;
+    }
   }
 }
 
