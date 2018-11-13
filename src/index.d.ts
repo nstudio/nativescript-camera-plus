@@ -55,12 +55,12 @@ export declare class CameraPlus extends ContentView {
   /**
    * String value when hooking into the confirmScreenShownEvent. This event fires when the confirm dialog is shown.
    */
-  public static confirmScreenShownEvent = 'confirmScreenShownEvent';
+  public static confirmScreenShownEvent: 'confirmScreenShownEvent';
 
   /**
    * String value when hooking into the confirmScreenDismissedEvent. This event fires when the confirm dialog is dismissed either by Retake or Save.
    */
-  public static confirmScreenDismissedEvent = 'confirmScreenDismissedEvent';
+  public static confirmScreenDismissedEvent: 'confirmScreenDismissedEvent';
 
   /**
    * If true console logs will be output to help debug the Camera Plus events.
