@@ -1231,11 +1231,7 @@ export class CameraPlus extends CameraPlusBase {
     this.camera.setDisplayOrientation(result);
 
     if (this.isVideoEnabled() && this._mediaRecorder) {
-      if (info.facing === CAMERA_FACING_FRONT) {
-        this._mediaRecorder.setOrientationHint(180 + result);
-      } else {
-        this._mediaRecorder.setOrientationHint(result);
-      }
+      this._mediaRecorder.setOrientationHint(result);
     }
   }
 
