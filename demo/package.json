@@ -2,14 +2,14 @@
   "nativescript": {
     "id": "org.nativescript.demo",
     "tns-android": {
-      "version": "5.0.0-rc-2018-10-18-172901-01"
+      "version": "5.0.0"
     }
   },
   "dependencies": {
     "@nstudio/nativescript-camera-plus": "../src",
     "nativescript-theme-core": "^1.0.4",
     "nativescript-unit-test-runner": "^0.3.4",
-    "tns-core-modules": "^4.2.1"
+    "tns-core-modules": "^5.0.3"
   },
   "devDependencies": {
     "babel-traverse": "6.12.0",
@@ -21,8 +21,8 @@
     "karma-jasmine": "^1.0.2",
     "karma-nativescript-launcher": "^0.4.0",
     "lazy": "1.0.11",
-    "nativescript-dev-typescript": "~0.7.1",
-    "tns-platform-declarations": "^4.2.1",
-    "typescript": "~2.8.2"
+    "nativescript-dev-typescript": "~0.7.6",
+    "tns-platform-declarations": "^5.0.3",
+    "typescript": "~3.1.6"
   }
 }
