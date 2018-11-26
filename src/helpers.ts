@@ -81,14 +81,12 @@ export function getOptimalPreviewSize(
   width: number,
   height: number
 ): android.hardware.Camera.Size {
-  const ASPECT_TOLERANCE = 0.1;
   const targetRatio = height / width;
   CLog(`targetRatio = ${targetRatio}`);
 
   if (sizes === null) return null;
 
   let optimalSize = null as android.hardware.Camera.Size;
-  let minDiff = Number.MAX_SAFE_INTEGER;
 
   const targetHeight = height;
   CLog(`targetHeight = ${targetHeight}`);
@@ -96,25 +94,17 @@ export function getOptimalPreviewSize(
   for (var i = 0; i < sizes.size(); i++) {
     const element = sizes.get(i) as android.hardware.Camera.Size;
     CLog(`size.width = ${element.width}, size.height = ${element.height}`);
-    const ratio = element.width / element.height;
-    CLog(`ratio = ${ratio}`);
-    if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
-    if (Math.abs(element.height - targetHeight) < minDiff) {
-      optimalSize = element;
-      minDiff = Math.abs(element.height - targetHeight);
-    }
-  }
+    if (element.width<=width && element.height<=height) {
+        if (optimalSize==null) {
+            optimalSize=element;
+        } else {
+            let resultArea=optimalSize.width*optimalSize.height;
+            let newArea=element.width*element.height;
 
-  if (optimalSize === null) {
-    // minDiff = Double.MAX_VALUE;
-    minDiff = Number.MAX_SAFE_INTEGER;
-    for (var i = 0; i < sizes.size(); i++) {
-      const element = sizes.get(i) as android.hardware.Camera.Size;
-      CLog(`size.width = ${element.width}, size.height = ${element.height}`);
-      if (Math.abs(element.height - targetHeight) < minDiff) {
-        optimalSize = element;
-        minDiff = Math.abs(element.height - targetHeight);
-      }
+            if (newArea>resultArea) {
+                optimalSize=element;
+            }
+        }
     }
   }
   CLog(
