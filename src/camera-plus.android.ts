@@ -42,7 +42,7 @@ const FLASH_MODE_ON = 'on';
 const FLASH_MODE_OFF = 'off';
 const CAMERA_FACING_FRONT = 1; // front camera
 const CAMERA_FACING_BACK = 0; // rear camera
-const RESULT_CODE_PICKER_IMAGES = 415161;
+const RESULT_CODE_PICKER_IMAGES = 941;
 const RESULT_OK = -1;
 
 // Snapshot-friendly functions
