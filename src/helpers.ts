@@ -91,20 +91,20 @@ export function getOptimalPreviewSize(
   const targetHeight = height;
   CLog(`targetHeight = ${targetHeight}`);
 
-  for (var i = 0; i < sizes.size(); i++) {
+  for (let i = 0; i < sizes.size(); i++) {
     const element = sizes.get(i) as android.hardware.Camera.Size;
     CLog(`size.width = ${element.width}, size.height = ${element.height}`);
-    if (element.width<=width && element.height<=height) {
-        if (optimalSize==null) {
-            optimalSize=element;
-        } else {
-            let resultArea=optimalSize.width*optimalSize.height;
-            let newArea=element.width*element.height;
+    if (element.width <= width && element.height <= height) {
+      if (optimalSize == null) {
+        optimalSize = element;
+      } else {
+        const resultArea = optimalSize.width * optimalSize.height;
+        const newArea = element.width * element.height;
 
-            if (newArea>resultArea) {
-                optimalSize=element;
-            }
+        if (newArea > resultArea) {
+          optimalSize = element;
         }
+      }
     }
   }
   CLog(
@@ -137,8 +137,8 @@ export function getOptimalPictureSize(
   const targetWidth = height;
   CLog(`targetWidth = ${targetWidth}`);
 
-  for (var i = 0; i < sizes.size(); i++) {
-    let size = sizes.get(i) as android.hardware.Camera.Size;
+  for (let i = 0; i < sizes.size(); i++) {
+    const size = sizes.get(i) as android.hardware.Camera.Size;
     let desiredMinimumWidth: number;
     let desiredMaximumWidth: number;
 
@@ -162,7 +162,7 @@ export function getOptimalPictureSize(
   if (!sizeSet) {
     // minDiff = Double.MAX_VALUE;
     minDiff = Number.MAX_SAFE_INTEGER;
-    for (var i = 0; i < sizes.size(); i++) {
+    for (let i = 0; i < sizes.size(); i++) {
       const element = sizes.get(i) as android.hardware.Camera.Size;
       CLog(`size.width = ${element.width}, size.height = ${element.height}`);
       if (Math.abs(element.height - targetHeight) < minDiff) {
@@ -187,13 +187,13 @@ export function calculateInSampleSize(
   reqHeight: number
 ) {
   // Raw height and width of image
-  let height = options.outHeight;
-  let width = options.outWidth;
+  const height = options.outHeight;
+  const width = options.outWidth;
   let inSampleSize = 1;
 
   if (height > reqHeight || width > reqWidth) {
-    let halfHeight = height / 2;
-    let halfWidth = width / 2;
+    const halfHeight = height / 2;
+    const halfWidth = width / 2;
 
     // Calculate the largest inSampleSize value that is a power of 2 and keeps both
     // height and width larger than the requested height and width.
