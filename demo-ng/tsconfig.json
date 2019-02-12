@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es5",
+        "target": "es2015",
         "declaration": false,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
@@ -9,14 +9,19 @@
         "noEmitOnError": false,
         "skipLibCheck": true,
         "lib": [
-            "es7",
-            "dom"
+            "es2017",
+            "dom",
+            "es6",
+            "es2015.iterable"
         ],
         "baseUrl": ".",
         "paths": {
             "*": [
                 "./node_modules/tns-core-modules/*",
                 "./node_modules/*"
+            ],
+            "~/*": [
+                "app/*"
             ]
         }
     },

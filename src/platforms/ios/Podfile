@@ -1,11 +1,11 @@
-pod "SwiftyCam", :git => "https://github.com/NathanWalker/SwiftyCam.git"
+pod 'SwiftyCam', :git => 'https://github.com/NathanWalker/SwiftyCam.git', :branch => 'feature/swift-4.2'
 pod "QBImagePickerController"
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     if target.name == 'SwiftyCam'
       target.build_configurations.each do |config|
-        config.build_settings['SWIFT_VERSION'] = '3.0'
+        config.build_settings['SWIFT_VERSION'] = '4.2'
       end
     end
   end
