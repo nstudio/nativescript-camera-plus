@@ -4,7 +4,7 @@
  * Version 1.1.0                                                   team@nStudio.io
  **********************************************************************************/
 
-import { ContentView } from 'tns-core-modules/ui/content-view';
+import { View } from 'tns-core-modules/ui/core/view';
 import { CameraPlus as CameraPlusDefinition } from '.';
 
 export class CameraUtil {
@@ -19,7 +19,7 @@ export const CLog = (...args) => {
 
 export type CameraTypes = 'front' | 'rear';
 
-export abstract class CameraPlusBase extends ContentView implements CameraPlusDefinition {
+export abstract class CameraPlusBase extends View implements CameraPlusDefinition {
   public set debug(value: boolean) {
     CameraUtil.debug = value;
   }
@@ -359,7 +359,18 @@ export interface ICameraPlusEvents {
   confirmScreenDismissedEvent: any;
 }
 
+export enum CameraVideoQuality {
+  MAX_480P = '480p',
+  MAX_720P = '720p',
+  MAX_1080P = '1080p',
+  MAX_2160P = '2160p',
+  HIGHEST = 'highest',
+  LOWEST = 'lowest',
+  QVGA = 'qvga'
+}
+
 export interface IVideoOptions {
+  quality?: CameraVideoQuality;
   confirm?: boolean;
   saveToGallery?: boolean;
   height?: number;
