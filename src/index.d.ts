@@ -1,6 +1,6 @@
-import { ContentView } from 'tns-core-modules/ui/content-view';
+import { View } from 'tns-core-modules/ui/core/view';
 
-export declare class CameraPlus extends ContentView {
+export declare class CameraPlus extends View {
   events: ICameraPlusEvents;
 
   /**
@@ -252,7 +252,17 @@ export interface ICameraOptions {
   confirmSaveText?: string;
 }
 
+export declare enum CameraVideoQuality {
+  MAX_480P = '480p',
+  MAX_720P = '720p',
+  MAX_1080P = '1080p',
+  MAX_2160P = '2160p',
+  HIGHEST = 'highest',
+  LOWEST = 'lowest',
+  QVGA = 'qvga'
+}
 export interface IVideoOptions {
+  quality?: CameraVideoQuality;
   confirm?: boolean;
   saveToGallery?: boolean;
   height?: number;

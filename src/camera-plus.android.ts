@@ -20,11 +20,13 @@ import {
   ICameraOptions,
   ICameraPlusEvents,
   IChooseOptions,
-  IVideoOptions
+  IVideoOptions,
+  CameraVideoQuality
 } from './camera-plus.common';
 import * as CamHelpers from './helpers';
 import { SelectedAsset } from './selected-asset';
-
+import { View } from 'tns-core-modules/ui/core/view/view';
+export { CameraVideoQuality } from './camera-plus.common';
 const REQUEST_VIDEO_CAPTURE = 999;
 const WRAP_CONTENT = -2;
 const ALIGN_PARENT_TOP = 10;
@@ -54,6 +56,8 @@ const WRITE_EXTERNAL_STORAGE = () => (android as any).Manifest.permission.WRITE_
 // the snapshot will fail if they resolve during import, so must be done via a function
 const DEVICE_INFO_STRING = () => `device: ${device.manufacturer} ${device.model} on SDK: ${device.sdkVersion}`;
 
+import * as common from './camera-plus.common';
+global.moduleMerge(common, exports);
 export class CameraPlus extends CameraPlusBase {
   // @GetSetProperty() public camera: android.hardware.Camera;
   // Snapshot-friendly, since the decorator will include the snapshot-unknown object "android"
@@ -122,6 +126,8 @@ export class CameraPlus extends CameraPlusBase {
     this.galleryIcon = this.galleryIcon ? this.galleryIcon : 'ic_photo_library_white';
 
     this.cameraId = CameraPlus.defaultCamera === 'front' ? CAMERA_FACING_FRONT : CAMERA_FACING_BACK;
+
+    this._onLayoutChangeListener = this._onLayoutChangeFn.bind(this);
   }
 
   private isVideoEnabled() {
@@ -132,6 +138,8 @@ export class CameraPlus extends CameraPlusBase {
    * Create the native view
    */
   public createNativeView() {
+    // create the Android RelativeLayout
+    this._nativeView = new android.widget.RelativeLayout(this._context);
     try {
       // camera is not available on this android device
       if (this.isCameraAvailable() === false) {
@@ -145,9 +153,6 @@ export class CameraPlus extends CameraPlusBase {
       const that = new WeakRef(this);
 
       this._owner = that;
-
-      // create the Android RelativeLayout
-      this._nativeView = new android.widget.RelativeLayout(this._context);
 
       permissions.requestPermission(CAMERA()).then(
         () => {
@@ -214,18 +219,34 @@ export class CameraPlus extends CameraPlusBase {
         },
         err => {
           CLog('Application does not have permission to use CAMERA.', err);
-          return;
+          return this._nativeView;
         }
       );
 
       CLog('video enabled:', this.isVideoEnabled());
       CLog('default camera:', CameraPlus.defaultCamera);
-
-      return this._nativeView;
     } catch (ex) {
       CLog('createNativeView error', ex);
       this.sendEvent(CameraPlus.errorEvent, ex, 'Error creating the native view.');
     }
+    return this._nativeView;
+  }
+
+  private _onLayoutChangeFn(args) {
+    const size = this.getActualSize();
+    CLog('xml width/height:', size.width + 'x' + size.height);
+  }
+
+  private _onLayoutChangeListener: any;
+
+  initNativeView() {
+    this.on(View.layoutChangedEvent, this._onLayoutChangeListener);
+  }
+
+  disposeNativeView() {
+    CLog('disposeNativeView.');
+    this.off(View.layoutChangedEvent, this._onLayoutChangeListener);
+    super.disposeNativeView();
   }
 
   /**
@@ -374,6 +395,57 @@ export class CameraPlus extends CameraPlusBase {
     }
   }
 
+  private _getCamcorderProfile(cameraId: number, quality: CameraVideoQuality): CameraVideoQuality {
+    const CamcorderProfile = android.media.CamcorderProfile;
+    let profile;
+    switch (quality) {
+      case CameraVideoQuality.MAX_720P:
+        if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_720P)) {
+          profile = CameraVideoQuality.MAX_720P;
+        } else {
+          profile = this._getCamcorderProfile(cameraId, CameraVideoQuality.MAX_480P);
+        }
+        break;
+      case CameraVideoQuality.MAX_1080P:
+        if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_1080P)) {
+          profile = CameraVideoQuality.MAX_1080P;
+        } else {
+          profile = this._getCamcorderProfile(cameraId, CameraVideoQuality.MAX_720P);
+        }
+
+        break;
+      case CameraVideoQuality.MAX_2160P:
+        try {
+          CamcorderProfile.get((CamcorderProfile as any).QUALITY_2160P);
+          profile = CameraVideoQuality.MAX_2160P;
+        } catch (e) {
+          profile = CameraVideoQuality.HIGHEST;
+        }
+        break;
+      case CameraVideoQuality.HIGHEST:
+        profile = CameraVideoQuality.HIGHEST;
+        break;
+      case CameraVideoQuality.LOWEST:
+        profile = CameraVideoQuality.LOWEST;
+        break;
+      case CameraVideoQuality.QVGA:
+        if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_QVGA)) {
+          profile = CameraVideoQuality.QVGA;
+        } else {
+          profile = CameraVideoQuality.LOWEST;
+        }
+        break;
+      default:
+        if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_480P)) {
+          profile = CameraVideoQuality.MAX_480P;
+        } else {
+          profile = this._getCamcorderProfile(cameraId, CameraVideoQuality.QVGA);
+        }
+        break;
+    }
+    return profile;
+  }
+
   private _prepareVideoRecorder(options?: IVideoOptions) {
     if (!this._mediaRecorder) {
       this._mediaRecorder = new android.media.MediaRecorder() as android.media.MediaRecorder;
@@ -388,9 +460,35 @@ export class CameraPlus extends CameraPlusBase {
     this._mediaRecorder.setAudioSource(android.media.MediaRecorder.AudioSource.CAMCORDER);
     this._mediaRecorder.setVideoSource(android.media.MediaRecorder.VideoSource.CAMERA);
     // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
-    this._mediaRecorder.setProfile(
-      android.media.CamcorderProfile.get(this.cameraId, android.media.CamcorderProfile.QUALITY_HIGH)
-    );
+    let quality;
+    const cameraQuality = this._getCamcorderProfile(this.cameraId, options.quality);
+    switch (cameraQuality) {
+      case CameraVideoQuality.MAX_2160P:
+        quality = android.media.CamcorderProfile.get(
+          this.cameraId,
+          (android as any).media.CamcorderProfile.QUALITY_2160P
+        );
+        break;
+      case CameraVideoQuality.MAX_1080P:
+        quality = android.media.CamcorderProfile.get(this.cameraId, android.media.CamcorderProfile.QUALITY_1080P);
+        break;
+      case CameraVideoQuality.MAX_720P:
+        quality = android.media.CamcorderProfile.get(this.cameraId, android.media.CamcorderProfile.QUALITY_720P);
+        break;
+      case CameraVideoQuality.HIGHEST:
+        quality = android.media.CamcorderProfile.get(this.cameraId, android.media.CamcorderProfile.QUALITY_HIGH);
+        break;
+      case CameraVideoQuality.LOWEST:
+        quality = android.media.CamcorderProfile.get(this.cameraId, android.media.CamcorderProfile.QUALITY_LOW);
+        break;
+      case CameraVideoQuality.QVGA:
+        quality = android.media.CamcorderProfile.get(this.cameraId, android.media.CamcorderProfile.QUALITY_QVGA);
+        break;
+      default:
+        quality = android.media.CamcorderProfile.get(this.cameraId, android.media.CamcorderProfile.QUALITY_480P);
+        break;
+    }
+    this._mediaRecorder.setProfile(quality);
     // Step 4: Set output file
     const videoPath = this._getOutputMediaFile(2).toString();
     this._videoPath = videoPath;

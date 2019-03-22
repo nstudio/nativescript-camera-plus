@@ -16,8 +16,12 @@ import {
   GetSetProperty,
   ICameraOptions,
   IChooseOptions,
-  IVideoOptions
+  IVideoOptions,
+  CameraVideoQuality
 } from './camera-plus.common';
+import { layout, View } from 'tns-core-modules/ui/core/view';
+
+export { CameraVideoQuality } from './camera-plus.common';
 
 /**
  * Library image picker delegate (multiple or single)
@@ -170,7 +174,7 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
 /**
  * Take picture with camera delegate
  */
-export class SwiftyDelegate extends NSObject {
+export class SwiftyDelegate extends NSObject implements SwiftyCamViewControllerDelegate {
   public static ObjCProtocols = [SwiftyCamViewControllerDelegate];
   private _owner: WeakRef<MySwifty>;
 
@@ -178,6 +182,26 @@ export class SwiftyDelegate extends NSObject {
     const delegate = <SwiftyDelegate>SwiftyDelegate.new();
     delegate._owner = owner;
     return delegate;
+  }
+
+  swiftyCamDidFailToConfigure(swiftyCam: SwiftyCamViewController) {
+    CLog('swiftyCamDidFailToConfigure:');
+  }
+
+  swiftyCamDidFailToRecordVideo(swiftyCam: SwiftyCamViewController, error: NSError) {
+    CLog('swiftyCamDidFailToRecordVideo:');
+  }
+
+  swiftyCamNotAuthorized(swiftyCam: SwiftyCamViewController) {
+    CLog('swiftyCamNotAuthorized:');
+  }
+
+  swiftyCamSessionDidStopRunning(swiftyCam: SwiftyCamViewController) {
+    CLog('swiftyCamSessionDidStopRunning:');
+  }
+
+  swiftyCamSessionDidStartRunning(swiftyCam: SwiftyCamViewController) {
+    CLog('swiftyCamSessionDidStartRunning:');
   }
 
   swiftyCamDidBeginRecordingVideo(swiftyCam: SwiftyCamViewController, camera: CameraSelection) {
@@ -301,6 +325,11 @@ export class MySwifty extends SwiftyCamViewController {
     CLog('MySwifty viewDidAppear');
   }
 
+  viewWillAppear(animated: boolean) {
+    super.viewWillAppear(animated);
+    CLog('MySwifty viewWillAppear');
+  }
+
   // public deviceDidRotate() {
   //   super.deviceDidRotate();
   //   CLog('deviceDidRotate!');
@@ -309,22 +338,22 @@ export class MySwifty extends SwiftyCamViewController {
   //   }
   // }
 
-  public resize(width?: any, height?: any) {
-    if (typeof width !== 'number') {
-      width = screen.mainScreen.widthDIPs;
-    }
-    if (typeof height !== 'number') {
-      height = screen.mainScreen.heightDIPs;
-    }
-    CLog('resizing to:', width + 'x' + height);
-    this.view.frame = CGRectMake(0, 0, width, height);
-    CLog('view.bounds:', this.view.bounds.size.width + 'x' + this.view.bounds.size.height);
-    if (!this._resized) {
-      this._resized = true;
-      this._addButtons();
-      this.viewDidAppear(true);
-    }
-  }
+  // public resize(width?: any, height?: any) {
+  //     if (typeof width !== 'number') {
+  //         width = screen.mainScreen.widthDIPs;
+  //     }
+  //     if (typeof height !== 'number') {
+  //         height = screen.mainScreen.heightDIPs;
+  //     }
+  //     CLog('resizing to:', width + 'x' + height);
+  //     this.view.frame = CGRectMake(0, 0, width, height);
+  //     CLog('view.bounds:', this.view.bounds.size.width + 'x' + this.view.bounds.size.height);
+  //     if (!this._resized) {
+  //         this._resized = true;
+  //         this._addButtons();
+  //         this.viewDidAppear(true);
+  //     }
+  // }
 
   public snapPicture(options?: ICameraOptions) {
     CLog('CameraPlus takePic options:', options);
@@ -356,7 +385,38 @@ export class MySwifty extends SwiftyCamViewController {
             saveToGallery: this._owner.get().saveToGallery
           };
         }
-        this.startVideoRecording();
+        switch (options ? options.quality : CameraVideoQuality.MAX_480P) {
+          case CameraVideoQuality.MAX_2160P:
+            this.videoQuality = VideoQuality.Resolution3840x2160;
+            break;
+          case CameraVideoQuality.MAX_1080P:
+            this.videoQuality = VideoQuality.Resolution1920x1080;
+            break;
+          case CameraVideoQuality.MAX_720P:
+            this.videoQuality = VideoQuality.Resolution1280x720;
+            break;
+          case CameraVideoQuality.HIGHEST:
+            this.videoQuality = VideoQuality.High;
+            break;
+          case CameraVideoQuality.LOWEST:
+            this.videoQuality = VideoQuality.Low;
+            break;
+          case CameraVideoQuality.QVGA:
+            this.videoQuality = VideoQuality.Resolution352x288;
+            break;
+          default:
+            this.videoQuality = VideoQuality.Resolution640x480;
+            break;
+        }
+
+        const status = PHPhotoLibrary.authorizationStatus();
+        if (status === PHAuthorizationStatus.NotDetermined) {
+          PHPhotoLibrary.requestAuthorization(status => {
+            this.startVideoRecording();
+          });
+        } else {
+          this.startVideoRecording();
+        }
       }
     }
   }
@@ -370,7 +430,10 @@ export class MySwifty extends SwiftyCamViewController {
       // TODO: discuss why callback handler(videoDidFinishSavingWithErrorContextInfo) does not emit event correctly - the path passed to the handler is the same as handled here so just go ahead and emit here for now
       this._owner.get().sendEvent(CameraPlus.videoRecordingReadyEvent, path);
 
-      UISaveVideoAtPathToSavedPhotosAlbum(path, this, 'videoDidFinishSavingWithErrorContextInfo', null);
+      const status = PHPhotoLibrary.authorizationStatus();
+      if (status === PHAuthorizationStatus.Authorized) {
+        UISaveVideoAtPathToSavedPhotosAlbum(path, this, 'videoDidFinishSavingWithErrorContextInfo', null);
+      }
     } else {
       CLog(`video not saved to gallery but recording is at: ${path}`);
       this._owner.get().sendEvent(CameraPlus.videoRecordingReadyEvent, path);
@@ -558,7 +621,7 @@ export class MySwifty extends SwiftyCamViewController {
     });
   }
 
-  private _addButtons() {
+  _addButtons() {
     CLog('adding buttons...');
     const width = this.view.bounds.size.width;
     const height = this.view.bounds.size.height;
@@ -654,6 +717,7 @@ export class CameraPlus extends CameraPlusBase {
 
   constructor() {
     super();
+    this._onLayoutChangeListener = this._onLayoutChangeFn.bind(this);
     CLog('CameraPlus constructor');
     this._swifty = MySwifty.initWithOwner(new WeakRef(this), CameraPlus.defaultCamera);
 
@@ -668,39 +732,46 @@ export class CameraPlus extends CameraPlusBase {
   }
 
   createNativeView() {
+    // this._swifty.videoGravity = SwiftyCamVideoGravity.ResizeAspectFill;
     this._swifty.enableVideo = this.isVideoEnabled();
     // disable audio if no video support
     this._swifty.disableAudio = !this.isVideoEnabled();
-    this.nativeView = this._swifty.view;
-
     CLog('CameraPlus createNativeView');
     CLog('video enabled:', this.isVideoEnabled());
     CLog('default camera:', CameraPlus.defaultCamera);
-    CLog(this.nativeView);
-    return this.nativeView;
+    CLog(this._swifty.view);
+    this._swifty.view.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+    return this._swifty.view;
   }
+
+  private _onLayoutChangeFn(args) {
+    const size = this.getActualSize();
+    CLog('xml width/height:', size.width + 'x' + size.height);
+  }
+
+  private _onLayoutChangeListener: any;
 
   initNativeView() {
     CLog('initNativeView.');
-    CLog('xml width/height:', this.width + 'x' + this.height);
+    this.on(View.layoutChangedEvent, this._onLayoutChangeListener);
+    this._swifty.viewWillAppear(true);
+  }
 
-    let changedDimensions = false;
-    if (this.width === 'auto') {
-      CLog('no width set, defaulting to mainScreen.widthDIPs');
-      this.width = screen.mainScreen.widthDIPs;
-      changedDimensions = true;
-    }
-    if (this.height === 'auto') {
-      CLog('no height set, defaulting to mainScreen.heightDIPs');
-      this.height = screen.mainScreen.heightDIPs;
-      changedDimensions = true;
-    }
-    CLog('after modifying xml width/height:', this.width + 'x' + this.height);
-    this._swifty.resize(this.width, this.height);
-    setTimeout(() => {
-      // won't properly update component dimensions without this timeout
-      if (changedDimensions) this.requestLayout();
-    });
+  disposeNativeView() {
+    CLog('disposeNativeView.');
+    this.off(View.layoutChangedEvent, this._onLayoutChangeListener);
+    super.disposeNativeView();
+  }
+
+  onLoaded() {
+    super.onLoaded();
+    this._swifty._addButtons();
+    this._swifty.viewDidAppear(true);
+  }
+
+  onUnloaded() {
+    this._swifty.viewDidDisappear(true);
+    super.onUnloaded();
   }
 
   public get isIPhoneX() {
@@ -786,7 +857,7 @@ export class CameraPlus extends CameraPlusBase {
    * Stop recording video
    */
   public stop(): void {
-    if (CameraPlus.enableVideo) {
+    if (this.isVideoEnabled()) {
       this._swifty.stopVideoRecording();
     }
   }

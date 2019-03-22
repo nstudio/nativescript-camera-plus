@@ -1,4 +1,4 @@
-import { CameraPlus } from '@nstudio/nativescript-camera-plus';
+import { CameraPlus, CameraVideoQuality } from '@nstudio/nativescript-camera-plus';
 import { Observable } from 'tns-core-modules/data/observable';
 import { ImageAsset } from 'tns-core-modules/image-asset';
 import { fromAsset } from 'tns-core-modules/image-source';
@@ -18,12 +18,12 @@ export class HelloWorldModel extends Observable {
   constructor(page: Page) {
     super();
 
-    this.cameraHeight = screen.mainScreen.heightDIPs * 0.45;
-
     this.cam = page.getViewById('camPlus') as CameraPlus;
 
     // hide a default icon button here
     // this.cam.showGalleryIcon = false
+
+    this.cameraHeight = screen.mainScreen.heightDIPs;
 
     if (this._counter > 0) {
       return;
@@ -68,7 +68,9 @@ export class HelloWorldModel extends Observable {
   public recordDemoVideo() {
     try {
       console.log(`*** start recording ***`);
-      this.cam.record();
+      this.cam.record({
+        saveToGallery: true
+      });
     } catch (err) {
       console.log(err);
     }
