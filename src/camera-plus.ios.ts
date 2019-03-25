@@ -22,7 +22,7 @@ import {
 import { layout, View } from 'tns-core-modules/ui/core/view';
 
 export { CameraVideoQuality } from './camera-plus.common';
-
+import * as platform from 'tns-core-modules/platform';
 /**
  * Library image picker delegate (multiple or single)
  */
@@ -384,6 +384,9 @@ export class MySwifty extends SwiftyCamViewController {
             confirm: this._owner.get().confirmVideo, // from property setter
             saveToGallery: this._owner.get().saveToGallery
           };
+        }
+        if (parseFloat(platform.device.sdkVersion) >= 11) {
+          this.videoCodecType = AVVideoCodecTypeHEVC;
         }
         switch (options ? options.quality : CameraVideoQuality.MAX_480P) {
           case CameraVideoQuality.MAX_2160P:

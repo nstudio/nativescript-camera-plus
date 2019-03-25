@@ -496,6 +496,10 @@ export class CameraPlus extends CameraPlusBase {
     this._mediaRecorder.setOutputFile(videoPath);
     // Step 5: Set the preview output
     this._mediaRecorder.setPreviewDisplay(this._textureSurface);
+    // Step 6: Set HEVC if available Android N
+    if (android.os.Build.VERSION.SDK_INT >= 24) {
+      this._mediaRecorder.setVideoEncoder((android as any).media.MediaRecorder.VideoEncoder.HEVC);
+    }
     // setting error listener to broadcast error event
     this._mediaRecorder.setOnErrorListener(
       new android.media.MediaRecorder.OnErrorListener({
