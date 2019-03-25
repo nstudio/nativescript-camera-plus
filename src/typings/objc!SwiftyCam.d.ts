@@ -119,6 +119,8 @@ declare class SwiftyCamViewController extends UIViewController
 
   static new(): SwiftyCamViewController; // inherited from NSObject
 
+  videoCodecType: AVVideoCodecType;
+
   allowAutoRotate: boolean;
 
   allowBackgroundAudio: boolean;
