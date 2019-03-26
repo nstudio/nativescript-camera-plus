@@ -488,7 +488,20 @@ export class CameraPlus extends CameraPlusBase {
         quality = android.media.CamcorderProfile.get(this.cameraId, android.media.CamcorderProfile.QUALITY_480P);
         break;
     }
-    this._mediaRecorder.setProfile(quality);
+    this._mediaRecorder.setOutputFormat(android.media.MediaRecorder.OutputFormat.MPEG_4);
+    this._mediaRecorder.setVideoSize(quality.videoFrameWidth, quality.videoFrameHeight);
+    this._mediaRecorder.setAudioChannels(quality.audioChannels);
+    const isHevcSupported = android.os.Build.VERSION.SDK_INT >= 24;
+    const videoBitRate = isHevcSupported ? quality.videoBitRate / 2 : quality.videoBitRate; // Use half bit rate for hevc
+    this._mediaRecorder.setVideoFrameRate(quality.videoFrameRate);
+    this._mediaRecorder.setVideoEncodingBitRate(videoBitRate);
+    this._mediaRecorder.setAudioEncodingBitRate(quality.audioBitRate);
+    if (isHevcSupported) {
+      this._mediaRecorder.setVideoEncoder((android as any).media.MediaRecorder.VideoEncoder.HEVC);
+    } else {
+      this._mediaRecorder.setVideoEncoder(android.media.MediaRecorder.VideoEncoder.H264);
+    }
+    this._mediaRecorder.setAudioEncoder(quality.audioCodec);
     // Step 4: Set output file
     const videoPath = this._getOutputMediaFile(2).toString();
     this._videoPath = videoPath;
