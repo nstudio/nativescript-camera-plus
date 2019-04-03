@@ -273,6 +273,7 @@ export class MySwifty extends SwiftyCamViewController {
   private _imageConfirmBg: UIView;
   private _flashEnabled: boolean;
   private _flashBtn: UIButton;
+  private _swiftyDelegate: any;
   private _pickerDelegate: any;
   private _resized: boolean;
 
@@ -286,6 +287,10 @@ export class MySwifty extends SwiftyCamViewController {
     CLog('ctrl.disableAudio:', ctrl.disableAudio);
     CLog('ctrl.defaultCamera:', defaultCamera);
     return ctrl;
+  }
+
+  public cleanup() {
+    this._swiftyDelegate = null;
   }
 
   public set enableVideo(value: boolean) {
@@ -311,7 +316,9 @@ export class MySwifty extends SwiftyCamViewController {
     CLog('doubleTapCameraSwitch:', doubleTapEnabled);
 
     // CLog('view.frame.size:', this.view.frame.size.width + 'x' + this.view.frame.size.height);
-    this.cameraDelegate = <any>SwiftyDelegate.initWithOwner(new WeakRef(this));
+    // retain delegate in javascript to ensure garbage collector does not get it
+    this._swiftyDelegate = <any>SwiftyDelegate.initWithOwner(new WeakRef(this));
+    this.cameraDelegate = this._swiftyDelegate;
     CLog('this.cameraDelegate:', this.cameraDelegate);
   }
 
@@ -762,6 +769,7 @@ export class CameraPlus extends CameraPlusBase {
 
   disposeNativeView() {
     CLog('disposeNativeView.');
+    this._swifty.cleanup();
     this.off(View.layoutChangedEvent, this._onLayoutChangeListener);
     super.disposeNativeView();
   }
