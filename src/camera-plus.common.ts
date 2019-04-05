@@ -4,7 +4,7 @@
  * Version 1.1.0                                                   team@nStudio.io
  **********************************************************************************/
 
-import { View } from 'tns-core-modules/ui/core/view';
+import { ContentView } from 'tns-core-modules/ui/content-view';
 import { CameraPlus as CameraPlusDefinition } from '.';
 
 export class CameraUtil {
@@ -19,7 +19,7 @@ export const CLog = (...args) => {
 
 export type CameraTypes = 'front' | 'rear';
 
-export abstract class CameraPlusBase extends View implements CameraPlusDefinition {
+export abstract class CameraPlusBase extends ContentView implements CameraPlusDefinition {
   public set debug(value: boolean) {
     CameraUtil.debug = value;
   }
