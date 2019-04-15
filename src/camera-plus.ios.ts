@@ -202,6 +202,7 @@ export class SwiftyDelegate extends NSObject implements SwiftyCamViewControllerD
 
   swiftyCamSessionDidStartRunning(swiftyCam: SwiftyCamViewController) {
     CLog('swiftyCamSessionDidStartRunning:');
+    this._owner.get().doLayout();
   }
 
   swiftyCamDidBeginRecordingVideo(swiftyCam: SwiftyCamViewController, camera: CameraSelection) {
@@ -320,6 +321,14 @@ export class MySwifty extends SwiftyCamViewController {
     this._swiftyDelegate = <any>SwiftyDelegate.initWithOwner(new WeakRef(this));
     this.cameraDelegate = this._swiftyDelegate;
     CLog('this.cameraDelegate:', this.cameraDelegate);
+  }
+
+  doLayout() {
+    const size = this._owner.get().getActualSize();
+    const nativeView = this._owner.get().nativeView;
+    const frame = nativeView.frame;
+    nativeView.frame = CGRectMake(frame.origin.x, frame.origin.y, size.width, size.height);
+    nativeView.setNeedsLayout();
   }
 
   viewDidLayoutSubviews() {
@@ -757,6 +766,11 @@ export class CameraPlus extends CameraPlusBase {
   private _onLayoutChangeFn(args) {
     const size = this.getActualSize();
     CLog('xml width/height:', size.width + 'x' + size.height);
+    const frame = this._swifty.view.frame;
+    this._swifty.view.frame = CGRectMake(frame.origin.x, frame.origin.y, size.width, size.height);
+    this._swifty.previewLayer.frame = CGRectMake(frame.origin.x, frame.origin.y, size.width, size.height);
+    this._swifty.view.setNeedsLayout();
+    this._swifty.previewLayer.setNeedsLayout();
   }
 
   private _onLayoutChangeListener: any;
