@@ -675,7 +675,7 @@ export class MySwifty extends SwiftyCamViewController {
     }
 
     if (this._owner.get().showCaptureIcon) {
-      const heightOffset = this._owner.get().isIPhoneX ? 160 : 80;
+      const heightOffset = this._owner.get().isIPhoneX ? 200 : 110;
       const picOutline = createButton(
         this,
         CGRectMake(width / 2 - 20, height - heightOffset, 50, 50),
