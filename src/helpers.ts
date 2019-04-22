@@ -77,13 +77,55 @@ export function assetFromPath(path, width, height, keepAspectRatio): ImageAsset 
  * @param height
  */
 export function getOptimalPreviewSize(
-  sizes: java.util.List,
+  sizes: java.util.List<android.hardware.Camera.Size>,
   width: number,
   height: number
 ): android.hardware.Camera.Size {
-  const ASPECT_TOLERANCE = 0.1;
   const targetRatio = height / width;
   CLog(`targetRatio = ${targetRatio}`);
+
+  if (sizes === null) return null;
+
+  let optimalSize = null as android.hardware.Camera.Size;
+
+  const targetHeight = height;
+  CLog(`targetHeight = ${targetHeight}`);
+
+  for (let i = 0; i < sizes.size(); i++) {
+    const element = sizes.get(i) as android.hardware.Camera.Size;
+    CLog(`size.width = ${element.width}, size.height = ${element.height}`);
+    if (element.width <= width && element.height <= height) {
+      if (optimalSize == null) {
+        optimalSize = element;
+      } else {
+        const resultArea = optimalSize.width * optimalSize.height;
+        const newArea = element.width * element.height;
+
+        if (newArea > resultArea) {
+          optimalSize = element;
+        }
+      }
+    }
+  }
+  CLog(
+    `optimalSize = ${optimalSize}, optimalSize.width = ${optimalSize.width}, optimalSize.height = ${optimalSize.height}`
+  );
+  return optimalSize;
+}
+
+/**
+ * Helper method to get the optimal sizing for the picture from the camera.
+ * Android cameras support different sizes for taking picture.
+ * @param sizes
+ * @param width
+ * @param height
+ */
+export function getOptimalPictureSize(
+  sizes: java.util.List<android.hardware.Camera.Size>,
+  width: number,
+  height: number
+): android.hardware.Camera.Size {
+  let sizeSet: boolean = false;
 
   if (sizes === null) return null;
 
@@ -92,23 +134,35 @@ export function getOptimalPreviewSize(
 
   const targetHeight = height;
   CLog(`targetHeight = ${targetHeight}`);
+  const targetWidth = height;
+  CLog(`targetWidth = ${targetWidth}`);
 
-  for (var i = 0; i < sizes.size(); i++) {
-    const element = sizes.get(i) as android.hardware.Camera.Size;
-    CLog(`size.width = ${element.width}, size.height = ${element.height}`);
-    const ratio = element.width / element.height;
-    CLog(`ratio = ${ratio}`);
-    if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
-    if (Math.abs(element.height - targetHeight) < minDiff) {
-      optimalSize = element;
-      minDiff = Math.abs(element.height - targetHeight);
+  for (let i = 0; i < sizes.size(); i++) {
+    const size = sizes.get(i) as android.hardware.Camera.Size;
+    let desiredMinimumWidth: number;
+    let desiredMaximumWidth: number;
+
+    if (width > 1000) {
+      desiredMinimumWidth = width - 200;
+      desiredMaximumWidth = width + 200;
+    } else {
+      desiredMinimumWidth = 800;
+      desiredMaximumWidth = 1200;
+    }
+
+    if (size.width > desiredMinimumWidth && size.width < desiredMaximumWidth && size.height < size.width) {
+      optimalSize = size;
+      CLog('setting size width', size.width + '');
+      CLog('setting size height', size.height + '');
+      sizeSet = true;
+      break;
     }
   }
 
-  if (optimalSize === null) {
+  if (!sizeSet) {
     // minDiff = Double.MAX_VALUE;
     minDiff = Number.MAX_SAFE_INTEGER;
-    for (var i = 0; i < sizes.size(); i++) {
+    for (let i = 0; i < sizes.size(); i++) {
       const element = sizes.get(i) as android.hardware.Camera.Size;
       CLog(`size.width = ${element.width}, size.height = ${element.height}`);
       if (Math.abs(element.height - targetHeight) < minDiff) {
@@ -116,9 +170,13 @@ export function getOptimalPreviewSize(
         minDiff = Math.abs(element.height - targetHeight);
       }
     }
+    sizeSet = true;
   }
+
   CLog(
-    `optimalSize = ${optimalSize}, optimalSize.width = ${optimalSize.width}, optimalSize.height = ${optimalSize.height}`
+    `optimalPictureSize = ${optimalSize}, optimalPictureSize.width = ${
+      optimalSize.width
+    }, optimalPictureSize.height = ${optimalSize.height}`
   );
   return optimalSize;
 }
@@ -129,13 +187,13 @@ export function calculateInSampleSize(
   reqHeight: number
 ) {
   // Raw height and width of image
-  let height = options.outHeight;
-  let width = options.outWidth;
+  const height = options.outHeight;
+  const width = options.outWidth;
   let inSampleSize = 1;
 
   if (height > reqHeight || width > reqWidth) {
-    let halfHeight = height / 2;
-    let halfWidth = width / 2;
+    const halfHeight = height / 2;
+    const halfWidth = width / 2;
 
     // Calculate the largest inSampleSize value that is a power of 2 and keeps both
     // height and width larger than the requested height and width.
@@ -180,10 +238,9 @@ export function getOrientationFromBytes(data): number {
   return orientation;
 }
 
-export function createImageConfirmationDialog(data, retakeText = null, saveText = null): Promise<boolean> {
+export function createImageConfirmationDialog(data, retakeText = 'Retake', saveText = 'Save'): Promise<boolean> {
   return new Promise((resolve, reject) => {
     try {
-      debugger;
       const alert = new android.app.AlertDialog.Builder(
         app.android.foregroundActivity
       ) as android.app.AlertDialog.Builder;

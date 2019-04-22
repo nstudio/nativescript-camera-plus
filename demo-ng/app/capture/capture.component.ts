@@ -1,130 +1,122 @@
-import { Component, OnDestroy, OnInit, ViewChild, ElementRef, NgZone } from "@angular/core";
-import { RouterExtensions } from 'nativescript-angular/router';
-import { Page } from 'tns-core-modules/ui/page';
+import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { CameraPlus } from '@nstudio/nativescript-camera-plus';
-import { ImageSource } from 'tns-core-modules/image-source';
 import { ImageAsset } from 'tns-core-modules/image-asset';
-import { Image } from 'tns-core-modules/ui/image';
+import { ImageSource } from 'tns-core-modules/image-source';
 
 @Component({
-	selector: "ns-capture",
-	moduleId: module.id,
-	styleUrls: ['./capture.component.css'],
-	templateUrl: "./capture.component.html",
+  selector: 'ns-capture',
+  moduleId: module.id,
+  styleUrls: ['./capture.component.css'],
+  templateUrl: './capture.component.html'
 })
 export class CaptureComponent implements OnInit, OnDestroy {
-	private cam: CameraPlus;
-	public imageSource: ImageSource;
+  private cam: CameraPlus;
+  public imageSource: ImageSource;
 
-	constructor(
-		private zone: NgZone
-	) {
-	}
+  constructor(private zone: NgZone) {}
 
-	ngOnInit(): void {
-	}
+  ngOnInit(): void {}
 
-	ngOnDestroy() {
-	}
+  ngOnDestroy() {}
 
-	public camLoaded(e: any): void {
-		console.log('***** cam loaded *****');
-		this.cam = e.object as CameraPlus;
+  public camLoaded(e: any): void {
+    console.log('***** cam loaded *****');
+    this.cam = e.object as CameraPlus;
 
-		let flashMode = this.cam.getFlashMode();
+    let flashMode = this.cam.getFlashMode();
 
-		// Turn flash on at startup
-		if (flashMode == 'off') {
-			this.cam.toggleFlash();
-		}
+    // Turn flash on at startup
+    if (flashMode == 'off') {
+      this.cam.toggleFlash();
+    }
 
-		// TEST THE ICONS SHOWING/HIDING
-		// this.cameraPlus.showCaptureIcon = true;
-		// this.cameraPlus.showFlashIcon = true;
-		// this.cameraPlus.showGalleryIcon = false;
-		// this.cameraPlus.showToggleIcon = false;
-	}
+    // TEST THE ICONS SHOWING/HIDING
+    // this.cameraPlus.showCaptureIcon = true;
+    // this.cameraPlus.showFlashIcon = true;
+    // this.cameraPlus.showGalleryIcon = false;
+    // this.cameraPlus.showToggleIcon = false;
+  }
 
-	public imagesSelectedEvent(e: any): void {
-		console.log('IMAGES SELECTED EVENT!!!');
-		this.loadImage((e.data as ImageAsset[])[0]);
-	}
+  public imagesSelectedEvent(e: any): void {
+    console.log('IMAGES SELECTED EVENT!!!');
+    this.loadImage((e.data as ImageAsset[])[0]);
+  }
 
-	public photoCapturedEvent(e: any): void {
-		console.log('PHOTO CAPTURED EVENT!!!');
-		this.loadImage(e.data as ImageAsset);
-	}
+  public photoCapturedEvent(e: any): void {
+    console.log('PHOTO CAPTURED EVENT!!!');
+    this.loadImage(e.data as ImageAsset);
+  }
 
-	public toggleCameraEvent(e: any): void {
-		console.log("camera toggled");
-	}
+  public toggleCameraEvent(e: any): void {
+    console.log('camera toggled');
+  }
 
-	public recordDemoVideo(): void {
-		try {
-			console.log(`*** start recording ***`);
-			this.cam.record();
-		} catch (err) {
-			console.log(err);
-		}
-	}
+  public recordDemoVideo(): void {
+    try {
+      console.log(`*** start recording ***`);
+      this.cam.record();
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
-	public stopRecordingDemoVideo(): void {
-		try {
-			console.log(`*** stop recording ***`);
-			this.cam.stop();
-			console.log(`*** after this.cam.stop() ***`);
-		} catch (err) {
-			console.log(err);
-		}
-	}
+  public stopRecordingDemoVideo(): void {
+    try {
+      console.log(`*** stop recording ***`);
+      this.cam.stop();
+      console.log(`*** after this.cam.stop() ***`);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
-	public toggleFlashOnCam(): void {
-		this.cam.toggleFlash();
-	}
+  public toggleFlashOnCam(): void {
+    this.cam.toggleFlash();
+  }
 
-	public toggleShowingFlashIcon(): void {
-		console.log(`showFlashIcon = ${this.cam.showFlashIcon}`);
-		this.cam.showFlashIcon = !this.cam.showFlashIcon;
-	}
+  public toggleShowingFlashIcon(): void {
+    console.log(`showFlashIcon = ${this.cam.showFlashIcon}`);
+    this.cam.showFlashIcon = !this.cam.showFlashIcon;
+  }
 
-	public toggleTheCamera(): void {
-		this.cam.toggleCamera();
-	}
+  public toggleTheCamera(): void {
+    this.cam.toggleCamera();
+  }
 
-	public openCamPlusLibrary(): void {
-		this.cam.chooseFromLibrary();
-	}
+  public openCamPlusLibrary(): void {
+    this.cam.chooseFromLibrary();
+  }
 
-	public takePicFromCam(): void {
-		this.cam.takePicture({ saveToGallery: true });
-	}
+  public takePicFromCam(): void {
+    this.cam.takePicture({ saveToGallery: true });
+  }
 
-	private loadImage(imageAsset: ImageAsset): void {
-		if (imageAsset) {
-			this.imageSource = new ImageSource();
+  private loadImage(imageAsset: ImageAsset): void {
+    if (imageAsset) {
+      this.imageSource = new ImageSource();
 
-			this.imageSource.fromAsset(imageAsset).then(
-				(imgSrc) => {
-					if (imgSrc) {
-						this.zone.run(() => {
-							this.imageSource = imgSrc;
-						})
-					} else {
-						this.imageSource = null;
-						alert('Image source is bad.');
-					}
-				},
-				(err) => {
-					this.imageSource = null;
-					console.log('Error getting image source: ')
-					console.error(err);
-					alert('Error getting image source from asset');
-				}
-			)
-		} else {
-			console.log('Image Asset was null')
-			alert('Image Asset was null');
-			this.imageSource = null;
-		}
-	}
+      this.imageSource.fromAsset(imageAsset).then(
+        imgSrc => {
+          if (imgSrc) {
+            this.zone.run(() => {
+              this.imageSource = imgSrc;
+            });
+          } else {
+            this.imageSource = null;
+            alert('Image source is bad.');
+          }
+        },
+        err => {
+          this.imageSource = null;
+          console.log('Error getting image source: ');
+          console.error(err);
+          alert('Error getting image source from asset');
+        }
+      );
+    } else {
+      console.log('Image Asset was null');
+      alert('Image Asset was null');
+      this.imageSource = null;
+    }
+  }
 }

@@ -1,298 +1,358 @@
-
 declare const enum CameraSelection {
+  Rear = 0,
 
-	Rear = 0,
+  Front = 1
+}
 
-	Front = 1
+declare class Orientation extends NSObject {
+  static alloc(): Orientation; // inherited from NSObject
+
+  static new(): Orientation; // inherited from NSObject
+
+  readonly coreMotionManager: CMMotionManager;
 }
 
 declare class PreviewView extends UIView {
+  static alloc(): PreviewView; // inherited from NSObject
 
-	static alloc(): PreviewView; // inherited from NSObject
+  static appearance(): PreviewView; // inherited from UIAppearance
 
-	static appearance(): PreviewView; // inherited from UIAppearance
+  static appearanceForTraitCollection(trait: UITraitCollection): PreviewView; // inherited from UIAppearance
 
-	static appearanceForTraitCollection(trait: UITraitCollection): PreviewView; // inherited from UIAppearance
+  static appearanceForTraitCollectionWhenContainedIn(
+    trait: UITraitCollection,
+    ContainerClass: typeof NSObject
+  ): PreviewView; // inherited from UIAppearance
 
-	static appearanceForTraitCollectionWhenContainedIn(trait: UITraitCollection, ContainerClass: typeof NSObject): PreviewView; // inherited from UIAppearance
+  static appearanceForTraitCollectionWhenContainedInInstancesOfClasses(
+    trait: UITraitCollection,
+    containerTypes: NSArray<typeof NSObject> | typeof NSObject[]
+  ): PreviewView; // inherited from UIAppearance
 
-	static appearanceForTraitCollectionWhenContainedInInstancesOfClasses(trait: UITraitCollection, containerTypes: NSArray<typeof NSObject>): PreviewView; // inherited from UIAppearance
+  static appearanceWhenContainedIn(ContainerClass: typeof NSObject): PreviewView; // inherited from UIAppearance
 
-	static appearanceWhenContainedIn(ContainerClass: typeof NSObject): PreviewView; // inherited from UIAppearance
+  static appearanceWhenContainedInInstancesOfClasses(
+    containerTypes: NSArray<typeof NSObject> | typeof NSObject[]
+  ): PreviewView; // inherited from UIAppearance
 
-	static appearanceWhenContainedInInstancesOfClasses(containerTypes: NSArray<typeof NSObject>): PreviewView; // inherited from UIAppearance
+  static layerClass(): typeof NSObject;
 
-	static layerClass(): typeof NSObject;
+  static new(): PreviewView; // inherited from NSObject
 
-	static new(): PreviewView; // inherited from NSObject
+  session: AVCaptureSession;
 
-	session: AVCaptureSession;
-
-	readonly videoPreviewLayer: AVCaptureVideoPreviewLayer;
+  readonly videoPreviewLayer: AVCaptureVideoPreviewLayer;
 }
 
 declare const enum SessionSetupResult {
+  Success = 0,
 
-	Success = 0,
+  NotAuthorized = 1,
 
-	NotAuthorized = 1,
-
-	ConfigurationFailed = 2
+  ConfigurationFailed = 2
 }
 
 declare class SwiftyCamButton extends UIButton {
+  static alloc(): SwiftyCamButton; // inherited from NSObject
 
-	static alloc(): SwiftyCamButton; // inherited from NSObject
+  static appearance(): SwiftyCamButton; // inherited from UIAppearance
 
-	static appearance(): SwiftyCamButton; // inherited from UIAppearance
+  static appearanceForTraitCollection(trait: UITraitCollection): SwiftyCamButton; // inherited from UIAppearance
 
-	static appearanceForTraitCollection(trait: UITraitCollection): SwiftyCamButton; // inherited from UIAppearance
+  static appearanceForTraitCollectionWhenContainedIn(
+    trait: UITraitCollection,
+    ContainerClass: typeof NSObject
+  ): SwiftyCamButton; // inherited from UIAppearance
 
-	static appearanceForTraitCollectionWhenContainedIn(trait: UITraitCollection, ContainerClass: typeof NSObject): SwiftyCamButton; // inherited from UIAppearance
+  static appearanceForTraitCollectionWhenContainedInInstancesOfClasses(
+    trait: UITraitCollection,
+    containerTypes: NSArray<typeof NSObject> | typeof NSObject[]
+  ): SwiftyCamButton; // inherited from UIAppearance
 
-	static appearanceForTraitCollectionWhenContainedInInstancesOfClasses(trait: UITraitCollection, containerTypes: NSArray<typeof NSObject>): SwiftyCamButton; // inherited from UIAppearance
+  static appearanceWhenContainedIn(ContainerClass: typeof NSObject): SwiftyCamButton; // inherited from UIAppearance
 
-	static appearanceWhenContainedIn(ContainerClass: typeof NSObject): SwiftyCamButton; // inherited from UIAppearance
+  static appearanceWhenContainedInInstancesOfClasses(
+    containerTypes: NSArray<typeof NSObject> | typeof NSObject[]
+  ): SwiftyCamButton; // inherited from UIAppearance
 
-	static appearanceWhenContainedInInstancesOfClasses(containerTypes: NSArray<typeof NSObject>): SwiftyCamButton; // inherited from UIAppearance
+  static buttonWithType(buttonType: UIButtonType): SwiftyCamButton; // inherited from UIButton
 
-	static buttonWithType(buttonType: UIButtonType): SwiftyCamButton; // inherited from UIButton
+  static new(): SwiftyCamButton; // inherited from NSObject
 
-	static new(): SwiftyCamButton; // inherited from NSObject
+  buttonEnabled: boolean;
 
-	delegate: SwiftyCamButtonDelegate;
+  delegate: SwiftyCamButtonDelegate;
 }
 
 interface SwiftyCamButtonDelegate {
+  buttonDidBeginLongPress(): void;
 
-	buttonDidBeginLongPress(): void;
+  buttonDidEndLongPress(): void;
 
-	buttonDidEndLongPress(): void;
+  buttonWasTapped(): void;
 
-	buttonWasTapped(): void;
+  longPressDidReachMaximumDuration(): void;
 
-	longPressDidReachMaximumDuration(): void;
-
-	setMaxiumVideoDuration(): number;
+  setMaxiumVideoDuration(): number;
 }
 declare var SwiftyCamButtonDelegate: {
-
-	prototype: SwiftyCamButtonDelegate;
+  prototype: SwiftyCamButtonDelegate;
 };
 
 declare var SwiftyCamVersionNumber: number;
 
 declare var SwiftyCamVersionString: interop.Reference<number>;
 
-declare class SwiftyCamViewController extends UIViewController implements AVCaptureFileOutputRecordingDelegate, SwiftyCamButtonDelegate, UIGestureRecognizerDelegate {
+declare const enum SwiftyCamVideoGravity {
+  Resize = 0,
 
-	static alloc(): SwiftyCamViewController; // inherited from NSObject
+  ResizeAspect = 1,
 
-	static deviceWithMediaTypePreferringPosition(mediaType: string, position: AVCaptureDevicePosition): AVCaptureDevice;
+  ResizeAspectFill = 2
+}
 
-	static new(): SwiftyCamViewController; // inherited from NSObject
+declare class SwiftyCamViewController extends UIViewController
+  implements AVCaptureFileOutputRecordingDelegate, SwiftyCamButtonDelegate, UIGestureRecognizerDelegate {
+  static alloc(): SwiftyCamViewController; // inherited from NSObject
 
-	allowBackgroundAudio: boolean;
+  static deviceWithMediaTypePreferringPosition(mediaType: string, position: AVCaptureDevicePosition): AVCaptureDevice;
 
-	beginZoomScale: number;
+  static new(): SwiftyCamViewController; // inherited from NSObject
 
-	cameraDelegate: SwiftyCamViewControllerDelegate;
+  videoCodecType: AVVideoCodecType;
 
-	readonly currentCamera: CameraSelection;
+  allowAutoRotate: boolean;
 
-	defaultCamera: CameraSelection;
+  allowBackgroundAudio: boolean;
 
-	disableAudio: boolean;
+  audioEnabled: boolean;
 
-	doubleTapCameraSwitch: boolean;
+  beginZoomScale: number;
 
-	flashEnabled: boolean;
+  cameraDelegate: SwiftyCamViewControllerDelegate;
 
-	flashView: UIView;
+  readonly currentCamera: CameraSelection;
 
-	isCameraTorchOn: boolean;
+  defaultCamera: CameraSelection;
 
-	readonly isSessionRunning: boolean;
+  disableAudio: boolean;
 
-	readonly isVideoRecording: boolean;
+  doubleTapCameraSwitch: boolean;
 
-	lowLightBoost: boolean;
+  flashEnabled: boolean;
 
-	maxZoomScale: number;
+  flashView: UIView;
 
-	maximumVideoDuration: number;
+  isCameraTorchOn: boolean;
 
-	movieFileOutput: AVCaptureMovieFileOutput;
+  readonly isSessionRunning: boolean;
 
-	photoFileOutput: AVCaptureStillImageOutput;
+  readonly isVideoRecording: boolean;
 
-	pinchToZoom: boolean;
+  lowLightBoost: boolean;
 
-	previewLayer: PreviewView;
+  maxZoomScale: number;
 
-	previousPanTranslation: number;
+  maximumVideoDuration: number;
 
-	readonly session: AVCaptureSession;
+  movieFileOutput: AVCaptureMovieFileOutput;
 
-	readonly sessionQueue: NSObject;
+  orientation: Orientation;
 
-	setupResult: SessionSetupResult;
+  outputFolder: string;
 
-	shouldUseDeviceOrientation: boolean;
+  readonly panGesture: UIPanGestureRecognizer;
 
-	swipeToZoom: boolean;
+  photoFileOutput: AVCaptureStillImageOutput;
 
-	swipeToZoomInverted: boolean;
+  readonly pinchGesture: UIPinchGestureRecognizer;
 
-	tapToFocus: boolean;
+  pinchToZoom: boolean;
 
-	videoDevice: AVCaptureDevice;
+  previewLayer: PreviewView;
 
-	videoDeviceInput: AVCaptureDeviceInput;
+  previousPanTranslation: number;
 
-	videoQuality: VideoQuality;
+  readonly session: AVCaptureSession;
 
-	zoomScale: number;
+  readonly sessionQueue: NSObject;
 
-	readonly debugDescription: string; // inherited from NSObjectProtocol
+  sessionRunning: boolean;
 
-	readonly description: string; // inherited from NSObjectProtocol
+  setupResult: SessionSetupResult;
 
-	readonly hash: number; // inherited from NSObjectProtocol
+  shouldPrompToAppSettings: boolean;
 
-	readonly isProxy: boolean; // inherited from NSObjectProtocol
+  shouldUseDeviceOrientation: boolean;
 
-	readonly superclass: typeof NSObject; // inherited from NSObjectProtocol
+  swipeToZoom: boolean;
 
-	readonly  // inherited from NSObjectProtocol
+  swipeToZoomInverted: boolean;
 
-	buttonDidBeginLongPress(): void;
+  tapToFocus: boolean;
 
-	buttonDidEndLongPress(): void;
+  videoDevice: AVCaptureDevice;
 
-	buttonWasTapped(): void;
+  videoDeviceInput: AVCaptureDeviceInput;
 
-	captureOutputDidFinishRecordingToOutputFileAtURLFromConnectionsError(captureOutput: AVCaptureFileOutput, outputFileURL: NSURL, connections: NSArray<any>, error: NSError): void;
+  videoGravity: SwiftyCamVideoGravity;
 
-	captureOutputDidStartRecordingToOutputFileAtURLFromConnections(captureOutput: AVCaptureFileOutput, fileURL: NSURL, connections: NSArray<any>): void;
+  videoQuality: VideoQuality;
 
-	capturePhotoAsyncronouslyWithCompletionHandler(completionHandler: (p1: boolean) => void): void;
+  zoomScale: number;
 
-	changeFlashSettingsWithDeviceMode(device: AVCaptureDevice, mode: AVCaptureFlashMode): void;
+  readonly debugDescription: string; // inherited from NSObjectProtocol
 
-	class(): typeof NSObject;
+  readonly description: string; // inherited from NSObjectProtocol
 
-	conformsToProtocol(aProtocol: any /* Protocol */): boolean;
+  readonly hash: number; // inherited from NSObjectProtocol
 
-	deviceDidRotate(): void;
+  readonly isProxy: boolean; // inherited from NSObjectProtocol
 
-	disableFlash(): void;
+  readonly superclass: typeof NSObject; // inherited from NSObjectProtocol
 
-	enableFlash(): void;
+  readonly; // inherited from NSObjectProtocol
 
-	gestureRecognizerShouldBeRequiredToFailByGestureRecognizer(gestureRecognizer: UIGestureRecognizer, otherGestureRecognizer: UIGestureRecognizer): boolean;
+  buttonDidBeginLongPress(): void;
 
-	gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer): boolean;
+  buttonDidEndLongPress(): void;
 
-	gestureRecognizerShouldReceivePress(gestureRecognizer: UIGestureRecognizer, press: UIPress): boolean;
+  buttonWasTapped(): void;
 
-	gestureRecognizerShouldReceiveTouch(gestureRecognizer: UIGestureRecognizer, touch: UITouch): boolean;
+  captureOutputDidFinishRecordingToOutputFileAtURLFromConnectionsError(
+    output: AVCaptureFileOutput,
+    outputFileURL: NSURL,
+    connections: NSArray<AVCaptureConnection> | AVCaptureConnection[],
+    error: NSError
+  ): void;
 
-	gestureRecognizerShouldRecognizeSimultaneouslyWithGestureRecognizer(gestureRecognizer: UIGestureRecognizer, otherGestureRecognizer: UIGestureRecognizer): boolean;
+  captureOutputDidStartRecordingToOutputFileAtURLFromConnections(
+    output: AVCaptureFileOutput,
+    fileURL: NSURL,
+    connections: NSArray<AVCaptureConnection> | AVCaptureConnection[]
+  ): void;
 
-	gestureRecognizerShouldRequireFailureOfGestureRecognizer(gestureRecognizer: UIGestureRecognizer, otherGestureRecognizer: UIGestureRecognizer): boolean;
+  capturePhotoAsyncronouslyWithCompletionHandler(completionHandler: (p1: boolean) => void): void;
 
-	getImageOrientationForCamera(forCamera: CameraSelection): UIImageOrientation;
+  changeFlashSettingsWithDeviceMode(device: AVCaptureDevice, mode: AVCaptureFlashMode): void;
 
-	getPreviewLayerOrientation(): AVCaptureVideoOrientation;
+  class(): typeof NSObject;
 
-	getVideoOrientation(): AVCaptureVideoOrientation;
+  conformsToProtocol(aProtocol: any /* Protocol */): boolean;
 
-	isEqual(object: any): boolean;
+  disableFlash(): void;
 
-	isKindOfClass(aClass: typeof NSObject): boolean;
+  enableFlash(): void;
 
-	isMemberOfClass(aClass: typeof NSObject): boolean;
+  gestureRecognizerShouldBeRequiredToFailByGestureRecognizer(
+    gestureRecognizer: UIGestureRecognizer,
+    otherGestureRecognizer: UIGestureRecognizer
+  ): boolean;
 
-	longPressDidReachMaximumDuration(): void;
+  gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer): boolean;
 
-	performSelector(aSelector: string): any;
+  gestureRecognizerShouldReceivePress(gestureRecognizer: UIGestureRecognizer, press: UIPress): boolean;
 
-	performSelectorWithObject(aSelector: string, object: any): any;
+  gestureRecognizerShouldReceiveTouch(gestureRecognizer: UIGestureRecognizer, touch: UITouch): boolean;
 
-	performSelectorWithObjectWithObject(aSelector: string, object1: any, object2: any): any;
+  gestureRecognizerShouldRecognizeSimultaneouslyWithGestureRecognizer(
+    gestureRecognizer: UIGestureRecognizer,
+    otherGestureRecognizer: UIGestureRecognizer
+  ): boolean;
 
-	processPhoto(imageData: NSData): UIImage;
+  gestureRecognizerShouldRequireFailureOfGestureRecognizer(
+    gestureRecognizer: UIGestureRecognizer,
+    otherGestureRecognizer: UIGestureRecognizer
+  ): boolean;
 
-	promptToAppSettings(): void;
+  isEqual(object: any): boolean;
 
-	respondsToSelector(aSelector: string): boolean;
+  isKindOfClass(aClass: typeof NSObject): boolean;
 
-	retainCount(): number;
+  isMemberOfClass(aClass: typeof NSObject): boolean;
 
-	self(): this;
+  longPressDidReachMaximumDuration(): void;
 
-	setBackgroundAudioPreference(): void;
+  performSelector(aSelector: string): any;
 
-	setMaxiumVideoDuration(): number;
+  performSelectorWithObject(aSelector: string, object: any): any;
 
-	startVideoRecording(): void;
+  performSelectorWithObjectWithObject(aSelector: string, object1: any, object2: any): any;
 
-	stopVideoRecording(): void;
+  processPhoto(imageData: NSData): UIImage;
 
-	subscribeToDeviceOrientationChangeNotifications(): void;
+  promptToAppSettings(): void;
 
-	switchCamera(): void;
+  respondsToSelector(aSelector: string): boolean;
 
-	takePhoto(): void;
+  retainCount(): number;
 
-	toggleFlash(): void;
+  self(): this;
 
-	unsubscribeFromDeviceOrientationChangeNotifications(): void;
+  setBackgroundAudioPreference(): void;
 
-	videoInputPresetFromVideoQualityWithQuality(quality: VideoQuality): string;
+  setMaxiumVideoDuration(): number;
+
+  startVideoRecording(): void;
+
+  stopVideoRecording(): void;
+
+  switchCamera(): void;
+
+  takePhoto(): void;
+
+  toggleFlash(): void;
+
+  videoInputPresetFromVideoQualityWithQuality(quality: VideoQuality): string;
 }
 
 interface SwiftyCamViewControllerDelegate {
+  swiftyCamDidBeginRecordingVideo(swiftyCam: SwiftyCamViewController, camera: CameraSelection): void;
 
-	swiftyCamDidBeginRecordingVideo(swiftyCam: SwiftyCamViewController, camera: CameraSelection): void;
+  swiftyCamDidChangeZoomLevel(swiftyCam: SwiftyCamViewController, zoom: number): void;
 
-	swiftyCamDidChangeZoomLevel(swiftyCam: SwiftyCamViewController, zoom: number): void;
+  swiftyCamDidFailToConfigure(swiftyCam: SwiftyCamViewController): void;
 
-	swiftyCamDidFinishProcessVideoAt(swiftyCam: SwiftyCamViewController, url: NSURL): void;
+  swiftyCamDidFailToRecordVideo(swiftyCam: SwiftyCamViewController, error: NSError): void;
 
-	swiftyCamDidFinishRecordingVideo(swiftyCam: SwiftyCamViewController, camera: CameraSelection): void;
+  swiftyCamDidFinishProcessVideoAt(swiftyCam: SwiftyCamViewController, url: NSURL): void;
 
-	swiftyCamDidFocusAtPoint(swiftyCam: SwiftyCamViewController, point: CGPoint): void;
+  swiftyCamDidFinishRecordingVideo(swiftyCam: SwiftyCamViewController, camera: CameraSelection): void;
 
-	swiftyCamDidSwitchCameras(swiftyCam: SwiftyCamViewController, camera: CameraSelection): void;
+  swiftyCamDidFocusAtPoint(swiftyCam: SwiftyCamViewController, point: CGPoint): void;
 
-	swiftyCamDidTake(swiftyCam: SwiftyCamViewController, photo: UIImage): void;
+  swiftyCamDidSwitchCameras(swiftyCam: SwiftyCamViewController, camera: CameraSelection): void;
+
+  swiftyCamDidTake(swiftyCam: SwiftyCamViewController, photo: UIImage): void;
+
+  swiftyCamNotAuthorized(swiftyCam: SwiftyCamViewController): void;
+
+  swiftyCamSessionDidStartRunning(swiftyCam: SwiftyCamViewController): void;
+
+  swiftyCamSessionDidStopRunning(swiftyCam: SwiftyCamViewController): void;
 }
 declare var SwiftyCamViewControllerDelegate: {
-
-	prototype: SwiftyCamViewControllerDelegate;
+  prototype: SwiftyCamViewControllerDelegate;
 };
 
 declare const enum VideoQuality {
+  High = 0,
 
-	High = 0,
+  Medium = 1,
 
-	Medium = 1,
+  Low = 2,
 
-	Low = 2,
+  Resolution352x288 = 3,
 
-	Resolution352x288 = 3,
+  Resolution640x480 = 4,
 
-	Resolution640x480 = 4,
+  Resolution1280x720 = 5,
 
-	Resolution1280x720 = 5,
+  Resolution1920x1080 = 6,
 
-	Resolution1920x1080 = 6,
+  Resolution3840x2160 = 7,
 
-	Resolution3840x2160 = 7,
+  Iframe960x540 = 8,
 
-	Iframe960x540 = 8,
-
-	Iframe1280x720 = 9
+  Iframe1280x720 = 9
 }

@@ -2,15 +2,13 @@
  * (c) 2017, nStudio, LLC & LiveShopper, LLC
  * Licensed under a Commercial license.
  *
- * Version 1.0.0                                        			   team@nStudio.io
+ * Version 1.1.0                                       			   team@nStudio.io
  **********************************************************************************/
-/// <reference path="./typings/android27.d.ts" />
+/// <reference path="./node_modules/tns-platform-declarations/android.d.ts" />
 
-import { ImageSource } from 'tns-core-modules/image-source';
-import { ImageAsset } from 'tns-core-modules/image-asset';
 import * as application from 'tns-core-modules/application';
-
-// declare var java, android: any;
+import { ImageAsset } from 'tns-core-modules/image-asset';
+import { ImageSource } from 'tns-core-modules/image-source';
 
 interface ArrayBufferStatic extends ArrayBufferConstructor {
   from(buffer: java.nio.ByteBuffer): ArrayBuffer;
@@ -187,7 +185,7 @@ export class SelectedAsset extends ImageAsset {
 
   private decodeThumbUri(): void {
     // decode image size
-    let REQUIRED_SIZE = {
+    const REQUIRED_SIZE = {
       maxWidth: 100,
       maxHeight: 100
     };
@@ -199,7 +197,7 @@ export class SelectedAsset extends ImageAsset {
 
   private decodeThumbAssetUri(): void {
     // decode image size
-    let REQUIRED_SIZE = {
+    const REQUIRED_SIZE = {
       maxWidth: 100,
       maxHeight: 100
     };
