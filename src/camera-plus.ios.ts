@@ -401,7 +401,7 @@ export class MySwifty extends SwiftyCamViewController {
             saveToGallery: this._owner.get().saveToGallery
           };
         }
-        if (parseFloat(platform.device.sdkVersion) >= 11) {
+        if (!options.disableHEVC && parseFloat(platform.device.sdkVersion) >= 11) {
           this.videoCodecType = AVVideoCodecTypeHEVC;
         }
         switch (options ? options.quality : CameraVideoQuality.MAX_480P) {
