@@ -375,6 +375,7 @@ export interface IVideoOptions {
   saveToGallery?: boolean;
   height?: number;
   width?: number;
+  disableHEVC?: boolean;
 }
 
 export function GetSetProperty() {
