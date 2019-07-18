@@ -569,9 +569,10 @@ export class CameraPlus extends CameraPlusBase {
       fileName = `VID_${Date.now()}.mp4`;
       const sdkVersionInt = parseInt(device.sdkVersion);
       if (sdkVersionInt > 21) {
-        const folderPath =
-          android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DCIM).toString() +
-          '/Camera/';
+        const folderPath = utils.ad
+          .getApplicationContext()
+          .getExternalFilesDir(null)
+          .getAbsolutePath();
         if (!fs.Folder.exists(folderPath)) {
           fs.Folder.fromPath(folderPath);
         }
@@ -592,9 +593,10 @@ export class CameraPlus extends CameraPlusBase {
           nativeFile
         );
       } else {
-        const folderPath =
-          android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DCIM).toString() +
-          '/Camera/';
+        const folderPath = utils.ad
+          .getApplicationContext()
+          .getExternalFilesDir(null)
+          .getAbsolutePath();
         if (!fs.Folder.exists(folderPath)) {
           fs.Folder.fromPath(folderPath);
         }
