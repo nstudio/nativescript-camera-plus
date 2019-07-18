@@ -1562,7 +1562,7 @@ export class CameraPlus extends CameraPlusBase {
     CLog('picturePath', picturePath);
     CLog('nativeFile', nativeFile);
 
-    if (saveToGallery === true && confirmPic === true) {
+    if (confirmPic === true) {
       this.sendEvent(CameraPlus.confirmScreenShownEvent);
       const result = await CamHelpers.createImageConfirmationDialog(
         data,
@@ -1580,20 +1580,14 @@ export class CameraPlus extends CameraPlusBase {
       }
 
       // Save image to device gallery
-      this._savePicture(nativeFile, data);
+      this._savePicture(nativeFile, data, saveToGallery === true);
 
       const asset = CamHelpers.assetFromPath(picturePath, reqWidth, reqHeight, shouldKeepAspectRatio);
 
       this.sendEvent(CameraPlus.photoCapturedEvent, asset);
       return;
     } else {
-      if (saveToGallery === true && !confirmPic) {
-        // Save image to device gallery
-        this._savePicture(nativeFile, data);
-        const asset = CamHelpers.assetFromPath(picturePath, reqWidth, reqHeight, shouldKeepAspectRatio);
-        this.sendEvent(CameraPlus.photoCapturedEvent, asset);
-        return;
-      }
+      this._savePicture(nativeFile, data, saveToGallery === true);
 
       const asset = CamHelpers.assetFromPath(picturePath, reqWidth, reqHeight, shouldKeepAspectRatio);
       this.sendEvent(CameraPlus.photoCapturedEvent, asset);
@@ -1601,10 +1595,12 @@ export class CameraPlus extends CameraPlusBase {
     }
   }
 
-  private _savePicture(file, data) {
+  private _savePicture(file, data, broadcastToGallery) {
     try {
       this._saveImageToDisk(file, data);
-      this._addPicToGallery(file);
+      if (broadcastToGallery === true) {
+        this._addPicToGallery(file);
+      }
     } catch (ex) {
       CLog('_savePicture error', ex);
     }
