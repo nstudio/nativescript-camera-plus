@@ -739,6 +739,7 @@ export class CameraPlus extends CameraPlusBase {
     this._onLayoutChangeListener = this._onLayoutChangeFn.bind(this);
     CLog('CameraPlus constructor');
     this._swifty = MySwifty.initWithOwner(new WeakRef(this), CameraPlus.defaultCamera);
+    this._swifty.shouldPrompToAppSettings = false;
 
     // experimenting with static flag (this is usually explicitly false)
     // enable device orientation
