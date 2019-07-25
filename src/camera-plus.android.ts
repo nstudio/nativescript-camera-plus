@@ -597,7 +597,7 @@ export class CameraPlus extends CameraPlusBase {
         //   "/Camera/" +
         //   fileName;
         nativeFile = new java.io.File(videoPath);
-        const FileProvider = FileProviderNamespace();
+        const FileProvider = FileProviderNamespace().FileProvider;
         const tempPictureUri = FileProvider.getUriForFile(
           app.android.currentContext,
           app.android.nativeApp.getPackageName() + '.provider',
