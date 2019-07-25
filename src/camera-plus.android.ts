@@ -47,6 +47,16 @@ const CAMERA_FACING_BACK = 0; // rear camera
 const RESULT_CODE_PICKER_IMAGES = 941;
 const RESULT_OK = -1;
 
+// AndroidX support
+const useAndroidX = function() {
+  return (<any>global).androidx;
+};
+const FileProviderNamespace = function() {
+  return useAndroidX() && (<any>global).androidx.core && (<any>global).androidx.core.content
+    ? (<any>global).androidx.core.content
+    : (<any>global).support.v4.content;
+};
+
 // Snapshot-friendly functions
 const CAMERA = () => (android as any).Manifest.permission.CAMERA;
 const RECORD_AUDIO = () => (android as any).Manifest.permission.RECORD_AUDIO;
@@ -587,7 +597,8 @@ export class CameraPlus extends CameraPlusBase {
         //   "/Camera/" +
         //   fileName;
         nativeFile = new java.io.File(videoPath);
-        const tempPictureUri = (<any>android.support.v4.content).FileProvider.getUriForFile(
+        const FileProvider = FileProviderNamespace();
+        const tempPictureUri = FileProvider.getUriForFile(
           app.android.currentContext,
           app.android.nativeApp.getPackageName() + '.provider',
           nativeFile
