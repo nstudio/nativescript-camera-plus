@@ -6,37 +6,37 @@
   "nativescript": {
     "id": "org.nativescript.demong",
     "tns-ios": {
-      "version": "5.1.0"
+      "version": "6.0.1"
     },
     "tns-android": {
-      "version": "5.1.0"
+      "version": "6.0.0"
     }
   },
   "dependencies": {
-    "@angular/animations": "~7.2.0",
-    "@angular/common": "~7.2.0",
-    "@angular/compiler": "~7.2.0",
-    "@angular/core": "~7.2.0",
-    "@angular/forms": "~7.2.0",
-    "@angular/http": "~7.2.0",
-    "@angular/platform-browser": "~7.2.0",
-    "@angular/platform-browser-dynamic": "~7.2.0",
-    "@angular/router": "~7.2.0",
+    "@angular/animations": "8.0.0",
+    "@angular/common": "8.0.0",
+    "@angular/compiler": "8.0.0",
+    "@angular/core": "8.0.0",
+    "@angular/forms": "8.0.0",
+    "@angular/platform-browser": "8.0.0",
+    "@angular/platform-browser-dynamic": "8.0.0",
+    "@angular/router": "8.0.0",
     "@nstudio/nativescript-camera-plus": "file:../src",
-    "nativescript-angular": "~7.2.0",
+    "nativescript-angular": "8.0.2",
     "nativescript-theme-core": "~1.0.2",
     "reflect-metadata": "~0.1.8",
     "rxjs": "~6.4.0",
-    "tns-core-modules": "~5.1.2",
-    "zone.js": "~0.8.29"
+    "tns-core-modules": "6.0.1",
+    "zone.js": "0.9.1"
   },
   "devDependencies": {
     "babel-traverse": "6.24.1",
     "babel-types": "6.24.1",
     "babylon": "6.17.0",
     "lazy": "1.0.11",
-    "nativescript-dev-android-snapshot": "^0.*.*",
-    "nativescript-dev-typescript": "~0.7.9",
-    "typescript": "~3.1.6"
+    "typescript": "3.4.5",
+    "nativescript-dev-webpack": "1.0.1",
+    "@angular/compiler-cli": "8.0.0",
+    "@ngtools/webpack": "8.0.0"
   }
 }

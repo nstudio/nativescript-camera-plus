@@ -23,10 +23,10 @@ export class CaptureComponent implements OnInit, OnDestroy {
     console.log('***** cam loaded *****');
     this.cam = e.object as CameraPlus;
 
-    let flashMode = this.cam.getFlashMode();
+    const flashMode = this.cam.getFlashMode();
 
     // Turn flash on at startup
-    if (flashMode == 'off') {
+    if (flashMode === 'off') {
       this.cam.toggleFlash();
     }
 
