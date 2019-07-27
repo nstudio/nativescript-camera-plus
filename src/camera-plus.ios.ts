@@ -876,8 +876,9 @@ export class CameraPlus extends CameraPlusBase {
   /**
    * Record video
    */
-  public record(options?: IVideoOptions): void {
+  public record(options?: IVideoOptions): Promise<any> {
     this._swifty.recordVideo(options);
+    return Promise.resolve();
   }
 
   /**
