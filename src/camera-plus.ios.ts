@@ -22,6 +22,7 @@ import {
 import { layout, View } from 'tns-core-modules/ui/core/view';
 
 export { CameraVideoQuality } from './camera-plus.common';
+export * from './camera-plus.common';
 import * as platform from 'tns-core-modules/platform';
 /**
  * Library image picker delegate (multiple or single)

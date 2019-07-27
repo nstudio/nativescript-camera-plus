@@ -1,4 +1,4 @@
-var CameraPlus = require("nativescript-camera-plus").CameraPlus;
+var CameraPlus = require("@nstudio/nativescript-camera-plus").CameraPlus;
 var cameraPlus = new CameraPlus();
 
 // TODO replace 'functionname' with an acual function name of your plugin class and run with 'npm test <platform>'

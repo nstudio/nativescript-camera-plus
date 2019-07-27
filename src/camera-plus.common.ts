@@ -212,25 +212,23 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
   /**
    * Opens the device Library (image gallery) to select images.
    */
-  chooseFromLibrary(options?: IChooseOptions): Promise<any> {
-    return new Promise((resolve, reject) => reject());
-  }
+  abstract chooseFromLibrary(options?: IChooseOptions): Promise<any>;
 
   /**
    * Takes a picture of the current preview of the CameraPlus.
    */
-  takePicture(options?: ICameraOptions): void {}
+  abstract takePicture(options?: ICameraOptions): void;
 
   /**
    * Start recording video
    * @param options IVideoOptions
    */
-  record(options?: IVideoOptions): void {}
+  abstract record(options?: IVideoOptions): Promise<void>;
 
   /**
    * Stop recording video
    */
-  stop(): void {}
+  abstract stop(): void;
 
   /**
    * Returns true if the device has at least one camera.

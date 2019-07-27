@@ -24,6 +24,7 @@ import {
   CameraVideoQuality
 } from './camera-plus.common';
 import * as CamHelpers from './helpers';
+console.dir(CamHelpers);
 import { SelectedAsset } from './selected-asset';
 import { View } from 'tns-core-modules/ui/core/view/view';
 export { CameraVideoQuality } from './camera-plus.common';
@@ -46,7 +47,7 @@ const CAMERA_FACING_FRONT = 1; // front camera
 const CAMERA_FACING_BACK = 0; // rear camera
 const RESULT_CODE_PICKER_IMAGES = 941;
 const RESULT_OK = -1;
-
+declare var androidx: any, android: any;
 // AndroidX support
 const useAndroidX = function() {
   return (<any>global).androidx;
@@ -54,7 +55,13 @@ const useAndroidX = function() {
 const FileProviderNamespace = function() {
   return useAndroidX() && (<any>global).androidx.core && (<any>global).androidx.core.content
     ? (<any>global).androidx.core.content
-    : (<any>global).support.v4.content;
+    : android.support.v4.content;
+};
+
+const ExifInterfaceNamespace = function() {
+  return useAndroidX() && (<any>global).androidx.exifinterface && (<any>global).androidx.exifinterface.media
+    ? (<any>global).androidx.exifinterface.media
+    : android.support.media;
 };
 
 // Snapshot-friendly functions
@@ -67,7 +74,9 @@ const WRITE_EXTERNAL_STORAGE = () => (android as any).Manifest.permission.WRITE_
 const DEVICE_INFO_STRING = () => `device: ${device.manufacturer} ${device.model} on SDK: ${device.sdkVersion}`;
 
 import * as common from './camera-plus.common';
-global.moduleMerge(common, exports);
+
+export * from './camera-plus.common';
+
 export class CameraPlus extends CameraPlusBase {
   // @GetSetProperty() public camera: android.hardware.Camera;
   // Snapshot-friendly, since the decorator will include the snapshot-unknown object "android"
@@ -599,7 +608,7 @@ export class CameraPlus extends CameraPlusBase {
         nativeFile = new java.io.File(videoPath);
         const FileProvider = FileProviderNamespace().FileProvider;
         const tempPictureUri = FileProvider.getUriForFile(
-          app.android.currentContext,
+          app.android.context,
           app.android.nativeApp.getPackageName() + '.provider',
           nativeFile
         );
@@ -1645,8 +1654,12 @@ export class CameraPlus extends CameraPlusBase {
   private _addPicToGallery(picFile) {
     // checking exif data for orientation issues
     try {
-      const exifInterface = new android.media.ExifInterface(picFile.getPath()) as android.media.ExifInterface;
-      const tagOrientation = exifInterface.getAttribute('Orientation');
+      const ExifInterface = ExifInterfaceNamespace().ExifInterface;
+      const exifInterface = new ExifInterface(picFile.getPath());
+      const tagOrientation = exifInterface.getAttributeInt(
+        ExifInterface.TAG_ORIENTATION,
+        ExifInterface.ORIENTATION_NORMAL
+      );
       CLog(`tagOrientation = ${tagOrientation}`);
       const contentUri = android.net.Uri.fromFile(picFile) as android.net.Uri;
       const mediaScanIntent = new android.content.Intent(
