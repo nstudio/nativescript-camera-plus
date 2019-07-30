@@ -15,16 +15,15 @@ import * as utils from 'tns-core-modules/utils/utils';
 import './async-await'; // attach global async/await for NS
 import {
   CameraPlusBase,
+  CameraVideoQuality,
   CLog,
   GetSetProperty,
   ICameraOptions,
   ICameraPlusEvents,
   IChooseOptions,
-  IVideoOptions,
-  CameraVideoQuality
+  IVideoOptions
 } from './camera-plus.common';
 import * as CamHelpers from './helpers';
-console.dir(CamHelpers);
 import { SelectedAsset } from './selected-asset';
 import { View } from 'tns-core-modules/ui/core/view/view';
 export { CameraVideoQuality } from './camera-plus.common';
@@ -72,8 +71,6 @@ const WRITE_EXTERNAL_STORAGE = () => (android as any).Manifest.permission.WRITE_
 // Since these device.* properties resolve directly to the android.* namespace,
 // the snapshot will fail if they resolve during import, so must be done via a function
 const DEVICE_INFO_STRING = () => `device: ${device.manufacturer} ${device.model} on SDK: ${device.sdkVersion}`;
-
-import * as common from './camera-plus.common';
 
 export * from './camera-plus.common';
 
@@ -399,6 +396,7 @@ export class CameraPlus extends CameraPlusBase {
     try {
       if (this.camera && this._mediaRecorder && this.isRecording) {
         CLog(`*** stopping mediaRecorder ***`);
+        this._addVidToGallery(new java.io.File(this._videoPath));
         this._owner.get().sendEvent(CameraPlus.videoRecordingReadyEvent, this._videoPath);
         this._mediaRecorder.stop(); // stop the recording
         this._releaseMediaRecorder(); // release the MediaRecorder object
@@ -1285,6 +1283,9 @@ export class CameraPlus extends CameraPlusBase {
       .getWindowManager()
       .getDefaultDisplay()
       .getRotation();
+
+    const orientation = activity.getResources().getConfiguration().orientation;
+
     CLog(`DISPLAY ROTATION = ${rotation}`);
     let degrees = 0;
 
@@ -1362,9 +1363,38 @@ export class CameraPlus extends CameraPlusBase {
 
     this.camera.setParameters(params); // set the parameters for the camera
     this.camera.setDisplayOrientation(result);
+    const Configuration = android.content.res.Configuration;
+    const Surface = android.view.Surface;
+    const SENSOR_ORIENTATION_DEFAULT_DEGREES = 90;
+    const SENSOR_ORIENTATION_INVERSE_DEGREES = 270;
+    const DEFAULT_ORIENTATIONS = {};
+    const INVERSE_ORIENTATIONS = {};
+
+    DEFAULT_ORIENTATIONS[Surface.ROTATION_0] = 90;
+    DEFAULT_ORIENTATIONS[Surface.ROTATION_90] = 0;
+    DEFAULT_ORIENTATIONS[Surface.ROTATION_180] = 270;
+    DEFAULT_ORIENTATIONS[Surface.ROTATION_270] = 180;
+
+    INVERSE_ORIENTATIONS[Surface.ROTATION_0] = 270;
+    INVERSE_ORIENTATIONS[Surface.ROTATION_90] = 180;
+    INVERSE_ORIENTATIONS[Surface.ROTATION_180] = 90;
+    INVERSE_ORIENTATIONS[Surface.ROTATION_270] = 0;
 
     if (this.isVideoEnabled() && this._mediaRecorder) {
-      this._mediaRecorder.setOrientationHint(result);
+      if (orientation === Configuration.ORIENTATION_PORTRAIT) {
+        switch (info.orientation) {
+          case SENSOR_ORIENTATION_DEFAULT_DEGREES:
+            this._mediaRecorder.setOrientationHint(DEFAULT_ORIENTATIONS[rotation]);
+            break;
+          case SENSOR_ORIENTATION_INVERSE_DEGREES:
+            this._mediaRecorder.setOrientationHint(INVERSE_ORIENTATIONS[rotation]);
+            break;
+        }
+      } else if (orientation === Configuration.ORIENTATION_LANDSCAPE && Surface.ROTATION_90 === rotation) {
+        this._mediaRecorder.setOrientationHint(0);
+      } else if (orientation === Configuration.ORIENTATION_LANDSCAPE && Surface.ROTATION_270 === rotation) {
+        this._mediaRecorder.setOrientationHint(0);
+      }
     }
   }
 
@@ -1654,22 +1684,45 @@ export class CameraPlus extends CameraPlusBase {
   private _addPicToGallery(picFile) {
     // checking exif data for orientation issues
     try {
-      const ExifInterface = ExifInterfaceNamespace().ExifInterface;
-      const exifInterface = new ExifInterface(picFile.getPath());
-      const tagOrientation = exifInterface.getAttributeInt(
-        ExifInterface.TAG_ORIENTATION,
-        ExifInterface.ORIENTATION_NORMAL
-      );
-      CLog(`tagOrientation = ${tagOrientation}`);
-      const contentUri = android.net.Uri.fromFile(picFile) as android.net.Uri;
-      const mediaScanIntent = new android.content.Intent(
-        'android.intent.action.MEDIA_SCANNER_SCAN_FILE',
-        contentUri
-      ) as android.content.Intent;
-      (app.android.context as android.content.Context).sendBroadcast(mediaScanIntent);
+      this._addFileToGallery(picFile);
     } catch (ex) {
       CLog('_addPicToGallery error', ex);
       this.sendEvent(CameraPlus.errorEvent, ex, 'Error adding image to device library.');
     }
+  }
+
+  /**
+   * Broadcasts an intent with the new video, this tells the OS an video has been added so it will show in the gallery.
+   * @param picFile
+   */
+  private _addVidToGallery(picFile) {
+    // checking exif data for orientation issues
+    try {
+      this._addFileToGallery(picFile);
+    } catch (ex) {
+      CLog('_addVidToGallery error', ex);
+      this.sendEvent(CameraPlus.errorEvent, ex, 'Error adding video to device library.');
+    }
+  }
+
+  /**
+   * Broadcasts an intent with the new file, this tells the OS a file has been added so it will show in the gallery.
+   * @param picFile
+   */
+  private _addFileToGallery(file) {
+    // checking exif data for orientation issues
+    const ExifInterface = ExifInterfaceNamespace().ExifInterface;
+    const exifInterface = new ExifInterface(file.getPath());
+    const tagOrientation = exifInterface.getAttributeInt(
+      ExifInterface.TAG_ORIENTATION,
+      ExifInterface.ORIENTATION_NORMAL
+    );
+    CLog(`tagOrientation = ${tagOrientation}`);
+    const contentUri = android.net.Uri.fromFile(file) as android.net.Uri;
+    const mediaScanIntent = new android.content.Intent(
+      'android.intent.action.MEDIA_SCANNER_SCAN_FILE',
+      contentUri
+    ) as android.content.Intent;
+    (app.android.context as android.content.Context).sendBroadcast(mediaScanIntent);
   }
 }
