@@ -374,6 +374,9 @@ export interface IVideoOptions {
   height?: number;
   width?: number;
   disableHEVC?: boolean;
+  androidMaxVideoBitRate?: number;
+  androidMaxFrameRate?: number;
+  androidMaxAudioBitRate?: number;
 }
 
 export function GetSetProperty() {

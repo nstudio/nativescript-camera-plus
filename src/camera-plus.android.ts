@@ -509,10 +509,13 @@ export class CameraPlus extends CameraPlusBase {
     this._mediaRecorder.setVideoSize(quality.videoFrameWidth, quality.videoFrameHeight);
     this._mediaRecorder.setAudioChannels(quality.audioChannels);
     const isHevcSupported = !options.disableHEVC && android.os.Build.VERSION.SDK_INT >= 24;
-    const videoBitRate = isHevcSupported ? quality.videoBitRate / 2 : quality.videoBitRate; // Use half bit rate for hevc
-    this._mediaRecorder.setVideoFrameRate(quality.videoFrameRate);
-    this._mediaRecorder.setVideoEncodingBitRate(videoBitRate);
-    this._mediaRecorder.setAudioEncodingBitRate(quality.audioBitRate);
+    const videoBitRate: number = isHevcSupported ? quality.videoBitRate / 2 : quality.videoBitRate; // Use half bit rate for hevc
+    const maxVideoBitrate = options.androidMaxVideoBitRate ? options.androidMaxVideoBitRate : videoBitRate;
+    const maxVideoFrameRate = options.androidMaxFrameRate ? options.androidMaxFrameRate : quality.videoFrameHeight;
+    const maxAudioBitRate = options.androidMaxAudioBitRate ? options.androidMaxAudioBitRate : quality.audioBitRate;
+    this._mediaRecorder.setVideoFrameRate(Math.min(quality.videoFrameRate, maxVideoFrameRate));
+    this._mediaRecorder.setVideoEncodingBitRate(Math.min(videoBitRate, maxVideoBitrate));
+    this._mediaRecorder.setAudioEncodingBitRate(Math.min(quality.audioBitRate, maxAudioBitRate));
     if (isHevcSupported) {
       this._mediaRecorder.setVideoEncoder((android as any).media.MediaRecorder.VideoEncoder.HEVC);
     } else {
