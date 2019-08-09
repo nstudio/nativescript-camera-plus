@@ -163,7 +163,6 @@ declare module co {
           param2: number
         ): void;
         public getAutoFocus(): boolean;
-        public setAutoFocus(param0: boolean): void;
         public setCameraPosition(param0: co.fitcom.fancycamera.FancyCamera.CameraPosition): void;
         public getDB(): number;
         public setSaveToGallery(param0: boolean): void;
@@ -200,8 +199,10 @@ declare module co {
         public deInitListener(): void;
         public release(): void;
         public setQuality(param0: number): void;
+        public setAutoFocus(param0: boolean): void;
         public setCameraOrientation(param0: number): void;
         public getCameraOrientation(): number;
+        public setAutoSquareCrop(param0: boolean): void;
         public setMaxAudioBitRate(param0: number): void;
         public stop(): void;
         public onSurfaceTextureUpdated(param0: globalAndroid.graphics.SurfaceTexture): void;

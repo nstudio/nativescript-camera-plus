@@ -77,7 +77,7 @@ export class CameraPlus extends CameraPlusBase {
   @GetSetProperty()
   public saveToGallery: boolean = false;
   @GetSetProperty()
-  public takePicIcon: string = 'ic_camera_alt_white';
+  public takePicIcon: string = 'ic_camera_white';
   @GetSetProperty()
   public galleryIcon: string = 'ic_photo_library_white';
   @GetSetProperty()
@@ -173,17 +173,10 @@ export class CameraPlus extends CameraPlusBase {
 
   initNativeView() {
     super.initNativeView();
-
-    console.log('initNativeView');
     this.on(View.layoutChangedEvent, this._onLayoutChangeListener);
     const listenerImpl = (co as any).fitcom.fancycamera.CameraEventListenerUI.extend({
       owner: null,
-      onCameraCloseUI(): void {
-        const owner = this.owner ? this.owner.get() : null;
-        if (owner) {
-          owner.sendEvent('loaded', owner.camera);
-        }
-      },
+      onCameraCloseUI(): void {},
       async onPhotoEventUI(event: co.fitcom.fancycamera.PhotoEvent) {
         const owner = this.owner ? this.owner.get() : null;
         if (event.getType() === co.fitcom.fancycamera.EventType.ERROR) {
@@ -195,9 +188,7 @@ export class CameraPlus extends CameraPlusBase {
         } else if (event.getType() === co.fitcom.fancycamera.EventType.INFO) {
           const file = event.getFile();
           if (event.getMessage() === co.fitcom.fancycamera.PhotoEvent.EventInfo.PHOTO_TAKEN.toString()) {
-            console.log(owner._lastCameraOptions);
             const options = owner._lastCameraOptions.shift();
-            console.log(owner._lastCameraOptions);
             let confirmPic;
             let confirmPicRetakeText;
             let confirmPicSaveText;
@@ -266,6 +257,7 @@ export class CameraPlus extends CameraPlusBase {
       onCameraOpenUI(): void {
         const owner = this.owner ? this.owner.get() : null;
         if (owner) {
+          owner._initDefaultButtons();
           if (owner._togglingCamera) {
             owner.sendEvent(CameraPlus.toggleCameraEvent, owner.camera);
             owner._ensureCorrectFlashIcon();
@@ -299,9 +291,6 @@ export class CameraPlus extends CameraPlusBase {
     });
     const listener = new listenerImpl();
     listener.owner = new WeakRef(this);
-    setTimeout(() => {
-      this._initDefaultButtons();
-    }, 5000);
     this._camera.setListener(listener);
   }
 
@@ -327,6 +316,7 @@ export class CameraPlus extends CameraPlusBase {
         return;
       }
       this._camera.setSaveToGallery(!!options.saveToGallery);
+      this._camera.setAutoSquareCrop(!!options.autoSquareCrop);
       this._lastCameraOptions.push(options);
       this._camera.takePhoto();
     }
@@ -736,11 +726,15 @@ export class CameraPlus extends CameraPlusBase {
     this._ensureCorrectFlashIcon();
     const shape = CamHelpers.createTransparentCircleDrawable();
     this._flashBtn.setBackgroundDrawable(shape);
+    const ref = new WeakRef(this);
     this._flashBtn.setOnClickListener(
       new android.view.View.OnClickListener({
         onClick: args => {
-          this.toggleFlash();
-          this._ensureCorrectFlashIcon();
+          const owner = ref.get();
+          if (owner) {
+            owner.toggleFlash();
+            owner._ensureCorrectFlashIcon();
+          }
         }
       })
     );
@@ -769,10 +763,14 @@ export class CameraPlus extends CameraPlusBase {
     this._galleryBtn.setImageResource(openGalleryDrawable);
     const shape = CamHelpers.createTransparentCircleDrawable();
     this._galleryBtn.setBackgroundDrawable(shape);
+    const ref = new WeakRef(this);
     this._galleryBtn.setOnClickListener(
       new android.view.View.OnClickListener({
         onClick: args => {
-          this.chooseFromLibrary();
+          const owner = ref.get();
+          if (owner) {
+            owner.chooseFromLibrary();
+          }
         }
       })
     );
@@ -800,10 +798,14 @@ export class CameraPlus extends CameraPlusBase {
     this._toggleCamBtn.setImageResource(switchCameraDrawable);
     const shape = CamHelpers.createTransparentCircleDrawable();
     this._toggleCamBtn.setBackgroundDrawable(shape);
+    const ref = new WeakRef(this);
     this._toggleCamBtn.setOnClickListener(
       new android.view.View.OnClickListener({
         onClick: (view: android.view.View) => {
-          this.toggleCamera();
+          const owner = ref.get();
+          if (owner) {
+            owner.toggleCamera();
+          }
         }
       })
     );
@@ -908,126 +910,3 @@ export class CameraPlus extends CameraPlusBase {
     }
   }
 }
-
-/*
-
-let CameraEventListener;
-
-function initCameraEventListener() {
-  if (CameraEventListener) {
-    return;
-  }
-  class CameraEventListenerImpl extends co.fitcom.fancycamera.CameraEventListenerUI {
-    owner: WeakRef<CameraPlus>;
-    constructor() {
-      super();
-      return global.__native(this);
-    }
-
-    public onCameraCloseUI(): void {
-      const owner = this.owner ? this.owner.get() : null;
-      if (owner) {
-        owner.sendEvent('loaded', owner.camera);
-      }
-    }
-    public async onPhotoEventUI(event: co.fitcom.fancycamera.PhotoEvent) {
-      const owner = this.owner ? this.owner.get() : null;
-      if (event.getType() === co.fitcom.fancycamera.EventType.ERROR) {
-        if (owner) {
-          owner._lastCameraOptions.shift();
-          CLog('takePicture error', null);
-          owner.sendEvent(CameraPlus.errorEvent, null, 'Error taking picture.');
-        }
-      } else if (event.getType() === co.fitcom.fancycamera.EventType.INFO) {
-        const file = event.getFile();
-        if (event.getMessage() === co.fitcom.fancycamera.PhotoEvent.EventInfo.PHOTO_TAKEN.toString()) {
-          const options = owner._lastCameraOptions.shift();
-          let confirmPic;
-          let confirmPicRetakeText;
-          let confirmPicSaveText;
-          let saveToGallery;
-          let reqWidth;
-          let reqHeight;
-          let shouldKeepAspectRatio;
-          let shouldAutoSquareCrop = owner.autoSquareCrop;
-
-          const density = utils.layout.getDisplayDensity();
-          if (options) {
-            confirmPic = options.confirm ? true : false;
-            confirmPicRetakeText = options.confirmRetakeText ? options.confirmRetakeText : owner.confirmRetakeText;
-            confirmPicSaveText = options.confirmSaveText ? options.confirmSaveText : owner.confirmSaveText;
-            saveToGallery = options.saveToGallery ? true : false;
-            reqWidth = options.width ? options.width * density : 0;
-            reqHeight = options.height ? options.height * density : reqWidth;
-            shouldKeepAspectRatio = types.isNullOrUndefined(options.keepAspectRatio) ? true : options.keepAspectRatio;
-            shouldAutoSquareCrop = !!options.autoSquareCrop;
-          } else {
-            // use xml property getters or their defaults
-            CLog('Using property getters for defaults, no options.');
-            confirmPic = owner.confirmPhotos;
-            saveToGallery = owner.saveToGallery;
-          }
-          if (confirmPic === true) {
-            owner.sendEvent(CameraPlus.confirmScreenShownEvent);
-            const result = await CamHelpers.createImageConfirmationDialog(
-              file.getAbsolutePath(),
-              confirmPicRetakeText,
-              confirmPicSaveText
-            ).catch(ex => {
-              CLog('Error createImageConfirmationDialog', ex);
-            });
-
-            owner.sendEvent(CameraPlus.confirmScreenDismissedEvent);
-
-            CLog(`confirmation result = ${result}`);
-            if (result !== true) {
-              file.delete();
-              return;
-            }
-
-            const asset = CamHelpers.assetFromPath(file.getAbsolutePath(), reqWidth, reqHeight, shouldKeepAspectRatio);
-
-            owner.sendEvent(CameraPlus.photoCapturedEvent, asset);
-            return;
-          } else {
-            const asset = CamHelpers.assetFromPath(file.getAbsolutePath(), reqWidth, reqHeight, shouldKeepAspectRatio);
-            owner.sendEvent(CameraPlus.photoCapturedEvent, asset);
-            return;
-          }
-        }
-      }
-    }
-    public onCameraOpenUI(): void {
-      const owner = this.owner ? this.owner.get() : null;
-      if (owner) {
-        if (owner._togglingCamera) {
-          owner.sendEvent(CameraPlus.toggleCameraEvent, owner.camera);
-          owner._ensureCorrectFlashIcon();
-          owner._togglingCamera = true;
-        } else {
-          owner.sendEvent('loaded', owner.camera);
-        }
-      }
-    }
-    public onVideoEventUI(event: co.fitcom.fancycamera.VideoEvent): void {
-      const owner = this.owner ? this.owner.get() : null;
-      if (owner) {
-        if (event.getType() === co.fitcom.fancycamera.EventType.ERROR) {
-          CLog(`stopRecording error`, null);
-          owner.sendEvent(CameraPlus.errorEvent, null, 'Error trying to stop recording.');
-          owner.isRecording = false;
-        } else if (event.getType() === co.fitcom.fancycamera.EventType.INFO) {
-          if (event.getMessage() === co.fitcom.fancycamera.VideoEvent.EventInfo.RECORDING_STARTED.toString()) {
-            owner.isRecording = true;
-            owner.sendEvent(CameraPlus.videoRecordingStartedEvent, owner.camera);
-          } else if (event.getMessage() === co.fitcom.fancycamera.VideoEvent.EventInfo.RECORDING_FINISHED.toString()) {
-            owner.sendEvent(CameraPlus.videoRecordingReadyEvent, event.getFile().getAbsolutePath());
-            CLog(`Recording complete`);
-            owner.isRecording = false;
-          }
-        }
-      }
-    }
-  }
-  CameraEventListener = CameraEventListenerImpl;
-}*/
