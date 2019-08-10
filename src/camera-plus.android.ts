@@ -62,9 +62,8 @@ export * from './camera-plus.common';
 export class CameraPlus extends CameraPlusBase {
   // @GetSetProperty() public camera: android.hardware.Camera;
   // Snapshot-friendly, since the decorator will include the snapshot-unknown object "android"
-  private _camera;
-  @GetSetProperty()
-  public cameraId;
+  private _camera: co.fitcom.fancycamera.FancyCamera;
+  private _cameraId;
 
   @GetSetProperty()
   public flashOnIcon: string = 'ic_flash_on_white';
@@ -148,7 +147,6 @@ export class CameraPlus extends CameraPlusBase {
         android.view.ViewGroup.LayoutParams.MATCH_PARENT
       )
     );
-
     this._nativeView.addView(this._camera as any);
     return this._nativeView;
   }
@@ -292,6 +290,7 @@ export class CameraPlus extends CameraPlusBase {
     const listener = new listenerImpl();
     listener.owner = new WeakRef(this);
     this._camera.setListener(listener);
+    this.cameraId = this._cameraId;
   }
 
   disposeNativeView() {
@@ -302,6 +301,25 @@ export class CameraPlus extends CameraPlusBase {
     super.disposeNativeView();
   }
 
+  get cameraId() {
+    return this._cameraId;
+  }
+
+  set cameraId(id: any) {
+    if (this._camera) {
+      switch (id) {
+        case CAMERA_FACING_FRONT:
+          this._camera.setCameraPosition(co.fitcom.fancycamera.FancyCamera.CameraPosition.FRONT);
+          this._cameraId = CAMERA_FACING_FRONT;
+          break;
+        default:
+          this._camera.setCameraPosition(co.fitcom.fancycamera.FancyCamera.CameraPosition.BACK);
+          this._cameraId = CAMERA_FACING_BACK;
+          break;
+      }
+    }
+    this._cameraId = id;
+  }
   /**
    * Takes a picture with from the camera preview.
    */
@@ -369,6 +387,34 @@ export class CameraPlus extends CameraPlusBase {
     if (this._camera) {
       this._camera.setDisableHEVC(!!options.disableHEVC);
       this._camera.setSaveToGallery(!!options.saveToGallery);
+      switch (options.quality) {
+        case CameraVideoQuality.HIGHEST:
+          this._camera.setQuality(co.fitcom.fancycamera.FancyCamera.Quality.HIGHEST.getValue());
+          break;
+        case CameraVideoQuality.LOWEST:
+          this._camera.setQuality(co.fitcom.fancycamera.FancyCamera.Quality.LOWEST.getValue());
+          break;
+        case CameraVideoQuality.MAX_2160P:
+          this._camera.setQuality(co.fitcom.fancycamera.FancyCamera.Quality.MAX_2160P.getValue());
+          break;
+        case CameraVideoQuality.MAX_1080P:
+          this._camera.setQuality(co.fitcom.fancycamera.FancyCamera.Quality.MAX_1080P.getValue());
+          break;
+        case CameraVideoQuality.MAX_720P:
+          this._camera.setQuality(co.fitcom.fancycamera.FancyCamera.Quality.MAX_720P.getValue());
+          break;
+        case CameraVideoQuality.QVGA:
+          this._camera.setQuality(co.fitcom.fancycamera.FancyCamera.Quality.QVGA.getValue());
+          break;
+        default:
+          this._camera.setQuality(co.fitcom.fancycamera.FancyCamera.Quality.MAX_480P.getValue());
+          break;
+      }
+      // -1 uses profile value;
+      this._camera.setMaxAudioBitRate(options.androidMaxAudioBitRate || -1);
+      this._camera.setMaxVideoBitrate(options.androidMaxVideoBitRate || -1);
+      this._camera.setMaxVideoFrameRate(options.androidMaxFrameRate || -1);
+
       const permResult = await this.requestVideoRecordingPermissions();
       CLog(permResult);
       this._camera.startRecording();
