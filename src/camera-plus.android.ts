@@ -62,7 +62,7 @@ export * from './camera-plus.common';
 export class CameraPlus extends CameraPlusBase {
   // @GetSetProperty() public camera: android.hardware.Camera;
   // Snapshot-friendly, since the decorator will include the snapshot-unknown object "android"
-  private _camera: co.fitcom.fancycamera.FancyCamera;
+  private _camera;
   private _cameraId;
 
   @GetSetProperty()
