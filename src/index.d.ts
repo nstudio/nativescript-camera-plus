@@ -267,6 +267,10 @@ export interface IVideoOptions {
   saveToGallery?: boolean;
   height?: number;
   width?: number;
+  disableHEVC?: boolean;
+  androidMaxVideoBitRate?: number;
+  androidMaxFrameRate?: number;
+  androidMaxAudioBitRate?: number;
 }
 
 export interface IChooseOptions {
