@@ -924,13 +924,18 @@ export class CameraPlus extends CameraPlusBase {
       }
 
       // this._log.debug('isIPhoneX name:', name);
-      this._isIPhoneX =
-        name.indexOf('iPhone10,3') === 0 ||
-        name.indexOf('iPhone10,6') === 0 ||
-        name.indexOf('iPhone11,2') === 0 ||
-        name.indexOf('iPhone11,4') === 0 ||
-        name.indexOf('iPhone11,6') === 0 ||
-        name.indexOf('iPhone11,8') === 0;
+      const parts = name.toLowerCase().split('iphone');
+      if (parts && parts.length > 1) {
+        const versionNumber = parseInt(parts[1]);
+        if (!isNaN(versionNumber)) {
+          // all above or greater than 11 are X devices
+          this._isIPhoneX = versionNumber >= 11;
+        }
+      }
+      if (!this._isIPhoneX) {
+        // consider iphone x global and iphone x gsm
+        this._isIPhoneX = name.indexOf('iPhone10,3') === 0 || name.indexOf('iPhone10,6') === 0;
+      }
     }
   }
 }
