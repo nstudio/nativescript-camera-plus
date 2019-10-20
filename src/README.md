@@ -5,7 +5,7 @@
 
 <p align="center">
 <a href="https://liveshopper.com">
-    <img align="center" src="./src/images/liveshopper.png" alt="LiveShopper Logo"/>
+    <img align="center" src="./images/liveshopper.png" alt="LiveShopper Logo"/>
     <a>
 </p>
 
@@ -29,7 +29,7 @@
 
 <p align="center">
     <a align="center" href="http://nstudio.io">
-      <img src="./src/images/nstudio-banner.png" alt="nStudio banner">
+      <img src="./images/nstudio-banner.png" alt="nStudio banner">
     </a>
     <h5 align="center">Do you need assistance on your project or plugin? Contact the nStudio team anytime at <a href="mailto:team@nstudio.io">team@nstudio.io</a> to get up to speed with the best practices in mobile and web app development.
     </h5>
