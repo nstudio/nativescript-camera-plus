@@ -1,4 +1,4 @@
 dependencies {
    implementation "com.android.support:exifinterface:+"
-   implementation 'co.fitcom:fancycamera:1.1.11'
+   implementation 'co.fitcom:fancycamera:1.1.12'
 }
