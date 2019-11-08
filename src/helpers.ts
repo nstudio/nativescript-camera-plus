@@ -270,6 +270,9 @@ export function createImageConfirmationDialog(file, retakeText = 'Retake', saveT
 
       const img = new android.widget.ImageView(app.android.context);
 
+      const scale = app.android.context.getResources().getDisplayMetrics().density;
+      img.setPadding(0, 10 * scale, 0, 0);
+
       img.setImageBitmap(picture);
       layout.addView(img);
       alert.setView(layout);
