@@ -174,9 +174,7 @@ export function getOptimalPictureSize(
   }
 
   CLog(
-    `optimalPictureSize = ${optimalSize}, optimalPictureSize.width = ${
-      optimalSize.width
-    }, optimalPictureSize.height = ${optimalSize.height}`
+    `optimalPictureSize = ${optimalSize}, optimalPictureSize.width = ${optimalSize.width}, optimalPictureSize.height = ${optimalSize.height}`
   );
   return optimalSize;
 }

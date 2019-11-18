@@ -7,23 +7,22 @@
 import { Color } from 'tns-core-modules/color';
 import * as fs from 'tns-core-modules/file-system/file-system';
 import { ImageAsset } from 'tns-core-modules/image-asset';
-import { screen } from 'tns-core-modules/platform';
+import * as platform from 'tns-core-modules/platform';
+import { View } from 'tns-core-modules/ui/core/view';
 import * as types from 'tns-core-modules/utils/types';
 import {
   CameraPlusBase,
   CameraTypes,
+  CameraVideoQuality,
   CLog,
   GetSetProperty,
   ICameraOptions,
   IChooseOptions,
-  IVideoOptions,
-  CameraVideoQuality
+  IVideoOptions
 } from './camera-plus.common';
-import { layout, View } from 'tns-core-modules/ui/core/view';
 
-export { CameraVideoQuality } from './camera-plus.common';
 export * from './camera-plus.common';
-import * as platform from 'tns-core-modules/platform';
+export { CameraVideoQuality } from './camera-plus.common';
 /**
  * Library image picker delegate (multiple or single)
  */

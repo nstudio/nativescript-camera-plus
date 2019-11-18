@@ -7,12 +7,11 @@
 
 import * as permissions from 'nativescript-permissions';
 import * as app from 'tns-core-modules/application';
-import * as fs from 'tns-core-modules/file-system';
 import { ImageAsset } from 'tns-core-modules/image-asset';
 import { device } from 'tns-core-modules/platform';
+import { View } from 'tns-core-modules/ui/core/view/view';
 import * as types from 'tns-core-modules/utils/types';
 import * as utils from 'tns-core-modules/utils/utils';
-import './async-await'; // attach global async/await for NS
 import {
   CameraPlusBase,
   CameraVideoQuality,
@@ -25,7 +24,7 @@ import {
 } from './camera-plus.common';
 import * as CamHelpers from './helpers';
 import { SelectedAsset } from './selected-asset';
-import { View } from 'tns-core-modules/ui/core/view/view';
+export * from './camera-plus.common';
 export { CameraVideoQuality } from './camera-plus.common';
 const REQUEST_VIDEO_CAPTURE = 999;
 const WRAP_CONTENT = -2;
@@ -56,8 +55,6 @@ const WRITE_EXTERNAL_STORAGE = () => (android as any).Manifest.permission.WRITE_
 // Since these device.* properties resolve directly to the android.* namespace,
 // the snapshot will fail if they resolve during import, so must be done via a function
 const DEVICE_INFO_STRING = () => `device: ${device.manufacturer} ${device.model} on SDK: ${device.sdkVersion}`;
-
-export * from './camera-plus.common';
 
 export class CameraPlus extends CameraPlusBase {
   // @GetSetProperty() public camera: android.hardware.Camera;
