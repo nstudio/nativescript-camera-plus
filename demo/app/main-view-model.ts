@@ -103,7 +103,7 @@ export class HelloWorldModel extends Observable {
     this.cam.chooseFromLibrary().then(
       (images: Array<ImageAsset>) => {
         console.log('Images selected from library total:', images.length);
-        for (let source of images) {
+        for (const source of images) {
           console.log(`source = ${source}`);
         }
         const testImg = Frame.topmost().getViewById('testImagePickResult') as Image;
