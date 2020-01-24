@@ -7,7 +7,7 @@
     "ci.tslint": "cd src && npm run tslint && cd ../demo && npm run ci.tslint",
     "ci.vanilla.android.build": "cd demo && tns build android --env.uglify",
     "ci.vanilla.ios.build": "cd demo && tns build ios --env.uglify",
-    "ci.ng.android.build": "cd src && npm pack && cd ../demo-angular && tns plugin remove @nstudio/nativescript-camera-plus && tns plugin add ../src/nstudio-nativescript-camera-plus-3.0.5.tgz && tns build android --env.aot --env.uglify",
-    "ci.ng.ios.build": "cd src && npm pack && cd ../demo-angular && tns plugin remove @nstudio/nativescript-camera-plus && tns plugin add ../src/nstudio-nativescript-camera-plus-3.0.5.tgz && tns build ios --env.aot --env.uglify"
+    "ci.ng.android.build": "cd src && npm pack && cd ../demo-ng && tns plugin remove @nstudio/nativescript-camera-plus && tns plugin add ../src/nstudio-nativescript-camera-plus-3.0.5.tgz && tns build android --env.aot --env.uglify",
+    "ci.ng.ios.build": "cd src && npm pack && cd ../demo-ng && tns plugin remove @nstudio/nativescript-camera-plus && tns plugin add ../src/nstudio-nativescript-camera-plus-3.0.5.tgz && tns build ios --env.aot --env.uglify"
   }
 }
