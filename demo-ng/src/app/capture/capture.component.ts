@@ -93,9 +93,7 @@ export class CaptureComponent implements OnInit, OnDestroy {
 
   private loadImage(imageAsset: ImageAsset): void {
     if (imageAsset) {
-      this.imageSource = new ImageSource();
-
-      this.imageSource.fromAsset(imageAsset).then(
+      ImageSource.fromAsset(imageAsset).then(
         imgSrc => {
           if (imgSrc) {
             this.zone.run(() => {

@@ -8,7 +8,7 @@
   "dependencies": {
     "@nativescript/angular": "~8.20.4",
     "@nativescript/core": "^6.3.2",
-    "@nstudio/nativescript-camera-plus": "file:../src/nstudio-nativescript-camera-plus-3.0.5.tgz",
+    "@nstudio/nativescript-camera-plus": "file:../src",
     "@angular/animations": "8.2.14",
     "@angular/common": "^8.2.14",
     "@angular/compiler": "^8.2.14",
@@ -32,6 +32,7 @@
     "@nativescript/schematics": "~0.5.0",
     "@ngtools/webpack": "~8.3.21",
     "nativescript-dev-webpack": "~1.4.1",
+    "tslint": "~6.0.0",
     "typescript": "3.7.4"
   },
   "scripts": {

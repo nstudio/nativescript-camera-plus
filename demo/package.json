@@ -19,7 +19,7 @@
     "nativescript-css-loader": "~0.26.1",
     "nativescript-dev-webpack": "1.4.1",
     "tns-platform-declarations": "^6.3.2",
-    "tslint": "~5.20.1",
+    "tslint": "~6.0.0",
     "typescript": "^3.7.4",
     "karma-webpack": "3.0.5"
   },
