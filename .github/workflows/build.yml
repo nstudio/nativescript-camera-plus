@@ -50,10 +50,10 @@ jobs:
         run: npm run ci.base.setup && npm run ci.pip.install
 
       - name: Build Vanilla iOS Demo App
-        run: cd src && npm run ci.vanilla.ios.build
+        run: npm run ci.vanilla.ios.build
 
       - name: Build Angular iOS
-        run: cd src && npm run ci.ng.ios.build
+        run: npm run ci.ng.ios.build
 
       - name: iOS Test
         run: |
