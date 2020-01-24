@@ -1,4 +1,4 @@
-<Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" class="page"
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" class="page" 
   xmlns:Cam="@nstudio/nativescript-camera-plus">
   <Page.actionBar>
     <ActionBar title="Camera Plus Demo" icon=""></ActionBar>

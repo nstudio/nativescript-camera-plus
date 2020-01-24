@@ -1,11 +1,11 @@
+import { Observable } from '@nativescript/core/data/observable';
+import { ImageAsset } from '@nativescript/core/image-asset';
+import { ImageSource } from '@nativescript/core/image-source';
+import { screen } from '@nativescript/core/platform';
+import { Frame } from '@nativescript/core/ui/frame';
+import { Image } from '@nativescript/core/ui/image';
+import { Page } from '@nativescript/core/ui/page';
 import { CameraPlus } from '@nstudio/nativescript-camera-plus';
-import { Observable } from 'tns-core-modules/data/observable';
-import { ImageAsset } from 'tns-core-modules/image-asset';
-import { ImageSource } from 'tns-core-modules/image-source';
-import { screen } from 'tns-core-modules/platform';
-import { Frame } from 'tns-core-modules/ui/frame';
-import { Image } from 'tns-core-modules/ui/image';
-import { Page } from 'tns-core-modules/ui/page';
 import { ObservableProperty } from './observable-property';
 
 export class HelloWorldModel extends Observable {
