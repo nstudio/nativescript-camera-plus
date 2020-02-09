@@ -199,3 +199,10 @@ export interface IVideoOptions {
   androidMaxAudioBitRate?: number;
 }
 ```
+
+### Contributing
+
+1. Fork and clone the repo.
+2. Execute `npm run dev.setup` in the root of the repo in your clone.
+3. Execute `npm run demo.android` or `npm run demo.ios` to start the demo app on the platform provided. If you have a device connected to your computer then it should start the app on the device. If not, an emulator/simulator should start.
+4. Lastly, you should be able to make changes to the source files in the `src` directory of the plugin and changes by synced to your running demo app.
