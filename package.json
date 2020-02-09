@@ -8,6 +8,13 @@
     "ci.vanilla.android.build": "cd demo && tns build android --env.uglify",
     "ci.vanilla.ios.build": "cd demo && tns build ios --env.uglify",
     "ci.ng.android.build": "cd demo-ng && tns build android --env.aot --env.uglify",
-    "ci.ng.ios.build": "cd demo-ng && tns build ios --env.aot --env.uglify"
+    "ci.ng.ios.build": "cd demo-ng && tns build ios --env.aot --env.uglify",
+    "dev.setup": "cd src && npm i && tsc",
+    "demo.ios": " cd demo && tns run ios",
+    "demo.android": "cd demo && tns run android",
+    "demo.ng.ios": "cd demo-ng && tns run ios --env.aot",
+    "demo.ng.android": "cd demo-ng && tns run android --env.aot",
+    "test.ios": "cd ../demo && tns test ios",
+    "test.android": "cd ../demo && tns test android"
   }
 }

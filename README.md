@@ -61,26 +61,24 @@ You can launch them from the simulator/emulator however the camera does not work
 
 The camera in your webcam being used on emulators will likely be rotated sideways (incorrectly). The actual camera output will be correctly oriented, it's only the preview on emulators that present the preview incorrectly. This issue shouldn't be present on real devices due to the camera being oriented correctly on the device vs. a webcam in a computer.
 
-NOTE: You may want to run: `npm run nuke` first to clear and reset directories.
-
 ### Run Vanilla Demo
 
-Plug device in, then:
+Plug device in then:
 
 ```bash
-npm run demo.ios.device
+npm run demo.ios
 // or...
-npm run demo.android.device
+npm run demo.android
 ```
 
 ### Run Angular Demo
 
-Plug device in, then:
+Plug device in then:
 
 ```bash
-npm run demo.ng.ios.device
+npm run demo.ng.ios
 // or...
-npm run demo.ng.android.device
+npm run demo.ng.android
 ```
 
 ## Properties
