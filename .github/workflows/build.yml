@@ -57,5 +57,5 @@ jobs:
 
       - name: iOS Test
         run: |
-          cd src && npm i && npm run tsc && cd ../demo && tns build ios
+          cd src && npm i && tsc && cd ../demo && tns build ios
           tns test ios --justlaunch
