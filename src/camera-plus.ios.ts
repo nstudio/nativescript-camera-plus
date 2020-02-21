@@ -7,22 +7,22 @@
 import { Color } from 'tns-core-modules/color';
 import * as fs from 'tns-core-modules/file-system/file-system';
 import { ImageAsset } from 'tns-core-modules/image-asset';
-import { screen } from 'tns-core-modules/platform';
+import * as platform from 'tns-core-modules/platform';
+import { View } from 'tns-core-modules/ui/core/view';
 import * as types from 'tns-core-modules/utils/types';
 import {
   CameraPlusBase,
   CameraTypes,
+  CameraVideoQuality,
   CLog,
   GetSetProperty,
   ICameraOptions,
   IChooseOptions,
-  IVideoOptions,
-  CameraVideoQuality
+  IVideoOptions
 } from './camera-plus.common';
-import { layout, View } from 'tns-core-modules/ui/core/view';
 
+export * from './camera-plus.common';
 export { CameraVideoQuality } from './camera-plus.common';
-import * as platform from 'tns-core-modules/platform';
 /**
  * Library image picker delegate (multiple or single)
  */
@@ -202,6 +202,7 @@ export class SwiftyDelegate extends NSObject implements SwiftyCamViewControllerD
 
   swiftyCamSessionDidStartRunning(swiftyCam: SwiftyCamViewController) {
     CLog('swiftyCamSessionDidStartRunning:');
+    this._owner.get().doLayout();
   }
 
   swiftyCamDidBeginRecordingVideo(swiftyCam: SwiftyCamViewController, camera: CameraSelection) {
@@ -322,6 +323,14 @@ export class MySwifty extends SwiftyCamViewController {
     CLog('this.cameraDelegate:', this.cameraDelegate);
   }
 
+  doLayout() {
+    const size = this._owner.get().getActualSize();
+    const nativeView = this._owner.get().nativeView;
+    const frame = nativeView.frame;
+    nativeView.frame = CGRectMake(frame.origin.x, frame.origin.y, size.width, size.height);
+    nativeView.setNeedsLayout();
+  }
+
   viewDidLayoutSubviews() {
     CLog('MySwifty viewDidLayoutSubviews');
     super.viewDidLayoutSubviews();
@@ -392,7 +401,7 @@ export class MySwifty extends SwiftyCamViewController {
             saveToGallery: this._owner.get().saveToGallery
           };
         }
-        if (parseFloat(platform.device.sdkVersion) >= 11) {
+        if (!options.disableHEVC && parseFloat(platform.device.sdkVersion) >= 11) {
           this.videoCodecType = AVVideoCodecTypeHEVC;
         }
         switch (options ? options.quality : CameraVideoQuality.MAX_480P) {
@@ -666,7 +675,7 @@ export class MySwifty extends SwiftyCamViewController {
     }
 
     if (this._owner.get().showCaptureIcon) {
-      const heightOffset = this._owner.get().isIPhoneX ? 160 : 80;
+      const heightOffset = this._owner.get().isIPhoneX ? 200 : 110;
       const picOutline = createButton(
         this,
         CGRectMake(width / 2 - 20, height - heightOffset, 50, 50),
@@ -730,6 +739,7 @@ export class CameraPlus extends CameraPlusBase {
     this._onLayoutChangeListener = this._onLayoutChangeFn.bind(this);
     CLog('CameraPlus constructor');
     this._swifty = MySwifty.initWithOwner(new WeakRef(this), CameraPlus.defaultCamera);
+    this._swifty.shouldPrompToAppSettings = false;
 
     // experimenting with static flag (this is usually explicitly false)
     // enable device orientation
@@ -757,6 +767,11 @@ export class CameraPlus extends CameraPlusBase {
   private _onLayoutChangeFn(args) {
     const size = this.getActualSize();
     CLog('xml width/height:', size.width + 'x' + size.height);
+    const frame = this._swifty.view.frame;
+    this._swifty.view.frame = CGRectMake(frame.origin.x, frame.origin.y, size.width, size.height);
+    this._swifty.previewLayer.frame = CGRectMake(frame.origin.x, frame.origin.y, size.width, size.height);
+    this._swifty.view.setNeedsLayout();
+    this._swifty.previewLayer.setNeedsLayout();
   }
 
   private _onLayoutChangeListener: any;
@@ -860,8 +875,9 @@ export class CameraPlus extends CameraPlusBase {
   /**
    * Record video
    */
-  public record(options?: IVideoOptions): void {
+  public record(options?: IVideoOptions): Promise<any> {
     this._swifty.recordVideo(options);
+    return Promise.resolve();
   }
 
   /**
@@ -907,13 +923,18 @@ export class CameraPlus extends CameraPlusBase {
       }
 
       // this._log.debug('isIPhoneX name:', name);
-      this._isIPhoneX =
-        name.indexOf('iPhone10,3') === 0 ||
-        name.indexOf('iPhone10,6') === 0 ||
-        name.indexOf('iPhone11,2') === 0 ||
-        name.indexOf('iPhone11,4') === 0 ||
-        name.indexOf('iPhone11,6') === 0 ||
-        name.indexOf('iPhone11,8') === 0;
+      const parts = name.toLowerCase().split('iphone');
+      if (parts && parts.length > 1) {
+        const versionNumber = parseInt(parts[1]);
+        if (!isNaN(versionNumber)) {
+          // all above or greater than 11 are X devices
+          this._isIPhoneX = versionNumber >= 11;
+        }
+      }
+      if (!this._isIPhoneX) {
+        // consider iphone x global and iphone x gsm
+        this._isIPhoneX = name.indexOf('iPhone10,3') === 0 || name.indexOf('iPhone10,6') === 0;
+      }
     }
   }
 }

@@ -1,11 +1,11 @@
-import { CameraPlus, CameraVideoQuality } from '@nstudio/nativescript-camera-plus';
-import { Observable } from 'tns-core-modules/data/observable';
-import { ImageAsset } from 'tns-core-modules/image-asset';
-import { fromAsset } from 'tns-core-modules/image-source';
-import { screen } from 'tns-core-modules/platform';
-import { topmost } from 'tns-core-modules/ui/frame';
-import { Image } from 'tns-core-modules/ui/image';
-import { Page } from 'tns-core-modules/ui/page';
+import { Observable } from '@nativescript/core/data/observable';
+import { ImageAsset } from '@nativescript/core/image-asset';
+import { ImageSource } from '@nativescript/core/image-source';
+import { screen } from '@nativescript/core/platform';
+import { Frame } from '@nativescript/core/ui/frame';
+import { Image } from '@nativescript/core/ui/image';
+import { Page } from '@nativescript/core/ui/page';
+import { CameraPlus } from '@nstudio/nativescript-camera-plus';
 import { ObservableProperty } from './observable-property';
 
 export class HelloWorldModel extends Observable {
@@ -23,7 +23,7 @@ export class HelloWorldModel extends Observable {
     // hide a default icon button here
     // this.cam.showGalleryIcon = false
 
-    this.cameraHeight = screen.mainScreen.heightDIPs;
+    this.cameraHeight = screen.mainScreen.heightDIPs * 0.6;
 
     if (this._counter > 0) {
       return;
@@ -40,8 +40,8 @@ export class HelloWorldModel extends Observable {
     this.cam.on(CameraPlus.photoCapturedEvent, (args: any) => {
       console.log(`photoCapturedEvent listener on main-view-model.ts  ${args}`);
       console.log((<any>args).data);
-      fromAsset((<any>args).data).then(res => {
-        const testImg = topmost().getViewById('testImagePickResult') as Image;
+      ImageSource.fromAsset((<any>args).data).then(res => {
+        const testImg = Frame.topmost().getViewById('testImagePickResult') as Image;
         testImg.src = res;
       });
     });
@@ -103,15 +103,15 @@ export class HelloWorldModel extends Observable {
     this.cam.chooseFromLibrary().then(
       (images: Array<ImageAsset>) => {
         console.log('Images selected from library total:', images.length);
-        for (let source of images) {
+        for (const source of images) {
           console.log(`source = ${source}`);
         }
-        const testImg = topmost().getViewById('testImagePickResult') as Image;
+        const testImg = Frame.topmost().getViewById('testImagePickResult') as Image;
         const firstImg = images[0];
         console.log(firstImg);
-        fromAsset(firstImg)
+        ImageSource.fromAsset(firstImg)
           .then(res => {
-            const testImg = topmost().getViewById('testImagePickResult') as Image;
+            const testImg = Frame.topmost().getViewById('testImagePickResult') as Image;
             testImg.src = res;
           })
           .catch(err => {

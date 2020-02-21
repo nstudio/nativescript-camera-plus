@@ -5,7 +5,7 @@ demo/
 demo-ng/
 screenshots/
 /scripts
-logos/
+images/
 *.gif
 *.png
 *.log

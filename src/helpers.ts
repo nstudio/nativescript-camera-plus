@@ -174,9 +174,7 @@ export function getOptimalPictureSize(
   }
 
   CLog(
-    `optimalPictureSize = ${optimalSize}, optimalPictureSize.width = ${
-      optimalSize.width
-    }, optimalPictureSize.height = ${optimalSize.height}`
+    `optimalPictureSize = ${optimalSize}, optimalPictureSize.width = ${optimalSize.width}, optimalPictureSize.height = ${optimalSize.height}`
   );
   return optimalSize;
 }
@@ -238,7 +236,7 @@ export function getOrientationFromBytes(data): number {
   return orientation;
 }
 
-export function createImageConfirmationDialog(data, retakeText = 'Retake', saveText = 'Save'): Promise<boolean> {
+export function createImageConfirmationDialog(file, retakeText = 'Retake', saveText = 'Save'): Promise<boolean> {
   return new Promise((resolve, reject) => {
     try {
       const alert = new android.app.AlertDialog.Builder(
@@ -259,16 +257,19 @@ export function createImageConfirmationDialog(data, retakeText = 'Retake', saveT
       // https://developer.android.com/topic/performance/graphics/load-bitmap.html
       const bitmapFactoryOpts = new android.graphics.BitmapFactory.Options();
       bitmapFactoryOpts.inJustDecodeBounds = true;
-      let picture = android.graphics.BitmapFactory.decodeByteArray(data, 0, data.length, bitmapFactoryOpts);
+      let picture = android.graphics.BitmapFactory.decodeFile(file, bitmapFactoryOpts);
 
       bitmapFactoryOpts.inSampleSize = calculateInSampleSize(bitmapFactoryOpts, 300, 300);
 
       // decode with inSampleSize set now
       bitmapFactoryOpts.inJustDecodeBounds = false;
 
-      picture = android.graphics.BitmapFactory.decodeByteArray(data, 0, data.length, bitmapFactoryOpts);
+      picture = android.graphics.BitmapFactory.decodeFile(file, bitmapFactoryOpts);
 
       const img = new android.widget.ImageView(app.android.context);
+
+      const scale = app.android.context.getResources().getDisplayMetrics().density;
+      img.setPadding(0, 10 * scale, 0, 0);
 
       img.setImageBitmap(picture);
       layout.addView(img);

@@ -1,6 +1,20 @@
 {
   "name": "camplus-root",
   "scripts": {
-    "precommit": "cd src && lint-staged"
+    "precommit": "cd src && lint-staged",
+    "ci.base.setup": "npm i && npm i -g typescript && tsc && echo no | npm i -g nativescript && tns usage-reporting disable && tns error-reporting disable && cd src && npm i && tsc",
+    "ci.pip.install": "sudo pip install --upgrade pip && sudo pip install six",
+    "ci.tslint": "cd src && npm run tslint && cd ../demo && npm run ci.tslint && cd ../demo-ng && npm run ci.tslint",
+    "ci.vanilla.android.build": "cd demo && tns build android --env.uglify",
+    "ci.vanilla.ios.build": "cd demo && tns build ios --env.uglify",
+    "ci.ng.android.build": "cd demo-ng && tns build android --env.aot --env.uglify",
+    "ci.ng.ios.build": "cd demo-ng && tns build ios --env.aot --env.uglify",
+    "dev.setup": "cd src && npm i && tsc",
+    "demo.ios": " cd demo && tns run ios",
+    "demo.android": "cd demo && tns run android",
+    "demo.ng.ios": "cd demo-ng && tns run ios --env.aot",
+    "demo.ng.android": "cd demo-ng && tns run android --env.aot",
+    "test.ios": "cd ../demo && tns test ios",
+    "test.android": "cd ../demo && tns test android"
   }
 }

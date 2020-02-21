@@ -11,6 +11,7 @@
 !index.d.ts
 !src/typings/*d.ts
 !scripts/*.js
+!webpack.config.js
 demo/app/*.js
 !demo/karma.conf.js
 !demo/app/tests/*.js

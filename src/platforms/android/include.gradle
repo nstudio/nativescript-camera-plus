@@ -1,7 +1,10 @@
-android {
-    
+allprojects {
+    repositories {
+        maven { url "https://jitpack.io" }
+        google()
+    }
 }
-
 dependencies {
-    compile "com.android.support:exifinterface:+"
+   implementation "com.android.support:exifinterface:+"
+	implementation 'com.github.triniwiz:fancycamera:1.2.3'
 }

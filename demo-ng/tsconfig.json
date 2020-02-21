@@ -1,32 +1,22 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "target": "es2015",
-        "declaration": false,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "noEmitHelpers": false,
-        "noEmitOnError": false,
-        "skipLibCheck": true,
-        "lib": [
-            "es2017",
-            "dom",
-            "es6",
-            "es2015.iterable"
-        ],
-        "baseUrl": ".",
-        "paths": {
-            "*": [
-                "./node_modules/tns-core-modules/*",
-                "./node_modules/*"
-            ],
-            "~/*": [
-                "app/*"
-            ]
-        }
-    },
-    "exclude": [
-        "node_modules",
-        "platforms"
-    ]
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "noEmitHelpers": true,
+    "noEmitOnError": true,
+    "lib": ["es6", "dom", "es2015.iterable"],
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["src/*"],
+      "*": ["./node_modules/*"]
+    }
+  },
+  "exclude": ["node_modules", "platforms", "../src/node_modules"],
+  "include": ["../src", "**/*"],
+  "angularCompilerOptions": {
+    "disableTypeScriptVersionCheck": true // disabling for now to use TS 3.7.3 which should be fine with Angular and available in Q1 with NG9 release
+  }
 }

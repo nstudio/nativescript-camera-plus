@@ -1,6 +1,6 @@
-import { View } from 'tns-core-modules/ui/core/view';
+import { ContentView } from 'tns-core-modules/ui/content-view';
 
-export declare class CameraPlus extends View {
+export declare class CameraPlus extends ContentView {
   events: ICameraPlusEvents;
 
   /**
@@ -166,7 +166,7 @@ export declare class CameraPlus extends View {
    * Start recording video
    * @param options IVideoOptions
    */
-  record(options?: IVideoOptions): void;
+  record(options?: IVideoOptions): Promise<void>;
 
   /**
    * Stop recording video.
@@ -267,6 +267,10 @@ export interface IVideoOptions {
   saveToGallery?: boolean;
   height?: number;
   width?: number;
+  disableHEVC?: boolean;
+  androidMaxVideoBitRate?: number;
+  androidMaxFrameRate?: number;
+  androidMaxAudioBitRate?: number;
 }
 
 export interface IChooseOptions {
