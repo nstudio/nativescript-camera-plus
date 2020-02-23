@@ -76,7 +76,7 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
     return new Date(year, month - 1, date, hour, minutes, seconds);
   }
 
-  qb_imagePickerControllerDidFinishPickingAssets(picker, assets: NSArray<any>): void {
+  qb_imagePickerControllerDidFinishPickingAssets(picker, assets: NSArray<PHAsset>): void {
     const selection = [];
     const manager = PHImageManager.defaultManager();
     // let scale = UIScreen.mainScreen.scale;
@@ -103,24 +103,38 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
 
     const requestImg = (i: number) => {
       // Do something with the asset
-      const asset = <PHAsset>assets.objectAtIndex(i);
+      const asset = assets.objectAtIndex(i);
       if (asset.mediaType === PHAssetMediaType.Image) {
-        manager.requestImageForAssetTargetSizeContentModeOptionsResultHandler(
-          asset,
-          targetSize,
-          PHImageContentMode.AspectFill,
-          requestOptions,
-          (image: UIImage, info: NSDictionary<any, any>) => {
-            const imageAsset = new ImageAsset(image);
-            // imageAsset.options = {
-            //   keepAspectRatio: this._keepAspectRatio
-            // };=
-            if (this._width) imageAsset.options.width = this._width;
-            if (this._height) imageAsset.options.height = this._height;
-            selection.push(imageAsset);
-            next.call(this);
-          }
-        );
+        // ios >= 13 added this api to get the original image
+        if (manager.requestImageDataAndOrientationForAssetOptionsResultHandler) {
+          manager.requestImageDataAndOrientationForAssetOptionsResultHandler(
+            asset,
+            requestOptions,
+            (imageData: NSData, dataUti: string, orientation: CGImagePropertyOrientation, info: NSDictionary<any, any>) => {
+              const image = new UIImage({data: imageData});
+              const imageAsset = new ImageAsset(image);
+              if (this._width) imageAsset.options.width = this._width;
+              if (this._height) imageAsset.options.height = this._height;
+              selection.push(imageAsset);
+              next.call(this);
+            }
+          );
+        }
+        else {
+          manager.requestImageForAssetTargetSizeContentModeOptionsResultHandler(
+            asset,
+            targetSize,
+            PHImageContentMode.AspectFill,
+            requestOptions,
+            (image: UIImage, info: NSDictionary<any, any>) => {
+              const imageAsset = new ImageAsset(image);
+              if (this._width) imageAsset.options.width = this._width;
+              if (this._height) imageAsset.options.height = this._height;
+              selection.push(imageAsset);
+              next.call(this);
+            }
+          );
+        }
       } else if (asset.mediaType === PHAssetMediaType.Video) {
         const requestOptions = PHVideoRequestOptions.alloc().init();
         requestOptions.version = PHVideoRequestOptionsVersion.Original;
