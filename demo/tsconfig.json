@@ -1,18 +1,18 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es2015",
+    "target": "es5",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
     "noEmitHelpers": true,
     "noEmitOnError": false,
-    "skipLibCheck": true,
-    "lib": ["es2017", "dom", "es6"],
+    "diagnostics": true,
+    "lib": ["es6", "dom"],
     "baseUrl": ".",
     "paths": {
-      "*": ["./node_modules/tns-core-modules/*", "./node_modules/*"],
       "~/*": ["app/*"]
     }
   },
-  "exclude": ["node_modules", "platforms", "**/*.aot.ts"]
+  "exclude": ["node_modules", "platforms", "**/*.aot.ts", "../src/node_modules"]
 }

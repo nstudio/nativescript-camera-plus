@@ -1,13 +1,10 @@
 {
   "nativescript": {
-    "id": "org.nativescript.demong",
-    "tns-android": {
-      "version": "6.3.1"
-    }
+    "id": "org.nativescript.demong"
   },
   "dependencies": {
     "@nativescript/angular": "~8.20.4",
-    "@nativescript/core": "^6.3.2",
+    "@nativescript/core": "^6.4.1",
     "@nstudio/nativescript-camera-plus": "file:../src",
     "@angular/animations": "8.2.14",
     "@angular/common": "^8.2.14",
@@ -33,7 +30,7 @@
     "@ngtools/webpack": "~8.3.21",
     "nativescript-dev-webpack": "~1.4.1",
     "tslint": "~6.0.0",
-    "typescript": "3.7.4"
+    "typescript": "3.7.5"
   },
   "scripts": {
     "build.plugin": "cd ../src && npm run build",
