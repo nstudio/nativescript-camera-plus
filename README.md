@@ -50,7 +50,7 @@ tns plugin add @nstudio/nativescript-camera-plus
 
 _Yes the camera is rotated because it's a webcam to an emulator and it's just the way life works_
 
-![Camera Plus](images/camplus1.gif)
+![Camera Plus](src/images/camplus1.gif)
 
 ## Demo
 
