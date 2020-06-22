@@ -742,6 +742,10 @@ export class CameraPlus extends CameraPlusBase {
 
   @GetSetProperty()
   public enableVideo: boolean;
+
+  @GetSetProperty()
+  public resizeAspectFill: boolean;
+
   // library picker handling
   private _galleryMax: number = 3;
   private _galleryPickerWidth: number;
@@ -765,8 +769,15 @@ export class CameraPlus extends CameraPlusBase {
     return this.enableVideo === true || CameraPlus.enableVideo;
   }
 
+  private hasVideoGravity() {
+    return this.resizeAspectFill === true || CameraPlus.resizeAspectFill;
+  }
+
   createNativeView() {
-    // this._swifty.videoGravity = SwiftyCamVideoGravity.ResizeAspectFill;
+    if (this.hasVideoGravity()) {
+      this._swifty.videoGravity = SwiftyCamVideoGravity.ResizeAspectFill;
+    }
+    
     this._swifty.enableVideo = this.isVideoEnabled();
     // disable audio if no video support
     this._swifty.disableAudio = !this.isVideoEnabled();

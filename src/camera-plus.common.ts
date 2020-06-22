@@ -35,6 +35,11 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
   public static enableVideo: boolean = false;
 
   /**
+   * If true the preview box will fit the screen size
+   */
+  public static resizeAspectFill: boolean = false;
+
+  /**
    * Default camera: must be set early before constructor to default the camera correctly on launch (default to rear)
    */
   public static defaultCamera: CameraTypes = 'rear';
