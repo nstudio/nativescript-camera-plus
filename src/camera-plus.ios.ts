@@ -4,12 +4,9 @@
  * Version 1.1.0                                                    team@nStudio.io
  **********************************************************************************/
 
-import { Color } from 'tns-core-modules/color';
-import * as fs from 'tns-core-modules/file-system/file-system';
-import { ImageAsset } from 'tns-core-modules/image-asset';
-import * as platform from 'tns-core-modules/platform';
-import { View } from 'tns-core-modules/ui/core/view';
-import * as types from 'tns-core-modules/utils/types';
+/// <reference path="./node_modules/@nativescript/types-ios/index.d.ts" />
+
+import { Color, Device, File, ImageAsset, knownFolders, path, Utils, View } from '@nativescript/core';
 import {
   CameraPlusBase,
   CameraTypes,
@@ -18,7 +15,7 @@ import {
   GetSetProperty,
   ICameraOptions,
   IChooseOptions,
-  IVideoOptions
+  IVideoOptions,
 } from './camera-plus.common';
 
 export * from './camera-plus.common';
@@ -56,7 +53,7 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
     if (options) {
       this._width = options.width;
       this._height = options.height;
-      this._keepAspectRatio = types.isNullOrUndefined(options.keepAspectRatio) ? true : options.keepAspectRatio;
+      this._keepAspectRatio = Utils.isNullOrUndefined(options.keepAspectRatio) ? true : options.keepAspectRatio;
     } else {
       this._keepAspectRatio = true; // always default to true
     }
@@ -110,7 +107,12 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
           manager.requestImageDataAndOrientationForAssetOptionsResultHandler(
             asset,
             requestOptions,
-            (imageData: NSData, dataUti: string, orientation: CGImagePropertyOrientation, info: NSDictionary<any, any>) => {
+            (
+              imageData: NSData,
+              dataUti: string,
+              orientation: CGImagePropertyOrientation,
+              info: NSDictionary<any, any>
+            ) => {
               const image = new UIImage({ data: imageData });
               const imageAsset = new ImageAsset(image);
               if (this._width) imageAsset.options.width = this._width;
@@ -120,8 +122,7 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
               next.call(this);
             }
           );
-        }
-        else {
+        } else {
           manager.requestImageForAssetTargetSizeContentModeOptionsResultHandler(
             asset,
             targetSize,
@@ -147,15 +148,15 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
           requestOptions,
           (videoAsset: AVAsset, audioMix, info) => {
             if (videoAsset.isKindOfClass(AVURLAsset.class())) {
-              const docsPath = fs.knownFolders.documents();
+              const docsPath = knownFolders.documents();
 
-              const pathParts = (<AVURLAsset>videoAsset).URL.toString().split(fs.path.separator);
+              const pathParts = (<AVURLAsset>videoAsset).URL.toString().split(path.separator);
               const filename = pathParts[pathParts.length - 1];
-              const localFilePath = fs.path.join(docsPath.path, 'camera-plus-videos', filename);
+              const localFilePath = path.join(docsPath.path, 'camera-plus-videos', filename);
 
               const targetURL = NSURL.fileURLWithPath(localFilePath);
 
-              if (fs.File.exists(localFilePath)) {
+              if (File.exists(localFilePath)) {
                 docsPath.getFile('camera-plus-videos/' + filename).remove();
               } else {
                 // make sure the folder exists, or else copyItemAtURLToURLError
@@ -272,8 +273,8 @@ export class MySwifty extends SwiftyCamViewController {
     recordVideo: { returns: interop.types.void },
     videoDidFinishSavingWithErrorContextInfo: {
       returns: interop.types.void,
-      params: [NSString, NSError, interop.Pointer]
-    }
+      params: [NSString, NSError, interop.Pointer],
+    },
     // 'deviceDidRotate': { returns: interop.types.void }
     // 'thisImage:hasBeenSavedInPhotoAlbumWithError:usingContextInfo:': {
     //   returns: interop.types.void,
@@ -396,7 +397,7 @@ export class MySwifty extends SwiftyCamViewController {
         confirm: this._owner.get().confirmPhotos, // from property setter
         confirmRetakeText: this._owner.get().confirmRetakeText,
         confirmSaveText: this._owner.get().confirmSaveText,
-        saveToGallery: this._owner.get().saveToGallery
+        saveToGallery: this._owner.get().saveToGallery,
       };
     }
     this.takePhoto();
@@ -415,10 +416,10 @@ export class MySwifty extends SwiftyCamViewController {
         } else {
           this._videoOptions = {
             confirm: this._owner.get().confirmVideo, // from property setter
-            saveToGallery: this._owner.get().saveToGallery
+            saveToGallery: this._owner.get().saveToGallery,
           };
         }
-        if (!options.disableHEVC && parseFloat(platform.device.sdkVersion) >= 11) {
+        if (!options.disableHEVC && parseFloat(Device.sdkVersion) >= 11) {
           this.videoCodecType = AVVideoCodecTypeHEVC;
         }
         switch (options ? options.quality : CameraVideoQuality.MAX_480P) {
@@ -447,7 +448,7 @@ export class MySwifty extends SwiftyCamViewController {
 
         const status = PHPhotoLibrary.authorizationStatus();
         if (status === PHAuthorizationStatus.NotDetermined) {
-          PHPhotoLibrary.requestAuthorization(status => {
+          PHPhotoLibrary.requestAuthorization((status) => {
             this.startVideoRecording();
           });
         } else {
@@ -646,11 +647,11 @@ export class MySwifty extends SwiftyCamViewController {
       if (options) {
         reqWidth = options.width || reqWidth;
         reqHeight = options.height || reqHeight;
-        keepAspectRatio = types.isNullOrUndefined(options.keepAspectRatio) ? true : options.keepAspectRatio;
+        keepAspectRatio = Utils.isNullOrUndefined(options.keepAspectRatio) ? true : options.keepAspectRatio;
       } else {
         options = {
           showImages: true,
-          showVideos: this._enableVideo
+          showVideos: this._enableVideo,
         };
       }
 
@@ -659,7 +660,7 @@ export class MySwifty extends SwiftyCamViewController {
       if (reqWidth && reqHeight) {
         this._pickerDelegate = QBImagePickerControllerDelegateImpl.new().initWithCallbackAndOptions(
           new WeakRef(this),
-          result => {
+          (result) => {
             CLog('chosen from library:', result);
             this._owner.get().sendEvent(CameraPlus.imagesSelectedEvent, result);
             resolve(result);
@@ -667,11 +668,14 @@ export class MySwifty extends SwiftyCamViewController {
           { width: reqWidth, height: reqHeight, keepAspectRatio: keepAspectRatio }
         );
       } else {
-        this._pickerDelegate = QBImagePickerControllerDelegateImpl.new().initWithCallback(new WeakRef(this), result => {
-          CLog('chosen from library:', result);
-          this._owner.get().sendEvent(CameraPlus.imagesSelectedEvent, result);
-          resolve(result);
-        });
+        this._pickerDelegate = QBImagePickerControllerDelegateImpl.new().initWithCallback(
+          new WeakRef(this),
+          (result) => {
+            CLog('chosen from library:', result);
+            this._owner.get().sendEvent(CameraPlus.imagesSelectedEvent, result);
+            resolve(result);
+          }
+        );
       }
       imagePickerController.delegate = this._pickerDelegate;
       const galleryPickerMode = this._owner.get().galleryPickerMode;

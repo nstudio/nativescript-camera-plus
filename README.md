@@ -43,7 +43,7 @@
 ## Installation
 
 ```bash
-tns plugin add @nstudio/nativescript-camera-plus
+ns plugin add @nstudio/nativescript-camera-plus
 ```
 
 **Note :- Android**
@@ -96,19 +96,19 @@ npm run demo.ng.android
 
 ## Properties
 
-| Name                  | Type    | Default    | Description                                                                                                                  |
-| --------------------- | ------- | -----------|----------------------------------------------------------------------------------------------------------------------------- |
-| **debug**             | boolean | *false*      | If true logs will be output in the console to help debug the Camera Plus events.                                           |
-| **confirmPhotos**     | boolean | *true*       | If true the default take picture event will present a confirmation dialog before saving.                                   |
-| **confirmRetakeText** | string  | *'Retake'*   | When confirming capture this text will be presented to the user to retake the photo.                                       |
-| **confirmSaveText**   | string  | *'Save'*     | When confirming capture this text will be presented to the user to save the photo.                                         |
-| **saveToGallery**     | boolean | *true*       | If true the default take picture event will save to device gallery.                                                        |
-| **galleryPickerMode** | string  | *'multiple'* |The gallery/library selection mode. 'single' allows one image to be selected. 'multiple' allows multiple images.            |
-| **showFlashIcon**     | boolean | *true*       | If true the default flash toggle icon/button will show on the Camera Plus layout.                                          |
-| **showToggleIcon**    | boolean | *true*       | If true the default camera toggle (front/back) icon button will show on the Camera Plus layout.                            |
-| **showCaptureIcon**   | boolean | *true*       | If true the default capture (take picture) icon/button will show on the Camera Plus layout.                                |
-| **showGalleryIcon**   | boolean | *true*       | If true the choose from gallery/library icon/button will show on the Camera Plus layout.                                   |
-| **enableVideo**       | boolean | *fale*       | If true the CameraPlus instance can record video and videos are shown in the gallery.                                      |
+| Name                  | Type    | Default      | Description                                                                                                      |
+| --------------------- | ------- | ------------ | ---------------------------------------------------------------------------------------------------------------- |
+| **debug**             | boolean | _false_      | If true logs will be output in the console to help debug the Camera Plus events.                                 |
+| **confirmPhotos**     | boolean | _true_       | If true the default take picture event will present a confirmation dialog before saving.                         |
+| **confirmRetakeText** | string  | _'Retake'_   | When confirming capture this text will be presented to the user to retake the photo.                             |
+| **confirmSaveText**   | string  | _'Save'_     | When confirming capture this text will be presented to the user to save the photo.                               |
+| **saveToGallery**     | boolean | _true_       | If true the default take picture event will save to device gallery.                                              |
+| **galleryPickerMode** | string  | _'multiple'_ | The gallery/library selection mode. 'single' allows one image to be selected. 'multiple' allows multiple images. |
+| **showFlashIcon**     | boolean | _true_       | If true the default flash toggle icon/button will show on the Camera Plus layout.                                |
+| **showToggleIcon**    | boolean | _true_       | If true the default camera toggle (front/back) icon button will show on the Camera Plus layout.                  |
+| **showCaptureIcon**   | boolean | _true_       | If true the default capture (take picture) icon/button will show on the Camera Plus layout.                      |
+| **showGalleryIcon**   | boolean | _true_       | If true the choose from gallery/library icon/button will show on the Camera Plus layout.                         |
+| **enableVideo**       | boolean | _fale_       | If true the CameraPlus instance can record video and videos are shown in the gallery.                            |
 
 ## Static Properties
 

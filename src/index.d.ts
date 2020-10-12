@@ -1,4 +1,4 @@
-import { ContentView } from 'tns-core-modules/ui/content-view';
+import { ContentView } from '@nativescript/core';
 
 export declare class CameraPlus extends ContentView {
   events: ICameraPlusEvents;
@@ -299,7 +299,7 @@ export declare enum CameraVideoQuality {
   MAX_2160P = '2160p',
   HIGHEST = 'highest',
   LOWEST = 'lowest',
-  QVGA = 'qvga'
+  QVGA = 'qvga',
 }
 export interface IVideoOptions {
   quality?: CameraVideoQuality;

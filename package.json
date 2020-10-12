@@ -2,19 +2,21 @@
   "name": "camplus-root",
   "scripts": {
     "precommit": "cd src && lint-staged",
-    "ci.base.setup": "npm i -g typescript && echo no | npm i -g nativescript && tns usage-reporting disable && tns error-reporting disable && cd src && npm i && tsc",
+    "ci.base.setup": "npm i -g typescript && echo no | npm i -g nativescript && ns usage-reporting disable && ns error-reporting disable && cd src && npm i && tsc",
     "ci.pip.install": "sudo pip install --upgrade pip && sudo pip install six",
     "ci.tslint": "cd src && npm run tslint && cd ../demo && npm run ci.tslint && cd ../demo-ng && npm run ci.tslint",
-    "ci.vanilla.android.build": "cd demo && tns build android --env.uglify",
-    "ci.vanilla.ios.build": "cd demo && tns build ios --env.uglify",
-    "ci.ng.android.build": "cd demo-ng && tns build android --env.aot --env.uglify",
-    "ci.ng.ios.build": "cd demo-ng && tns build ios --env.aot --env.uglify",
+    "ci.vanilla.android.build": "cd demo && ns build android --env.uglify",
+    "ci.vanilla.ios.build": "cd demo && ns build ios --env.uglify",
+    "ci.ng.android.build": "cd demo-ng && ns build android --env.aot --env.uglify",
+    "ci.ng.ios.build": "cd demo-ng && ns build ios --env.aot --env.uglify",
     "dev.setup": "cd src && npm i && tsc",
-    "demo.ios": " cd demo && tns run ios",
-    "demo.android": "cd demo && tns run android",
-    "demo.ng.ios": "cd demo-ng && tns run ios --env.aot",
-    "demo.ng.android": "cd demo-ng && tns run android --env.aot",
-    "test.ios": "cd ../demo && tns test ios",
-    "test.android": "cd ../demo && tns test android"
+    "demo.ios": " cd demo && ns run ios",
+    "demo.android": "cd demo && ns run android",
+    "demo.ng.ios": "cd demo-ng && ns run ios --env.aot",
+    "demo.ng.android": "cd demo-ng && ns run android --env.aot",
+    "format.check": "cd src && npx prettier --check \"../**/*.{css,ts,json,scss,html,md}\"",
+    "format.write": "npm run format.check -- --write",
+    "test.ios": "cd ../demo && ns test ios",
+    "test.android": "cd ../demo && ns test android"
   }
 }

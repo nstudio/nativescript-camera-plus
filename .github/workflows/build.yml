@@ -16,14 +16,17 @@ jobs:
       - name: Base Setup
         run: npm run ci.base.setup
 
-      - name: Lint
-        run: npm run ci.tslint
-
       - name: Build Vanilla Android Demo App
         run: npm run ci.vanilla.android.build
 
       - name: Build Angular Android
         run: npm run ci.ng.android.build
+
+      - name: Lint
+        run: npm run ci.tslint
+
+      - name: Format
+        run: npm run format.check
 
       # - name: Install Android sdkmanager
       #   run: |
@@ -37,8 +40,8 @@ jobs:
       #     echo no | android create avd --force -n test -b armeabi-v7a
       #     emulator -avd test -no-audio -no-window &
       #     android-wait-for-emulator
-      #     cd src && npm i && npm run tsc && cd ../demo && tns build android
-      #     tns test android --justlaunch
+      #     cd src && npm i && npm run tsc && cd ../demo && ns build android
+      #     ns test android --justlaunch
 
   job2:
     name: iOS Builds & Test
@@ -57,5 +60,5 @@ jobs:
 
       - name: iOS Test
         run: |
-          cd src && npm i && tsc && cd ../demo && tns build ios
-          tns test ios --justlaunch
+          cd src && npm i && tsc && cd ../demo && ns build ios
+          ns test ios --justlaunch

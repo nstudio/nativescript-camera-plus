@@ -1,5 +1,4 @@
-import * as app from 'tns-core-modules/application';
-import { ImageAsset } from 'tns-core-modules/image-asset';
+import { Application, ImageAsset } from '@nativescript/core';
 import { CLog } from './camera-plus.common';
 
 /**
@@ -7,9 +6,9 @@ import { CLog } from './camera-plus.common';
  * @param iconName
  */
 export function getImageDrawable(iconName: string) {
-  const drawableId = app.android.context
+  const drawableId = Application.android.context
     .getResources()
-    .getIdentifier(iconName, 'drawable', app.android.context.getPackageName()) as number;
+    .getIdentifier(iconName, 'drawable', Application.android.context.getPackageName()) as number;
   return drawableId;
 }
 
@@ -17,7 +16,7 @@ export function getImageDrawable(iconName: string) {
  * Helper method to create android ImageButton
  */
 export function createImageButton(): android.widget.ImageButton {
-  const btn = new android.widget.ImageButton(app.android.context) as android.widget.ImageButton;
+  const btn = new android.widget.ImageButton(Application.android.context) as android.widget.ImageButton;
   btn.setPadding(24, 24, 24, 24);
   btn.setMaxHeight(48);
   btn.setMaxWidth(48);
@@ -64,7 +63,7 @@ export function assetFromPath(path, width, height, keepAspectRatio): ImageAsset 
   asset.options = {
     width,
     height,
-    keepAspectRatio
+    keepAspectRatio,
   };
   return asset;
 }
@@ -240,17 +239,17 @@ export function createImageConfirmationDialog(file, retakeText = 'Retake', saveT
   return new Promise((resolve, reject) => {
     try {
       const alert = new android.app.AlertDialog.Builder(
-        app.android.foregroundActivity
+        Application.android.foregroundActivity
       ) as android.app.AlertDialog.Builder;
       alert.setOnDismissListener(
         new android.content.DialogInterface.OnDismissListener({
-          onDismiss: dialog => {
+          onDismiss: (dialog) => {
             resolve(false);
-          }
+          },
         })
       );
 
-      const layout = new android.widget.LinearLayout(app.android.context) as android.widget.LinearLayout;
+      const layout = new android.widget.LinearLayout(Application.android.context) as android.widget.LinearLayout;
       layout.setOrientation(1);
 
       // - Brad - working on OOM issue - use better Bitmap creation
@@ -266,9 +265,9 @@ export function createImageConfirmationDialog(file, retakeText = 'Retake', saveT
 
       picture = android.graphics.BitmapFactory.decodeFile(file, bitmapFactoryOpts);
 
-      const img = new android.widget.ImageView(app.android.context);
+      const img = new android.widget.ImageView(Application.android.context);
 
-      const scale = app.android.context.getResources().getDisplayMetrics().density;
+      const scale = Application.android.context.getResources().getDisplayMetrics().density;
       img.setPadding(0, 10 * scale, 0, 0);
 
       img.setImageBitmap(picture);
@@ -279,7 +278,7 @@ export function createImageConfirmationDialog(file, retakeText = 'Retake', saveT
         new android.content.DialogInterface.OnClickListener({
           onClick: (dialog, which) => {
             resolve(false);
-          }
+          },
         })
       );
 
@@ -288,7 +287,7 @@ export function createImageConfirmationDialog(file, retakeText = 'Retake', saveT
         new android.content.DialogInterface.OnClickListener({
           onClick: (dialog, which) => {
             resolve(true);
-          }
+          },
         })
       );
       alert.show();
