@@ -7,7 +7,15 @@
 /// <reference path="./node_modules/@nativescript/types-android/index.d.ts" />
 
 import * as permissions from 'nativescript-permissions';
-import { AndroidApplication, Application, Device, ImageAsset, Utils, View } from '@nativescript/core';
+import {
+  AndroidActivityResultEventData,
+  AndroidApplication,
+  Application,
+  Device,
+  ImageAsset,
+  Utils,
+  View,
+} from '@nativescript/core';
 import {
   CameraPlusBase,
   CameraVideoQuality,
@@ -619,68 +627,87 @@ export class CameraPlus extends CameraPlusBase {
             intent.putExtra('android.intent.extra.ALLOW_MULTIPLE', true);
           }
 
-          // activityResult event
-          const onImagePickerResult = (args) => {
-            if (args.requestCode === RESULT_CODE_PICKER_IMAGES && args.resultCode === RESULT_OK) {
+          const onImagePickerResultEventListener = (event: AndroidActivityResultEventData) => {
+            if (event.requestCode === RESULT_CODE_PICKER_IMAGES && event.resultCode === RESULT_OK) {
               try {
-                const selectedImages = [];
-                const data = args.intent;
-                const clipData = data.getClipData();
+                const data: android.content.Intent = event.intent;
+                const selectedImages = this.getSelectedImages(data);
 
-                if (clipData !== null) {
-                  for (let i = 0; i < clipData.getItemCount(); i++) {
-                    const clipItem = clipData.getItemAt(i);
-                    const uri = clipItem.getUri();
-                    const selectedAsset = new SelectedAsset(uri);
-                    const asset = new ImageAsset(selectedAsset);
-                    selectedImages.push(asset);
-                  }
-                } else {
-                  const uri = data.getData();
-                  const path = uri.getPath();
-                  const selectedAsset = new SelectedAsset(uri);
-                  const asset = new ImageAsset(selectedAsset);
-                  selectedImages.push(asset);
-                }
-
-                Application.android.off(AndroidApplication.activityResultEvent, onImagePickerResult);
-                resolve(selectedImages);
                 this.sendEvent(CameraPlus.imagesSelectedEvent, selectedImages);
-                return; // yay
-              } catch (e) {
-                CLog(e);
-                Application.android.off(AndroidApplication.activityResultEvent, onImagePickerResult);
-                reject(e);
-                this.sendEvent(CameraPlus.errorEvent, e, 'Error with the image picker result.');
-                return;
+
+                resolve(selectedImages);
+              } catch (error) {
+                CLog(error);
+                this.sendEvent(CameraPlus.errorEvent, error, 'Error with the image picker result.');
+                reject(error);
               }
             } else {
-              Application.android.off(AndroidApplication.activityResultEvent, onImagePickerResult);
-              reject(`Image picker activity result code ${args.resultCode}`);
-              return;
+              const error = new Error(`Image picker activity result code ${event.resultCode}`);
+              this.sendEvent(CameraPlus.errorEvent, error, error.message);
+              reject(error);
             }
+
+            // Cleanup, remove bound listener.
+            Application.android.off(AndroidApplication.activityResultEvent, onImagePickerResultEventListener);
           };
 
-          // set the onImagePickerResult for the intent
-          Application.android.on(AndroidApplication.activityResultEvent, onImagePickerResult);
-          // start the intent
+          // Bind listener
+          Application.android.on(AndroidApplication.activityResultEvent, onImagePickerResultEventListener);
+
+          // Start the intent
           Application.android.foregroundActivity.startActivityForResult(intent, RESULT_CODE_PICKER_IMAGES);
         };
 
         // Ensure storage permissions
-        const hasPerm = this.hasStoragePermissions();
-        if (hasPerm === true) {
-          createThePickerIntent();
-        } else {
+        if (!this.hasStoragePermissions()) {
           permissions.requestPermissions([READ_EXTERNAL_STORAGE(), WRITE_EXTERNAL_STORAGE()]).then(() => {
-            createThePickerIntent();
+            if (!this.hasStoragePermissions()) {
+              const error = new Error('request for storage permissions denied');
+              this.sendEvent(CameraPlus.errorEvent, error, 'Error choosing an image from the device library.');
+              reject(error);
+            } else {
+              createThePickerIntent();
+            }
           });
+          return;
         }
+
+        createThePickerIntent();
       } catch (e) {
-        reject(e);
         this.sendEvent(CameraPlus.errorEvent, e, 'Error choosing an image from the device library.');
+        reject(e);
       }
     });
+  }
+
+  /**
+   * Collect images from intent and return a collection of Image Assets.
+   *
+   * @param intent
+   */
+  private getSelectedImages(intent: android.content.Intent): ImageAsset[] {
+    const selectedImages: ImageAsset[] = [];
+    const clipData = intent.getClipData();
+
+    const imageFromUri = (uri: globalAndroid.net.Uri) => {
+      const selectedAssetUri = new SelectedAsset(uri).fileUri;
+      return new ImageAsset(selectedAssetUri);
+    };
+
+    if (clipData !== null) {
+      for (let i = 0; i < clipData.getItemCount(); i++) {
+        const clipItem = clipData.getItemAt(i);
+        const uri = clipItem.getUri();
+        const asset = imageFromUri(uri);
+        selectedImages.push(asset);
+      }
+    } else {
+      const uri = intent.getData();
+      const asset = imageFromUri(uri);
+      selectedImages.push(asset);
+    }
+
+    return selectedImages;
   }
 
   /**
