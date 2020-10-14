@@ -1,14 +1,15 @@
 import { Observable } from '@nativescript/core';
+
 export function ObservableProperty() {
   return (target: Observable, propertyKey: string) => {
     Object.defineProperty(target, propertyKey, {
       // tslint:disable-next-line:only-arrow-functions
-      get: function() {
+      get: function () {
         // tslint:disable-next-line:object-literal-shorthand
         return this['_' + propertyKey];
       },
       // tslint:disable-next-line:only-arrow-functions
-      set: function(value) {
+      set: function (value) {
         // tslint:disable-next-line:object-literal-shorthand
         if (this['_' + propertyKey] === value) {
           return;
@@ -19,11 +20,11 @@ export function ObservableProperty() {
           eventName: Observable.propertyChangeEvent,
           propertyName: propertyKey,
           object: this,
-          value
+          value,
         });
       },
       enumerable: true,
-      configurable: true
+      configurable: true,
     });
   };
 }
