@@ -1,4 +1,18 @@
-import { ContentView } from '@nativescript/core';
+import { ContentView, ImageAsset } from '@nativescript/core';
+import {
+  CameraPlusEvents,
+  ConfirmScreenDismissedEvent,
+  ConfirmScreenShownEvent,
+  ErrorEvent,
+  ImagesSelectedEvent,
+  PhotoCapturedEvent,
+  ToggleCameraEvent,
+  VideoRecordingFinishedEvent,
+  VideoRecordingReadyEvent,
+  VideoRecordingStartedEvent,
+} from './events';
+
+export * from './events';
 
 export declare class CameraPlus extends ContentView {
   events: ICameraPlusEvents;
@@ -20,47 +34,47 @@ export declare class CameraPlus extends ContentView {
   /**
    * String value for hooking into the errorEvent. This event fires when an error is emitted from Camera Plus.
    */
-  public static errorEvent: string;
+  public static errorEvent: CameraPlusEvents.ErrorEvent;
 
   /**
    * String value for hooking into the photoCapturedEvent. This event fires when a photo is taken.
    */
-  public static photoCapturedEvent: string;
+  public static photoCapturedEvent: CameraPlusEvents.PhotoCapturedEvent;
 
   /**
    * String value for hooking into the toggleCameraEvent. This event fires when the device camera is toggled.
    */
-  public static toggleCameraEvent: string;
+  public static toggleCameraEvent: CameraPlusEvents.ToggleCameraEvent;
 
   /**
    * String value when hooking into the imagesSelectedEvent. This event fires when images are selected from the device library/gallery.
    */
-  public static imagesSelectedEvent: string;
+  public static imagesSelectedEvent: CameraPlusEvents.ImagesSelectedEvent;
 
   /**
    * String value when hooking into the videoRecordingStartedEvent. This event fires when video starts recording.
    */
-  public static videoRecordingStartedEvent: string;
+  public static videoRecordingStartedEvent: CameraPlusEvents.VideoRecordingStartedEvent;
 
   /**
    * String value when hooking into the videoRecordingFinishedEvent. This event fires when video stops recording but has not processed yet.
    */
-  public static videoRecordingFinishedEvent: string;
+  public static videoRecordingFinishedEvent: CameraPlusEvents.VideoRecordingFinishedEvent;
 
   /**
    * String value when hooking into the videoRecordingReadyEvent. This event fires when video has completed processing and is ready to be used.
    */
-  public static videoRecordingReadyEvent: string;
+  public static videoRecordingReadyEvent: CameraPlusEvents.VideoRecordingReadyEvent;
 
   /**
    * String value when hooking into the confirmScreenShownEvent. This event fires when the confirm dialog is shown.
    */
-  public static confirmScreenShownEvent: 'confirmScreenShownEvent';
+  public static confirmScreenShownEvent: CameraPlusEvents.ConfirmScreenShownEvent;
 
   /**
    * String value when hooking into the confirmScreenDismissedEvent. This event fires when the confirm dialog is dismissed either by Retake or Save.
    */
-  public static confirmScreenDismissedEvent: 'confirmScreenDismissedEvent';
+  public static confirmScreenDismissedEvent: CameraPlusEvents.ConfirmScreenDismissedEvent;
 
   /**
    * If true console logs will be output to help debug the Camera Plus events.
@@ -194,7 +208,7 @@ export declare class CameraPlus extends ContentView {
   /**
    * Opens the device Library (image gallery) to select images.
    */
-  chooseFromLibrary(options?: IChooseOptions): Promise<any>;
+  chooseFromLibrary(options?: IChooseOptions): Promise<ImageAsset[]>;
 
   /**
    * Takes a picture of the current preview of the CameraPlus.
@@ -322,13 +336,15 @@ export interface IChooseOptions {
 }
 
 export interface ICameraPlusEvents {
-  errorEvent: any;
-  photoCapturedEvent: any;
-  toggleCameraEvent: any;
-  imagesSelectedEvent: any;
-  videoRecordingStartedEvent: any;
-  videoRecordingFinishedEvent: any;
-  videoRecordingReadyEvent: any;
+  errorEvent: ErrorEvent;
+  photoCapturedEvent: PhotoCapturedEvent;
+  toggleCameraEvent: ToggleCameraEvent;
+  imagesSelectedEvent: ImagesSelectedEvent;
+  videoRecordingStartedEvent: VideoRecordingStartedEvent;
+  videoRecordingFinishedEvent: VideoRecordingFinishedEvent;
+  videoRecordingReadyEvent: VideoRecordingReadyEvent;
+  confirmScreenShownEvent: ConfirmScreenShownEvent;
+  confirmScreenDismissedEvent: ConfirmScreenDismissedEvent;
 }
 
 export enum WhiteBalance {

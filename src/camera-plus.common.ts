@@ -6,12 +6,13 @@
 
 import { ContentView } from '@nativescript/core';
 import { CameraPlus as CameraPlusDefinition } from '.';
+import { CameraPlusEvents } from './events';
 
 export class CameraUtil {
   public static debug: boolean = false;
 }
 
-export const CLog = (...args) => {
+export const CLog = (...args: any[]) => {
   if (CameraUtil.debug) {
     console.log('NativeScript-CameraPlus ---', args);
   }
@@ -42,47 +43,47 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
   /*
    * String value for hooking into the errorEvent. This event fires when an error is emitted from CameraPlus.
    */
-  public static errorEvent = 'errorEvent';
+  public static errorEvent = CameraPlusEvents.ErrorEvent;
 
   /**
    * String value for hooking into the photoCapturedEvent. This event fires when a photo is taken.
    */
-  public static photoCapturedEvent = 'photoCapturedEvent';
+  public static photoCapturedEvent = CameraPlusEvents.PhotoCapturedEvent;
 
   /**
    * String value for hooking into the toggleCameraEvent. This event fires when the device camera is toggled.
    */
-  public static toggleCameraEvent = 'toggleCameraEvent';
+  public static toggleCameraEvent = CameraPlusEvents.ToggleCameraEvent;
 
   /**
    * String value when hooking into the imagesSelectedEvent. This event fires when images are selected from the device library/gallery.
    */
-  public static imagesSelectedEvent = 'imagesSelectedEvent';
+  public static imagesSelectedEvent = CameraPlusEvents.ImagesSelectedEvent;
 
   /**
    * String value when hooking into the videoRecordingStartedEvent. This event fires when video starts recording.
    */
-  public static videoRecordingStartedEvent = 'videoRecordingStartedEvent';
+  public static videoRecordingStartedEvent = CameraPlusEvents.VideoRecordingStartedEvent;
 
   /**
    * String value when hooking into the videoRecordingFinishedEvent. This event fires when video stops recording but has not processed yet.
    */
-  public static videoRecordingFinishedEvent = 'videoRecordingFinishedEvent';
+  public static videoRecordingFinishedEvent = CameraPlusEvents.VideoRecordingFinishedEvent;
 
   /**
    * String value when hooking into the videoRecordingReadyEvent. This event fires when video has completed processing and is ready to be used.
    */
-  public static videoRecordingReadyEvent = 'videoRecordingReadyEvent';
+  public static videoRecordingReadyEvent = CameraPlusEvents.VideoRecordingReadyEvent;
 
   /**
    * String value when hooking into the confirmScreenShownEvent. This event fires when the picture confirm dialog is shown.
    */
-  public static confirmScreenShownEvent = 'confirmScreenShownEvent';
+  public static confirmScreenShownEvent = CameraPlusEvents.ConfirmScreenShownEvent;
 
   /**
    * String value when hooking into the confirmScreenDismissedEvent. This event fires when the picture confirm dialog is dismissed either by Retake or Save button.
    */
-  public static confirmScreenDismissedEvent = 'confirmScreenDismissedEvent';
+  public static confirmScreenDismissedEvent = CameraPlusEvents.ConfirmScreenDismissedEvent;
 
   /**
    * @default 4:3
