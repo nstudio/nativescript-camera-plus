@@ -23,6 +23,7 @@ export { CameraVideoQuality, WhiteBalance } from './camera-plus.common';
 /**
  * Library image picker delegate (multiple or single)
  */
+@NativeClass()
 class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePickerControllerDelegate {
   public static ObjCProtocols = [QBImagePickerControllerDelegate];
 
@@ -191,6 +192,7 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
 /**
  * Take picture with camera delegate
  */
+@NativeClass()
 export class SwiftyDelegate extends NSObject implements SwiftyCamViewControllerDelegate {
   public static ObjCProtocols = [SwiftyCamViewControllerDelegate];
   private _owner: WeakRef<MySwifty>;
@@ -201,56 +203,56 @@ export class SwiftyDelegate extends NSObject implements SwiftyCamViewControllerD
     return delegate;
   }
 
-  swiftyCamDidFailToConfigure(swiftyCam: SwiftyCamViewController) {
+  public swiftyCamDidFailToConfigure(swiftyCam: SwiftyCamViewController) {
     CLog('swiftyCamDidFailToConfigure:');
   }
 
-  swiftyCamDidFailToRecordVideo(swiftyCam: SwiftyCamViewController, error: NSError) {
+  public swiftyCamDidFailToRecordVideo(swiftyCam: SwiftyCamViewController, error: NSError) {
     CLog('swiftyCamDidFailToRecordVideo:');
   }
 
-  swiftyCamNotAuthorized(swiftyCam: SwiftyCamViewController) {
+  public swiftyCamNotAuthorized(swiftyCam: SwiftyCamViewController) {
     CLog('swiftyCamNotAuthorized:');
   }
 
-  swiftyCamSessionDidStopRunning(swiftyCam: SwiftyCamViewController) {
+  public swiftyCamSessionDidStopRunning(swiftyCam: SwiftyCamViewController) {
     CLog('swiftyCamSessionDidStopRunning:');
   }
 
-  swiftyCamSessionDidStartRunning(swiftyCam: SwiftyCamViewController) {
+  public swiftyCamSessionDidStartRunning(swiftyCam: SwiftyCamViewController) {
     CLog('swiftyCamSessionDidStartRunning:');
     this._owner.get().doLayout();
   }
 
-  swiftyCamDidBeginRecordingVideo(swiftyCam: SwiftyCamViewController, camera: CameraSelection) {
+  public swiftyCamDidBeginRecordingVideo(swiftyCam: SwiftyCamViewController, camera: CameraSelection) {
     CLog('swiftyCamDidBeginRecordingVideo:', camera);
     this._owner.get().didStartRecording(camera);
   }
 
-  swiftyCamDidChangeZoomLevel(swiftyCam: SwiftyCamViewController, zoom: number) {
+  public swiftyCamDidChangeZoomLevel(swiftyCam: SwiftyCamViewController, zoom: number) {
     CLog('swiftyCamDidChangeZoomLevel:', zoom);
   }
 
-  swiftyCamDidFinishProcessVideoAt(swiftyCam: SwiftyCamViewController, url: NSURL) {
+  public swiftyCamDidFinishProcessVideoAt(swiftyCam: SwiftyCamViewController, url: NSURL) {
     CLog('swiftyCamDidFinishProcessVideoAt:', url);
     this._owner.get().recordingReady(url.path);
   }
 
-  swiftyCamDidFinishRecordingVideo(swiftyCam: SwiftyCamViewController, camera: CameraSelection) {
+  public swiftyCamDidFinishRecordingVideo(swiftyCam: SwiftyCamViewController, camera: CameraSelection) {
     CLog('swiftyCamDidFinishRecordingVideo:', camera);
     this._owner.get().didFinishRecording(camera);
   }
 
-  swiftyCamDidFocusAtPoint(swiftyCam: SwiftyCamViewController, point: CGPoint) {
+  public swiftyCamDidFocusAtPoint(swiftyCam: SwiftyCamViewController, point: CGPoint) {
     CLog('swiftyCamDidFocusAtPoint:', point);
   }
 
-  swiftyCamDidSwitchCameras(swiftyCam: SwiftyCamViewController, camera: CameraSelection) {
+  public swiftyCamDidSwitchCameras(swiftyCam: SwiftyCamViewController, camera: CameraSelection) {
     CLog('swiftyCamDidSwitchCameras:', camera);
     this._owner.get().didSwitchCamera(camera);
   }
 
-  swiftyCamDidTake(swiftyCam: SwiftyCamViewController, photo: UIImage) {
+  public swiftyCamDidTake(swiftyCam: SwiftyCamViewController, photo: UIImage) {
     CLog('swiftyCamDidTake:', photo);
     try {
       // UIImageWriteToSavedPhotosAlbum(photo, this._owner.get(), 'thisImage:hasBeenSavedInPhotoAlbumWithError:usingContextInfo:', null);
@@ -262,26 +264,27 @@ export class SwiftyDelegate extends NSObject implements SwiftyCamViewControllerD
   }
 }
 
+@NativeClass()
 export class MySwifty extends SwiftyCamViewController {
-  public static ObjCExposedMethods = {
-    switchCam: { returns: interop.types.void },
-    resetPreview: { returns: interop.types.void },
-    savePhoto: { returns: interop.types.void },
-    snapPicture: { returns: interop.types.void },
-    toggleFlash: { returns: interop.types.void },
-    openGallery: { returns: interop.types.void },
-    recordVideo: { returns: interop.types.void },
-    videoDidFinishSavingWithErrorContextInfo: {
-      returns: interop.types.void,
-      params: [NSString, NSError, interop.Pointer],
-    },
-    // 'deviceDidRotate': { returns: interop.types.void }
-    // 'thisImage:hasBeenSavedInPhotoAlbumWithError:usingContextInfo:': {
-    //   returns: interop.types.void,
-    //   params: [UIImage, NSError, interop.Pointer]
-    // }
-  };
-  private _owner: WeakRef<CameraPlus>;
+  // public static ObjCExposedMethods = {
+  //   switchCam: { returns: interop.types.void },
+  //   resetPreview: { returns: interop.types.void },
+  //   savePhoto: { returns: interop.types.void },
+  //   snapPicture: { returns: interop.types.void },
+  //   toggleFlash: { returns: interop.types.void },
+  //   openGallery: { returns: interop.types.void },
+  //   recordVideo: { returns: interop.types.void },
+  // videoDidFinishSavingWithErrorContextInfo: {
+  //   returns: interop.types.void,
+  //   params: [NSString, NSError, interop.Pointer],
+  // },
+  //   // 'deviceDidRotate': { returns: interop.types.void }
+  //   // 'thisImage:hasBeenSavedInPhotoAlbumWithError:usingContextInfo:': {
+  //   //   returns: interop.types.void,
+  //   //   params: [UIImage, NSError, interop.Pointer]
+  //   // }
+  // };
+  public _owner: WeakRef<CameraPlus>;
   private _snapPicOptions: ICameraOptions;
   private _enableVideo: boolean;
   private _videoOptions: IVideoOptions;
@@ -297,7 +300,7 @@ export class MySwifty extends SwiftyCamViewController {
 
   public static initWithOwner(owner: WeakRef<CameraPlus>, defaultCamera: CameraTypes = 'rear') {
     CLog('MySwifty initWithOwner');
-    const ctrl = <MySwifty>MySwifty.new();
+    const ctrl: MySwifty = MySwifty.new();
     CLog('ctrl', ctrl);
     ctrl._owner = owner;
     // set default camera
@@ -325,7 +328,7 @@ export class MySwifty extends SwiftyCamViewController {
     });
   }
 
-  viewDidLoad() {
+  public viewDidLoad(): void {
     CLog('MySwifty viewdidload');
     super.viewDidLoad();
     this.view.userInteractionEnabled = true;
@@ -335,7 +338,7 @@ export class MySwifty extends SwiftyCamViewController {
 
     // CLog('view.frame.size:', this.view.frame.size.width + 'x' + this.view.frame.size.height);
     // retain delegate in javascript to ensure garbage collector does not get it
-    this._swiftyDelegate = <any>SwiftyDelegate.initWithOwner(new WeakRef(this));
+    this._swiftyDelegate = SwiftyDelegate.initWithOwner(new WeakRef(this));
     this.cameraDelegate = this._swiftyDelegate;
     CLog('this.cameraDelegate:', this.cameraDelegate);
   }
@@ -348,17 +351,17 @@ export class MySwifty extends SwiftyCamViewController {
     nativeView.setNeedsLayout();
   }
 
-  viewDidLayoutSubviews() {
+  public viewDidLayoutSubviews() {
     CLog('MySwifty viewDidLayoutSubviews');
     super.viewDidLayoutSubviews();
   }
 
-  viewDidAppear(animated: boolean) {
+  public viewDidAppear(animated: boolean) {
     super.viewDidAppear(animated);
     CLog('MySwifty viewDidAppear');
   }
 
-  viewWillAppear(animated: boolean) {
+  public viewWillAppear(animated: boolean) {
     super.viewWillAppear(animated);
     CLog('MySwifty viewWillAppear');
   }
@@ -819,7 +822,7 @@ export class CameraPlus extends CameraPlusBase {
     return this.enableVideo === true || CameraPlus.enableVideo;
   }
 
-  createNativeView() {
+  public createNativeView() {
     // this._swifty.videoGravity = SwiftyCamVideoGravity.ResizeAspectFill;
     this._swifty.enableVideo = this.isVideoEnabled();
     // disable audio if no video support
@@ -827,14 +830,14 @@ export class CameraPlus extends CameraPlusBase {
     CLog('CameraPlus createNativeView');
     CLog('video enabled:', this.isVideoEnabled());
     CLog('default camera:', CameraPlus.defaultCamera);
-    CLog(this._swifty.view);
+    CLog('view:', this._swifty.view);
     this._swifty.view.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
     return this._swifty.view;
   }
 
-  private _onLayoutChangeFn(args) {
+  private _onLayoutChangeFn(args: any) {
     const size = this.getActualSize();
-    CLog('xml width/height:', size.width + 'x' + size.height);
+    CLog(`xml width/height: ${size.width}x${size.height}`);
     const frame = this._swifty.view.frame;
     this._swifty.view.frame = CGRectMake(frame.origin.x, frame.origin.y, size.width, size.height);
     this._swifty.previewLayer.frame = CGRectMake(frame.origin.x, frame.origin.y, size.width, size.height);

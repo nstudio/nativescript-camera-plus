@@ -1,2 +1,4 @@
 *.d.ts
 !index.d.ts
+!typings/*.d.ts
+platforms
