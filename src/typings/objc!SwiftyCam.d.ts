@@ -1,7 +1,7 @@
 declare const enum CameraSelection {
   Rear = 0,
 
-  Front = 1
+  Front = 1,
 }
 
 declare class Orientation extends NSObject {
@@ -49,7 +49,7 @@ declare const enum SessionSetupResult {
 
   NotAuthorized = 1,
 
-  ConfigurationFailed = 2
+  ConfigurationFailed = 2,
 }
 
 declare class SwiftyCamButton extends UIButton {
@@ -77,7 +77,13 @@ declare class SwiftyCamButton extends UIButton {
 
   static buttonWithType(buttonType: UIButtonType): SwiftyCamButton; // inherited from UIButton
 
+  static buttonWithTypePrimaryAction(buttonType: UIButtonType, primaryAction: UIAction): SwiftyCamButton; // inherited from UIButton
+
   static new(): SwiftyCamButton; // inherited from NSObject
+
+  static systemButtonWithImageTargetAction(image: UIImage, target: any, action: string): SwiftyCamButton; // inherited from UIButton
+
+  static systemButtonWithPrimaryAction(primaryAction: UIAction): SwiftyCamButton; // inherited from UIButton
 
   buttonEnabled: boolean;
 
@@ -108,18 +114,18 @@ declare const enum SwiftyCamVideoGravity {
 
   ResizeAspect = 1,
 
-  ResizeAspectFill = 2
+  ResizeAspectFill = 2,
 }
 
-declare class SwiftyCamViewController extends UIViewController
+declare class SwiftyCamViewController
+  extends UIViewController
   implements AVCaptureFileOutputRecordingDelegate, SwiftyCamButtonDelegate, UIGestureRecognizerDelegate {
   static alloc(): SwiftyCamViewController; // inherited from NSObject
 
   static deviceWithMediaTypePreferringPosition(mediaType: string, position: AVCaptureDevicePosition): AVCaptureDevice;
 
-  static new(): SwiftyCamViewController; // inherited from NSObject
-
-  videoCodecType: AVVideoCodecType;
+  // static new(): SwiftyCamViewController; // inherited from NSObject
+  static new<T>(): T; // inherited from NSObject
 
   allowAutoRotate: boolean;
 
@@ -191,6 +197,8 @@ declare class SwiftyCamViewController extends UIViewController
 
   tapToFocus: boolean;
 
+  videoCodecType: string;
+
   videoDevice: AVCaptureDevice;
 
   videoDeviceInput: AVCaptureDeviceInput;
@@ -250,6 +258,8 @@ declare class SwiftyCamViewController extends UIViewController
   ): boolean;
 
   gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer): boolean;
+
+  gestureRecognizerShouldReceiveEvent(gestureRecognizer: UIGestureRecognizer, event: _UIEvent): boolean;
 
   gestureRecognizerShouldReceivePress(gestureRecognizer: UIGestureRecognizer, press: UIPress): boolean;
 
@@ -354,5 +364,5 @@ declare const enum VideoQuality {
 
   Iframe960x540 = 8,
 
-  Iframe1280x720 = 9
+  Iframe1280x720 = 9,
 }
