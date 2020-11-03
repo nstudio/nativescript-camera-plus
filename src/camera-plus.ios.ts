@@ -301,6 +301,8 @@ export class MySwifty extends SwiftyCamViewController {
   public static initWithOwner(owner: WeakRef<CameraPlus>, defaultCamera: CameraTypes = 'rear') {
     CLog('MySwifty initWithOwner');
     const ctrl: MySwifty = MySwifty.new();
+
+    CLog('view', ctrl);
     CLog('ctrl', ctrl);
     ctrl._owner = owner;
     // set default camera
@@ -451,7 +453,7 @@ export class MySwifty extends SwiftyCamViewController {
 
         const status = PHPhotoLibrary.authorizationStatus();
         if (status === PHAuthorizationStatus.NotDetermined) {
-          PHPhotoLibrary.requestAuthorization((status) => {
+          PHPhotoLibrary.requestAuthorization(() => {
             this.startVideoRecording();
           });
         } else {
@@ -465,18 +467,22 @@ export class MySwifty extends SwiftyCamViewController {
     this._owner.get().sendEvent(CameraPlus.videoRecordingStartedEvent, camera);
   }
 
-  public recordingReady(path: string) {
-    if ((this._videoOptions && this._videoOptions.saveToGallery) || this._owner.get().saveToGallery) {
+  public recordingReady(recordingPath: string) {
+    CLog(`recordingReady path: ${recordingPath}`);
+    const configSaveToGallery = this._videoOptions.saveToGallery || this._owner.get().saveToGallery;
+    if (configSaveToGallery) {
+      CLog(`recordingReady saveToGallery ${configSaveToGallery}`);
+
       // TODO: discuss why callback handler(videoDidFinishSavingWithErrorContextInfo) does not emit event correctly - the path passed to the handler is the same as handled here so just go ahead and emit here for now
-      this._owner.get().sendEvent(CameraPlus.videoRecordingReadyEvent, path);
+      this._owner.get().sendEvent(CameraPlus.videoRecordingReadyEvent, recordingPath);
 
       const status = PHPhotoLibrary.authorizationStatus();
       if (status === PHAuthorizationStatus.Authorized) {
-        UISaveVideoAtPathToSavedPhotosAlbum(path, this, 'videoDidFinishSavingWithErrorContextInfo', null);
+        UISaveVideoAtPathToSavedPhotosAlbum(recordingPath, this, 'videoDidFinishSavingWithErrorContextInfo', null);
       }
     } else {
-      CLog(`video not saved to gallery but recording is at: ${path}`);
-      this._owner.get().sendEvent(CameraPlus.videoRecordingReadyEvent, path);
+      CLog(`video not saved to gallery but recording is at: ${recordingPath}`);
+      this._owner.get().sendEvent(CameraPlus.videoRecordingReadyEvent, recordingPath);
     }
   }
 
@@ -484,13 +490,13 @@ export class MySwifty extends SwiftyCamViewController {
     this._owner.get().sendEvent(CameraPlus.videoRecordingFinishedEvent, camera);
   }
 
-  public videoDidFinishSavingWithErrorContextInfo(path: string, error: NSError, contextInfo: any) {
+  public videoDidFinishSavingWithErrorContextInfo(vidPath: string, error: NSError, contextInfo: any) {
     if (error) {
       CLog('video save to camera roll error:');
       CLog(error);
       return;
     }
-    CLog(`video saved`, path);
+    CLog(`video saved`, vidPath);
 
     // ideally could just rely on this, but this will not emit the event (commenting for now and instead doing above in recordready - TODO: discuss why)
     // this._owner.get().sendEvent(CameraPlus.videoRecordingReadyEvent, path);
@@ -711,7 +717,7 @@ export class MySwifty extends SwiftyCamViewController {
     });
   }
 
-  _addButtons() {
+  public _addButtons() {
     CLog('adding buttons...');
     const width = this.view.bounds.size.width;
     const height = this.view.bounds.size.height;
@@ -733,6 +739,7 @@ export class MySwifty extends SwiftyCamViewController {
     this._flashBtnHandler();
 
     if (this._owner.get().showGalleryIcon === true) {
+      CLog('adding show gallery button...');
       const galleryBtn = createButton(
         this,
         CGRectMake(20, height - 80, 50, 50),
@@ -746,6 +753,7 @@ export class MySwifty extends SwiftyCamViewController {
     }
 
     if (this._owner.get().showCaptureIcon) {
+      CLog('adding show capture button...');
       const heightOffset = this._owner.get().isIPhoneX ? 200 : 110;
       const picOutline = createButton(
         this,
@@ -772,6 +780,7 @@ export class MySwifty extends SwiftyCamViewController {
 
   private _flashBtnHandler() {
     if (this._owner.get().showFlashIcon) {
+      CLog('adding flash button...');
       if (this._flashBtn) this._flashBtn.removeFromSuperview();
       if (this.flashEnabled) {
         this._flashBtn = createButton(this, CGRectMake(20, 20, 50, 50), null, 'toggleFlash', null, createIcon('flash'));
@@ -799,6 +808,7 @@ export class CameraPlus extends CameraPlusBase {
 
   @GetSetProperty()
   public enableVideo: boolean;
+
   // library picker handling
   private _galleryMax: number = 3;
   private _galleryPickerWidth: number;
@@ -948,6 +958,7 @@ export class CameraPlus extends CameraPlusBase {
    */
   public record(options?: IVideoOptions): Promise<void> {
     if (this.isVideoEnabled()) {
+      CLog(`Start Video Recording: ${options && JSON.stringify(options)}`);
       this._swifty.recordVideo(options);
     }
     return Promise.resolve();
@@ -958,6 +969,7 @@ export class CameraPlus extends CameraPlusBase {
    */
   public stop(): void {
     if (this.isVideoEnabled()) {
+      CLog('Stop Video Recording');
       this._swifty.stopVideoRecording();
     }
   }
