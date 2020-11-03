@@ -299,7 +299,7 @@ export class CameraPlus extends CameraPlusBase {
     }
   }
 
-  initNativeView() {
+  public initNativeView() {
     super.initNativeView();
     this.on(View.layoutChangedEvent, this._onLayoutChangeListener);
     const listenerImpl = (com as any).github.triniwiz.fancycamera.CameraEventListenerUI.extend({
@@ -386,7 +386,6 @@ export class CameraPlus extends CameraPlusBase {
           owner.sendEvent(CameraPlus.photoCapturedEvent, asset);
           return;
         }
-
       },
       onCameraOpenUI(): void {
         const owner = this.owner ? this.owner.get() : null;
@@ -846,7 +845,7 @@ export class CameraPlus extends CameraPlusBase {
    */
   public isCameraAvailable() {
     if (
-      utils.ad
+      Utils.ad
         .getApplicationContext()
         .getPackageManager()
         .hasSystemFeature('android.hardware.camera')
