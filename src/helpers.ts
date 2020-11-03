@@ -5,18 +5,18 @@ import { CLog } from './camera-plus.common';
  * Helper method to get the drawable of an app_resource icon for the ImageButtons 'image'
  * @param iconName
  */
-export function getImageDrawable(iconName: string) {
-  const drawableId = Application.android.context
+export function getImageDrawable(iconName: string): number {
+  const contentContext: android.content.Context = Application.android.context;
+  return contentContext
     .getResources()
-    .getIdentifier(iconName, 'drawable', Application.android.context.getPackageName()) as number;
-  return drawableId;
+    .getIdentifier(iconName, 'drawable', Application.android.context.getPackageName());
 }
 
 /**
  * Helper method to create android ImageButton
  */
 export function createImageButton(): android.widget.ImageButton {
-  const btn = new android.widget.ImageButton(Application.android.context) as android.widget.ImageButton;
+  const btn = new android.widget.ImageButton(Application.android.context);
   btn.setPadding(24, 24, 24, 24);
   btn.setMaxHeight(48);
   btn.setMaxWidth(48);
@@ -85,13 +85,13 @@ export function getOptimalPreviewSize(
 
   if (sizes === null) return null;
 
-  let optimalSize = null as android.hardware.Camera.Size;
+  let optimalSize: android.hardware.Camera.Size = null;
 
   const targetHeight = height;
   CLog(`targetHeight = ${targetHeight}`);
 
   for (let i = 0; i < sizes.size(); i++) {
-    const element = sizes.get(i) as android.hardware.Camera.Size;
+    const element: android.hardware.Camera.Size = sizes.get(i);
     CLog(`size.width = ${element.width}, size.height = ${element.height}`);
     if (element.width <= width && element.height <= height) {
       if (optimalSize == null) {
@@ -128,7 +128,7 @@ export function getOptimalPictureSize(
 
   if (sizes === null) return null;
 
-  let optimalSize = null as android.hardware.Camera.Size;
+  let optimalSize: android.hardware.Camera.Size = null;
   let minDiff = Number.MAX_SAFE_INTEGER;
 
   const targetHeight = height;
@@ -137,7 +137,7 @@ export function getOptimalPictureSize(
   CLog(`targetWidth = ${targetWidth}`);
 
   for (let i = 0; i < sizes.size(); i++) {
-    const size = sizes.get(i) as android.hardware.Camera.Size;
+    const size: android.hardware.Camera.Size = sizes.get(i);
     let desiredMinimumWidth: number;
     let desiredMaximumWidth: number;
 
@@ -162,7 +162,7 @@ export function getOptimalPictureSize(
     // minDiff = Double.MAX_VALUE;
     minDiff = Number.MAX_SAFE_INTEGER;
     for (let i = 0; i < sizes.size(); i++) {
-      const element = sizes.get(i) as android.hardware.Camera.Size;
+      const element: android.hardware.Camera.Size = sizes.get(i);
       CLog(`size.width = ${element.width}, size.height = ${element.height}`);
       if (Math.abs(element.height - targetHeight) < minDiff) {
         optimalSize = element;
@@ -206,7 +206,7 @@ export function calculateInSampleSize(
 export function getOrientationFromBytes(data): number {
   // We won't auto-rotate the front Camera image
   const inputStream = new java.io.ByteArrayInputStream(data);
-  let exif;
+  let exif: android.media.ExifInterface;
   if (android.os.Build.VERSION.SDK_INT >= 24) {
     exif = new android.media.ExifInterface(inputStream as any);
   } else {
@@ -238,9 +238,7 @@ export function getOrientationFromBytes(data): number {
 export function createImageConfirmationDialog(file, retakeText = 'Retake', saveText = 'Save'): Promise<boolean> {
   return new Promise((resolve, reject) => {
     try {
-      const alert = new android.app.AlertDialog.Builder(
-        Application.android.foregroundActivity
-      ) as android.app.AlertDialog.Builder;
+      const alert = new android.app.AlertDialog.Builder(Application.android.foregroundActivity);
       alert.setOnDismissListener(
         new android.content.DialogInterface.OnDismissListener({
           onDismiss: (dialog) => {
@@ -249,7 +247,7 @@ export function createImageConfirmationDialog(file, retakeText = 'Retake', saveT
         })
       );
 
-      const layout = new android.widget.LinearLayout(Application.android.context) as android.widget.LinearLayout;
+      const layout = new android.widget.LinearLayout(Application.android.context);
       layout.setOrientation(1);
 
       // - Brad - working on OOM issue - use better Bitmap creation
