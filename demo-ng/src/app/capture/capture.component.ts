@@ -1,4 +1,4 @@
-import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { ImageAsset, ImageSource } from '@nativescript/core';
 import {
   CameraLoadedEvent,
@@ -14,7 +14,7 @@ import {
   styleUrls: ['./capture.component.css'],
   templateUrl: './capture.component.html',
 })
-export class CaptureComponent implements OnInit, OnDestroy {
+export class CaptureComponent {
   public imageSource: ImageSource;
   public showOverlay = false;
   public overlayChanged = 0;
@@ -23,10 +23,6 @@ export class CaptureComponent implements OnInit, OnDestroy {
   private readonly tag = '[demo-ng]';
 
   constructor(private zone: NgZone) {}
-
-  ngOnInit(): void {}
-
-  ngOnDestroy() {}
 
   public cameraLoadedEvent(event: CameraLoadedEvent): void {
     console.info(`${this.tag}: Cam loaded.`);
@@ -38,12 +34,6 @@ export class CaptureComponent implements OnInit, OnDestroy {
     if (flashMode === 'off') {
       this.cam.toggleFlash();
     }
-
-    // TEST THE ICONS SHOWING/HIDING
-    // this.cam.showCaptureIcon = true;
-    // this.cam.showFlashIcon = true;
-    // this.cam.showGalleryIcon = false;
-    // this.cam.showToggleIcon = false;
   }
 
   public imagesSelectedEvent(event: ImagesSelectedEvent): void {
@@ -65,20 +55,22 @@ export class CaptureComponent implements OnInit, OnDestroy {
 
   public recordDemoVideo(): void {
     try {
-      console.log(`*** start recording ***`);
-      this.cam.record();
+      console.info(`${this.tag}: Start recording`);
+      this.cam.record({
+        saveToGallery: true,
+      });
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
   public stopRecordingDemoVideo(): void {
     try {
-      console.log(`*** stop recording ***`);
+      console.info(`${this.tag}: Stop recording`);
       this.cam.stop();
-      console.log(`*** after this.cam.stop() ***`);
+      console.info(`${this.tag}: After Stop recording`);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
