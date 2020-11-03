@@ -8,24 +8,13 @@
     "noEmitHelpers": true,
     "noEmitOnError": false,
     "diagnostics": true,
-    "lib": [
-      "es6",
-      "dom",
-      "es2017"
-    ],
+    "lib": ["es6", "dom", "es2017"],
     "baseUrl": ".",
     "paths": {
-      "~/*": [
-        "app/*"
-      ]
+      "~/*": ["app/*"]
     },
     "moduleResolution": "node",
     "removeComments": false
   },
-  "exclude": [
-    "node_modules",
-    "platforms",
-    "**/*.aot.ts",
-    "../src/node_modules"
-  ]
+  "exclude": ["node_modules", "platforms", "**/*.aot.ts", "../src/node_modules"]
 }

@@ -1,4 +1,4 @@
-import { Frame, Image, ImageAsset, ImageSource, Observable, Page, Screen } from '@nativescript/core';
+import { Frame, Image, ImageSource, Observable, Page, Screen } from '@nativescript/core';
 import {
   CameraPlus,
   ErrorEvent,
