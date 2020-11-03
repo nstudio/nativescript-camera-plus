@@ -85,6 +85,15 @@ export interface ConfirmScreenDismissedEvent extends EventData {
  */
 export interface CameraLoadedEvent extends EventData {
   eventName: 'loaded';
-  data: co.fitcom.fancycamera.FancyCamera | MySwifty; // check iOS, verify cross platform stability
+
+  /**
+   * This typing is unavailable on the opposite platform.
+   * For example, on Android you will get an error for MySwifty.
+   *
+   * This occurs when using a type of `a | b`, instead use these for now:
+   * Android: co.fitcom.fancycamera.FancyCamera
+   * iOS: MySwifty
+   */
+  data: any;
   object: CameraPlus;
 }

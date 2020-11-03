@@ -345,6 +345,11 @@ export interface ICameraPlusEvents {
   videoRecordingReadyEvent: VideoRecordingReadyEvent;
   confirmScreenShownEvent: ConfirmScreenShownEvent;
   confirmScreenDismissedEvent: ConfirmScreenDismissedEvent;
+
+  /**
+   * Angular only.
+   */
+  cameraLoadedEvent: CameraLoadedEvent;
 }
 
 export enum WhiteBalance {
