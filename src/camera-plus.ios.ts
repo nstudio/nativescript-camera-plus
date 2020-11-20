@@ -91,7 +91,7 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
 
     let cnt = 0;
 
-    const next = function() {
+    const next = function () {
       cnt++;
       if (cnt === assets.count) {
         this._callback(selection);
@@ -111,10 +111,11 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
             asset,
             requestOptions,
             (imageData: NSData, dataUti: string, orientation: CGImagePropertyOrientation, info: NSDictionary<any, any>) => {
-              const image = new UIImage({data: imageData});
+              const image = new UIImage({ data: imageData });
               const imageAsset = new ImageAsset(image);
               if (this._width) imageAsset.options.width = this._width;
               if (this._height) imageAsset.options.height = this._height;
+              imageAsset.options.keepAspectRatio = this._keepAspectRatio;
               selection.push(imageAsset);
               next.call(this);
             }
@@ -130,6 +131,7 @@ class QBImagePickerControllerDelegateImpl extends NSObject implements QBImagePic
               const imageAsset = new ImageAsset(image);
               if (this._width) imageAsset.options.width = this._width;
               if (this._height) imageAsset.options.height = this._height;
+              imageAsset.options.keepAspectRatio = this._keepAspectRatio;
               selection.push(imageAsset);
               next.call(this);
             }
@@ -401,6 +403,7 @@ export class MySwifty extends SwiftyCamViewController {
   }
 
   public recordVideo(options?: IVideoOptions) {
+    options = options || {};
     if (this._enableVideo) {
       if (this.isVideoRecording) {
         CLog('CameraPlus stop video recording.');
@@ -520,6 +523,26 @@ export class MySwifty extends SwiftyCamViewController {
   public tookPhoto(photo: UIImage) {
     this._photoToSave = photo;
     CLog('tookPhoto!');
+    if (this._snapPicOptions && this._snapPicOptions.autoSquareCrop) {
+      const width = photo.size.width;
+      const height = photo.size.height;
+      let originalWidth = width;
+      let originalHeight = height;
+      let x = 0;
+      let y = 0;
+      if (originalWidth < originalHeight) {
+        x = (originalHeight - originalWidth) / 2;
+        originalHeight = originalWidth;
+      } else {
+        y = (originalWidth - originalHeight) / 2;
+        originalWidth = originalHeight;
+      }
+
+      const rect: any = CGRectMake(x, y, originalWidth, originalHeight);
+      const ref = CGImageCreateWithImageInRect(photo.CGImage, rect);
+      this._photoToSave = UIImage.imageWithCGImageScaleOrientation(ref, photo.scale, photo.imageOrientation);
+      CGImageRelease(ref);
+    }
 
     if (this._snapPicOptions && this._snapPicOptions.confirm) {
       // show the confirmation
@@ -531,8 +554,9 @@ export class MySwifty extends SwiftyCamViewController {
       // confirm user wants to keep photo
       const imageConfirm = UIImageView.alloc().init();
       imageConfirm.contentMode = UIViewContentMode.ScaleAspectFit;
-      imageConfirm.image = photo;
-      imageConfirm.frame = CGRectMake(0, 50, width, height - 40);
+      imageConfirm.image = this._photoToSave;
+      imageConfirm.frame = CGRectMake(0, 50, width, height - 50);
+
       // add 'Retake' in bottom left and 'Save Photo' in bottom right
       const retakeBtn = createButton(
         this,
@@ -573,7 +597,13 @@ export class MySwifty extends SwiftyCamViewController {
       if ((this._snapPicOptions && this._snapPicOptions.saveToGallery) || this._owner.get().saveToGallery) {
         UIImageWriteToSavedPhotosAlbum(this._photoToSave, null, null, null);
       }
-      this._owner.get().sendEvent(CameraPlus.photoCapturedEvent, new ImageAsset(this._photoToSave));
+      const asset = new ImageAsset(this._photoToSave);
+      if (this._snapPicOptions) {
+        if (typeof this._snapPicOptions.keepAspectRatio === 'boolean') asset.options.keepAspectRatio = this._snapPicOptions.keepAspectRatio;
+        if (typeof this._snapPicOptions.height === 'number') asset.options.height = this._snapPicOptions.height;
+        if (typeof this._snapPicOptions.width === 'number') asset.options.width = this._snapPicOptions.width;
+      }
+      this._owner.get().sendEvent(CameraPlus.photoCapturedEvent, asset);
       this.resetPreview();
     }
   }
@@ -953,12 +983,12 @@ export class CameraPlus extends CameraPlusBase {
   }
 }
 
-const rootVC = function() {
+const rootVC = function () {
   const appWindow = UIApplication.sharedApplication.keyWindow;
   return appWindow.rootViewController;
 };
 
-const createButton = function(
+const createButton = function (
   target: any,
   frame: CGRect,
   label: string,
@@ -997,14 +1027,14 @@ const createButton = function(
   return btn;
 };
 
-const addShadow = function(button: UIButton) {
+const addShadow = function (button: UIButton) {
   button.layer.shadowColor = UIColor.blackColor.CGColor;
   button.layer.shadowOffset = CGSizeMake(0, 0);
   button.layer.shadowRadius = 5;
   button.layer.shadowOpacity = 1;
 };
 
-const createIcon = function(
+const createIcon = function (
   type: 'flash' | 'flashOff' | 'toggle' | 'picOutline' | 'takePic' | 'gallery',
   size?: CGSize,
   color?: string
@@ -1040,7 +1070,7 @@ const createIcon = function(
   return img;
 };
 
-const drawFlash = function(color: string) {
+const drawFlash = function (color: string) {
   const iconColor = new Color(color || '#fff').ios;
 
   //// Bezier Drawing
@@ -1122,7 +1152,7 @@ const drawFlash = function(color: string) {
   bezierPath.fill();
 };
 
-const drawFlashOff = function(color: string) {
+const drawFlashOff = function (color: string) {
   const iconColor = new Color(color || '#fff').ios;
 
   //// Bezier Drawing
@@ -1263,7 +1293,7 @@ const drawFlashOff = function(color: string) {
   bezier2Path.fill();
 };
 
-const drawToggle = function(color: string) {
+const drawToggle = function (color: string) {
   const iconColor = new Color(color || '#fff').ios;
 
   //// Bezier Drawing
@@ -1502,7 +1532,7 @@ const drawToggle = function(color: string) {
   bezier3Path.fill();
 };
 
-const drawPicOutline = function(color: string) {
+const drawPicOutline = function (color: string) {
   const iconColor = new Color(color || '#fff').ios;
 
   //// Bezier Drawing
@@ -1616,7 +1646,7 @@ const drawPicOutline = function(color: string) {
   // bezier2Path.fill();
 };
 
-const drawCircle = function(color: string) {
+const drawCircle = function (color: string) {
   const iconColor = new Color(color || '#fff').ios;
 
   // inner circle
@@ -1658,7 +1688,7 @@ const drawCircle = function(color: string) {
   bezier2Path.fill();
 };
 
-const drawGallery = function(color: string) {
+const drawGallery = function (color: string) {
   const iconColor = new Color(color || '#fff').ios;
 
   //// Bezier Drawing
