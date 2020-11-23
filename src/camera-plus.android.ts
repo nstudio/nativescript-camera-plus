@@ -344,6 +344,7 @@ export class CameraPlus extends CameraPlusBase {
   }
 
   private _autoFocus = false;
+  // @ts-ignore
   public get autoFocus(): boolean {
     return this._autoFocus;
   }
