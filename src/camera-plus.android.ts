@@ -128,7 +128,7 @@ export class CameraPlus extends CameraPlusBase {
   }
 
   get ratio() {
-    return this._camera ? this._camera.getRatio() : '4:3'
+    return this._camera ? this._camera.getRatio() : '4:3';
   }
   set ratio(value: string) {
     if (this._camera) {
@@ -147,7 +147,7 @@ export class CameraPlus extends CameraPlusBase {
   }
 
   // @ts-ignore
-  set whitebalance(value: WhiteBalance | string) {
+  set whiteBalance(value: WhiteBalance | string) {
     if (this._camera) {
       switch (value) {
         case WhiteBalance.Cloudy:
@@ -194,9 +194,9 @@ export class CameraPlus extends CameraPlusBase {
     }
   }
 
-  get whitebalance(): WhiteBalance | string {
-    if(this._camera){
-      switch(this._camera.getWhiteBalance()){
+  get whiteBalance(): WhiteBalance | string {
+    if (this._camera) {
+      switch (this._camera.getWhiteBalance()) {
         case com.github.triniwiz.fancycamera.WhiteBalance.Cloudy:
           return WhiteBalance.Cloudy;
           case com.github.triniwiz.fancycamera.WhiteBalance.Fluorescent:
@@ -212,18 +212,18 @@ export class CameraPlus extends CameraPlusBase {
           case com.github.triniwiz.fancycamera.WhiteBalance.WarmFluorescent:
           return WhiteBalance.WarmFluorescent;
           default:
-            return WhiteBalance.Auto
+            return WhiteBalance.Auto;
       }
     }
     return WhiteBalance.Auto;
   }
-  
+
   getAvailablePictureSizes(ratio: string): { width: number, height: number }[] {
     const sizes = [];
     if (this._camera && typeof ratio === 'string') {
       const nativeSizes: any = this._camera.getAvailablePictureSizes(ratio);
-      for (let size of nativeSizes) {
-        sizes.push({ width: size.getWidth(), height: size.getHeight() })
+      for (const size of nativeSizes) {
+        sizes.push({ width: size.getWidth(), height: size.getHeight() });
       }
     }
     return sizes;
@@ -233,16 +233,16 @@ export class CameraPlus extends CameraPlusBase {
     const ratios = [];
     if (this._camera) {
       const nativeRatios: any = this._camera.getGetSupportedRatios();
-      for (let ratio of nativeRatios) {
+      for (const ratio of nativeRatios) {
         ratios.push(ratio);
       }
     }
     return ratios;
   }
-  
-  //@ts-ignore
-  set pictureSize(value: string){
-    if(this._camera){
+
+  // @ts-ignore
+  set pictureSize(value: string) {
+    if (this._camera) {
       this._camera.setPictureSize(value);
     }
   }
@@ -309,13 +309,13 @@ export class CameraPlus extends CameraPlusBase {
           CLog(message, null);
           owner.sendEvent(CameraPlus.errorEvent, null, message);
           if (owner.isRecording) {
-            owner.isRecording = false
+            owner.isRecording = false;
           }
         }
       },
       async onCameraPhotoUI(event?: java.io.File) {
         const owner = this.owner ? this.owner.get() : null;
-        const file = event
+        const file = event;
         const options = owner._lastCameraOptions.shift();
         let confirmPic;
         let confirmPicRetakeText;
@@ -472,7 +472,7 @@ export class CameraPlus extends CameraPlusBase {
     }
   }
 
-  //@ts-ignore
+  // @ts-ignore
   public get autoFocus(): boolean {
     return this._camera ? this._camera.getAutoFocus() : false;
   }
@@ -684,10 +684,10 @@ export class CameraPlus extends CameraPlusBase {
 
   public toggleFlash() {
     if (this._camera) {
-      if (this._camera.getFlashMode() != com.github.triniwiz.fancycamera.CameraFlashMode.OFF) {
-        this._camera.setFlashMode(com.github.triniwiz.fancycamera.CameraFlashMode.ON)
+      if (this._camera.getFlashMode() !== com.github.triniwiz.fancycamera.CameraFlashMode.OFF) {
+        this._camera.setFlashMode(com.github.triniwiz.fancycamera.CameraFlashMode.ON);
       } else {
-        this._camera.setFlashMode(com.github.triniwiz.fancycamera.CameraFlashMode.OFF)
+        this._camera.setFlashMode(com.github.triniwiz.fancycamera.CameraFlashMode.OFF);
       }
     }
   }
@@ -850,7 +850,7 @@ export class CameraPlus extends CameraPlusBase {
    */
   public getFlashMode() {
     if (this.hasFlash()) {
-      if (this._camera.getFlashMode() != com.github.triniwiz.fancycamera.CameraFlashMode.OFF) {
+      if (this._camera.getFlashMode() !== com.github.triniwiz.fancycamera.CameraFlashMode.OFF) {
         return 'on';
       }
       return 'off';

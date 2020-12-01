@@ -98,12 +98,12 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
   @GetSetProperty()
   public zoom: number = 0;
 
-  
+
   /**
    *  *ANDROID ONLY* Camera white balance
    */
   @GetSetProperty()
-  public whitebalance: WhiteBalance | string = WhiteBalance.Auto;
+  public whiteBalance: WhiteBalance | string = WhiteBalance.Auto;
 
 
   /**
@@ -123,7 +123,7 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
   }
 
    /**
-   * *ANDROID ONLY* 
+   * *ANDROID ONLY*
    * @returns retuns an array of strings representing the preview sizes supported by the current device.
    */
   getGetSupportedRatios(): string[] {

@@ -83,7 +83,7 @@ export declare class CameraPlus extends ContentView {
   /**
    *  *ANDROID ONLY* Camera white balance
    */
-  whitebalance: WhiteBalance | string;
+  whiteBalance: WhiteBalance | string;
 
 
   /**
