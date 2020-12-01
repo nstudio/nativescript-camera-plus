@@ -22,7 +22,7 @@ import {
 } from './camera-plus.common';
 
 export * from './camera-plus.common';
-export { CameraVideoQuality } from './camera-plus.common';
+export { CameraVideoQuality, WhiteBalance } from './camera-plus.common';
 /**
  * Library image picker delegate (multiple or single)
  */

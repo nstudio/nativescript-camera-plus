@@ -20,12 +20,13 @@ import {
   ICameraOptions,
   ICameraPlusEvents,
   IChooseOptions,
-  IVideoOptions
+  IVideoOptions,
+  WhiteBalance
 } from './camera-plus.common';
 import * as CamHelpers from './helpers';
 import { SelectedAsset } from './selected-asset';
 export * from './camera-plus.common';
-export { CameraVideoQuality } from './camera-plus.common';
+export { CameraVideoQuality, WhiteBalance } from './camera-plus.common';
 const REQUEST_VIDEO_CAPTURE = 999;
 const WRAP_CONTENT = -2;
 const ALIGN_PARENT_TOP = 10;
@@ -55,11 +56,10 @@ const WRITE_EXTERNAL_STORAGE = () => (android as any).Manifest.permission.WRITE_
 // Since these device.* properties resolve directly to the android.* namespace,
 // the snapshot will fail if they resolve during import, so must be done via a function
 const DEVICE_INFO_STRING = () => `device: ${device.manufacturer} ${device.model} on SDK: ${device.sdkVersion}`;
-
 export class CameraPlus extends CameraPlusBase {
   // @GetSetProperty() public camera: android.hardware.Camera;
   // Snapshot-friendly, since the decorator will include the snapshot-unknown object "android"
-  private _camera;
+  private _camera: com.github.triniwiz.fancycamera.FancyCamera;
   private _cameraId;
 
   @GetSetProperty()
@@ -127,6 +127,130 @@ export class CameraPlus extends CameraPlusBase {
     return this.enableVideo === true || CameraPlus.enableVideo;
   }
 
+  get ratio() {
+    return this._camera ? this._camera.getRatio() : '4:3'
+  }
+  set ratio(value: string) {
+    if (this._camera) {
+      this._camera.setRatio(value);
+    }
+  }
+
+  get zoom() {
+    return this._camera ? this._camera.getZoom() : 0;
+  }
+
+  set zoom(value: number) {
+    if (this._camera) {
+      this._camera.setZoom(value);
+    }
+  }
+
+  // @ts-ignore
+  set whitebalance(value: WhiteBalance | string) {
+    if (this._camera) {
+      switch (value) {
+        case WhiteBalance.Cloudy:
+          this._camera.setWhiteBalance(
+            com.github.triniwiz.fancycamera.WhiteBalance.Cloudy
+          );
+          break;
+        case WhiteBalance.Fluorescent:
+          this._camera.setWhiteBalance(
+            com.github.triniwiz.fancycamera.WhiteBalance.Fluorescent
+          );
+          break;
+        case WhiteBalance.Incandescent:
+          this._camera.setWhiteBalance(
+            com.github.triniwiz.fancycamera.WhiteBalance.Incandescent
+          );
+          break;
+        case WhiteBalance.Shadow:
+          this._camera.setWhiteBalance(
+            com.github.triniwiz.fancycamera.WhiteBalance.Shadow
+          );
+          break;
+        case WhiteBalance.Sunny:
+          this._camera.setWhiteBalance(
+            com.github.triniwiz.fancycamera.WhiteBalance.Sunny
+          );
+          break;
+        case WhiteBalance.Twilight:
+          this._camera.setWhiteBalance(
+            com.github.triniwiz.fancycamera.WhiteBalance.Twilight
+          );
+          break;
+        case WhiteBalance.WarmFluorescent:
+          this._camera.setWhiteBalance(
+            com.github.triniwiz.fancycamera.WhiteBalance.WarmFluorescent
+          );
+          break;
+        default:
+          this._camera.setWhiteBalance(
+            com.github.triniwiz.fancycamera.WhiteBalance.Auto
+          );
+          break;
+      }
+    }
+  }
+
+  get whitebalance(): WhiteBalance | string {
+    if(this._camera){
+      switch(this._camera.getWhiteBalance()){
+        case com.github.triniwiz.fancycamera.WhiteBalance.Cloudy:
+          return WhiteBalance.Cloudy;
+          case com.github.triniwiz.fancycamera.WhiteBalance.Fluorescent:
+          return WhiteBalance.Fluorescent;
+          case com.github.triniwiz.fancycamera.WhiteBalance.Incandescent:
+          return WhiteBalance.Incandescent;
+          case com.github.triniwiz.fancycamera.WhiteBalance.Shadow:
+          return WhiteBalance.Shadow;
+          case com.github.triniwiz.fancycamera.WhiteBalance.Sunny:
+          return WhiteBalance.Sunny;
+          case com.github.triniwiz.fancycamera.WhiteBalance.Twilight:
+          return WhiteBalance.Twilight;
+          case com.github.triniwiz.fancycamera.WhiteBalance.WarmFluorescent:
+          return WhiteBalance.WarmFluorescent;
+          default:
+            return WhiteBalance.Auto
+      }
+    }
+    return WhiteBalance.Auto;
+  }
+  
+  getAvailablePictureSizes(ratio: string): { width: number, height: number }[] {
+    const sizes = [];
+    if (this._camera && typeof ratio === 'string') {
+      const nativeSizes: any = this._camera.getAvailablePictureSizes(ratio);
+      for (let size of nativeSizes) {
+        sizes.push({ width: size.getWidth(), height: size.getHeight() })
+      }
+    }
+    return sizes;
+  }
+
+  getGetSupportedRatios(): string[] {
+    const ratios = [];
+    if (this._camera) {
+      const nativeRatios: any = this._camera.getGetSupportedRatios();
+      for (let ratio of nativeRatios) {
+        ratios.push(ratio);
+      }
+    }
+    return ratios;
+  }
+  
+  //@ts-ignore
+  set pictureSize(value: string){
+    if(this._camera){
+      this._camera.setPictureSize(value);
+    }
+  }
+
+  get pictureSize(): string {
+    return this._camera ? this._camera.getPictureSize() : '0x0';
+  }
+
   get camera() {
     return this._camera;
   }
@@ -137,13 +261,14 @@ export class CameraPlus extends CameraPlusBase {
     // create the Android RelativeLayout
     app.android.on('activityRequestPermissions', this._permissionListener);
     this._nativeView = new android.widget.RelativeLayout(this._context);
-    this._camera = new co.fitcom.fancycamera.FancyCamera(this._context);
-    this._camera.setLayoutParams(
+    this._camera = new com.github.triniwiz.fancycamera.FancyCamera(this._context);
+    (this._camera as any).setLayoutParams(
       new android.view.ViewGroup.LayoutParams(
         android.view.ViewGroup.LayoutParams.MATCH_PARENT,
         android.view.ViewGroup.LayoutParams.MATCH_PARENT
       )
     );
+
     this._nativeView.addView(this._camera as any);
     return this._nativeView;
   }
@@ -160,8 +285,9 @@ export class CameraPlus extends CameraPlusBase {
 
   private _permissionListenerFn(args) {
     if (this._camera) {
-      if (this._camera.hasPermission()) {
-        this._camera.start();
+      console.log('', this._camera.hasCameraPermission() || this._camera.hasPermission());
+      if (this._camera.hasCameraPermission() || this._camera.hasPermission()) {
+        this._camera.startPreview();
       }
     }
   }
@@ -169,85 +295,91 @@ export class CameraPlus extends CameraPlusBase {
   initNativeView() {
     super.initNativeView();
     this.on(View.layoutChangedEvent, this._onLayoutChangeListener);
-    const listenerImpl = (co as any).fitcom.fancycamera.CameraEventListenerUI.extend({
+    const listenerImpl = (com as any).github.triniwiz.fancycamera.CameraEventListenerUI.extend({
       owner: null,
-      onCameraCloseUI(): void {},
-      async onPhotoEventUI(event: co.fitcom.fancycamera.PhotoEvent) {
+      onReady(): void { },
+      onCameraCloseUI(): void {
+      },
+      onCameraError(message: string, ex: java.lang.Exception): void {
+        console.log('onCameraError', message);
+        ex.printStackTrace();
         const owner = this.owner ? this.owner.get() : null;
-        if (event.getType() === co.fitcom.fancycamera.EventType.ERROR) {
-          if (owner) {
-            owner._lastCameraOptions.shift();
-            CLog('takePicture error', null);
-            owner.sendEvent(CameraPlus.errorEvent, null, 'Error taking picture.');
-          }
-        } else if (event.getType() === co.fitcom.fancycamera.EventType.INFO) {
-          const file = event.getFile();
-          if (event.getMessage() === co.fitcom.fancycamera.PhotoEvent.EventInfo.PHOTO_TAKEN.toString()) {
-            const options = owner._lastCameraOptions.shift();
-            let confirmPic;
-            let confirmPicRetakeText;
-            let confirmPicSaveText;
-            let saveToGallery;
-            let reqWidth;
-            let reqHeight;
-            let shouldKeepAspectRatio;
-            let shouldAutoSquareCrop = owner.autoSquareCrop;
-
-            const density = utils.layout.getDisplayDensity();
-            if (options) {
-              confirmPic = options.confirm ? true : false;
-              confirmPicRetakeText = options.confirmRetakeText ? options.confirmRetakeText : owner.confirmRetakeText;
-              confirmPicSaveText = options.confirmSaveText ? options.confirmSaveText : owner.confirmSaveText;
-              saveToGallery = options.saveToGallery ? true : false;
-              reqWidth = options.width ? options.width * density : 0;
-              reqHeight = options.height ? options.height * density : reqWidth;
-              shouldKeepAspectRatio = types.isNullOrUndefined(options.keepAspectRatio) ? true : options.keepAspectRatio;
-              shouldAutoSquareCrop = !!options.autoSquareCrop;
-            } else {
-              // use xml property getters or their defaults
-              CLog('Using property getters for defaults, no options.');
-              confirmPic = owner.confirmPhotos;
-              saveToGallery = owner.saveToGallery;
-            }
-            if (confirmPic === true) {
-              owner.sendEvent(CameraPlus.confirmScreenShownEvent);
-              const result = await CamHelpers.createImageConfirmationDialog(
-                file.getAbsolutePath(),
-                confirmPicRetakeText,
-                confirmPicSaveText
-              ).catch(ex => {
-                CLog('Error createImageConfirmationDialog', ex);
-              });
-
-              owner.sendEvent(CameraPlus.confirmScreenDismissedEvent);
-
-              CLog(`confirmation result = ${result}`);
-              if (result !== true) {
-                file.delete();
-                return;
-              }
-
-              const asset = CamHelpers.assetFromPath(
-                file.getAbsolutePath(),
-                reqWidth,
-                reqHeight,
-                shouldKeepAspectRatio
-              );
-
-              owner.sendEvent(CameraPlus.photoCapturedEvent, asset);
-              return;
-            } else {
-              const asset = CamHelpers.assetFromPath(
-                file.getAbsolutePath(),
-                reqWidth,
-                reqHeight,
-                shouldKeepAspectRatio
-              );
-              owner.sendEvent(CameraPlus.photoCapturedEvent, asset);
-              return;
-            }
+        if (owner) {
+          owner._lastCameraOptions.shift();
+          CLog(message, null);
+          owner.sendEvent(CameraPlus.errorEvent, null, message);
+          if (owner.isRecording) {
+            owner.isRecording = false
           }
         }
+      },
+      async onCameraPhotoUI(event?: java.io.File) {
+        const owner = this.owner ? this.owner.get() : null;
+        const file = event
+        const options = owner._lastCameraOptions.shift();
+        let confirmPic;
+        let confirmPicRetakeText;
+        let confirmPicSaveText;
+        let saveToGallery;
+        let reqWidth;
+        let reqHeight;
+        let shouldKeepAspectRatio;
+        let shouldAutoSquareCrop = owner.autoSquareCrop;
+
+        const density = utils.layout.getDisplayDensity();
+        if (options) {
+          confirmPic = options.confirm ? true : false;
+          confirmPicRetakeText = options.confirmRetakeText ? options.confirmRetakeText : owner.confirmRetakeText;
+          confirmPicSaveText = options.confirmSaveText ? options.confirmSaveText : owner.confirmSaveText;
+          saveToGallery = options.saveToGallery ? true : false;
+          reqWidth = options.width ? options.width * density : 0;
+          reqHeight = options.height ? options.height * density : reqWidth;
+          shouldKeepAspectRatio = types.isNullOrUndefined(options.keepAspectRatio) ? true : options.keepAspectRatio;
+          shouldAutoSquareCrop = !!options.autoSquareCrop;
+        } else {
+          // use xml property getters or their defaults
+          CLog('Using property getters for defaults, no options.');
+          confirmPic = owner.confirmPhotos;
+          saveToGallery = owner.saveToGallery;
+        }
+        if (confirmPic === true) {
+          owner.sendEvent(CameraPlus.confirmScreenShownEvent);
+          const result = await CamHelpers.createImageConfirmationDialog(
+            file.getAbsolutePath(),
+            confirmPicRetakeText,
+            confirmPicSaveText
+          ).catch(ex => {
+            CLog('Error createImageConfirmationDialog', ex);
+          });
+
+          owner.sendEvent(CameraPlus.confirmScreenDismissedEvent);
+
+          CLog(`confirmation result = ${result}`);
+          if (result !== true) {
+            file.delete();
+            return;
+          }
+
+          const asset = CamHelpers.assetFromPath(
+            file.getAbsolutePath(),
+            reqWidth,
+            reqHeight,
+            shouldKeepAspectRatio
+          );
+
+          owner.sendEvent(CameraPlus.photoCapturedEvent, asset);
+          return;
+        } else {
+          const asset = CamHelpers.assetFromPath(
+            file.getAbsolutePath(),
+            reqWidth,
+            reqHeight,
+            shouldKeepAspectRatio
+          );
+          owner.sendEvent(CameraPlus.photoCapturedEvent, asset);
+          return;
+        }
+
       },
       onCameraOpenUI(): void {
         const owner = this.owner ? this.owner.get() : null;
@@ -262,26 +394,23 @@ export class CameraPlus extends CameraPlusBase {
           }
         }
       },
-      onVideoEventUI(event: co.fitcom.fancycamera.VideoEvent): void {
+      onCameraVideoStartUI(): void {
         const owner = this.owner ? this.owner.get() : null;
         if (owner) {
-          if (event.getType() === co.fitcom.fancycamera.EventType.ERROR) {
-            CLog(`stopRecording error`, null);
-            owner.sendEvent(CameraPlus.errorEvent, null, 'Error trying to stop recording.');
-            owner.isRecording = false;
-          } else if (event.getType() === co.fitcom.fancycamera.EventType.INFO) {
-            if (event.getMessage() === co.fitcom.fancycamera.VideoEvent.EventInfo.RECORDING_STARTED.toString()) {
-              owner.isRecording = true;
-              owner.sendEvent(CameraPlus.videoRecordingStartedEvent, owner.camera);
-            } else if (
-              event.getMessage() === co.fitcom.fancycamera.VideoEvent.EventInfo.RECORDING_FINISHED.toString()
-            ) {
-              owner.sendEvent(CameraPlus.videoRecordingReadyEvent, event.getFile().getAbsolutePath());
-              CLog(`Recording complete`);
-              owner.isRecording = false;
-            }
-          }
+          owner.isRecording = true;
+          owner.sendEvent(CameraPlus.videoRecordingStartedEvent, owner.camera);
         }
+      },
+      onCameraVideoUI(event?: java.io.File): void {
+        const owner = this.owner ? this.owner.get() : null;
+        if (owner) {
+          owner.sendEvent(CameraPlus.videoRecordingReadyEvent, event.getAbsolutePath());
+          CLog(`Recording complete`);
+          owner.isRecording = false;
+        }
+      },
+      onCameraAnalysisUI(imageAnalysis: com.github.triniwiz.fancycamera.ImageAnalysis): void {
+
       }
     });
     const listener = new listenerImpl();
@@ -306,11 +435,11 @@ export class CameraPlus extends CameraPlusBase {
     if (this._camera) {
       switch (id) {
         case CAMERA_FACING_FRONT:
-          this._camera.setCameraPosition(co.fitcom.fancycamera.FancyCamera.CameraPosition.FRONT);
+          this._camera.setPosition(com.github.triniwiz.fancycamera.CameraPosition.FRONT);
           this._cameraId = CAMERA_FACING_FRONT;
           break;
         default:
-          this._camera.setCameraPosition(co.fitcom.fancycamera.FancyCamera.CameraPosition.BACK);
+          this._camera.setPosition(com.github.triniwiz.fancycamera.CameraPosition.BACK);
           this._cameraId = CAMERA_FACING_BACK;
           break;
       }
@@ -343,16 +472,14 @@ export class CameraPlus extends CameraPlusBase {
     }
   }
 
-  private _autoFocus = false;
-  // @ts-ignore
+  //@ts-ignore
   public get autoFocus(): boolean {
-    return this._autoFocus;
+    return this._camera ? this._camera.getAutoFocus() : false;
   }
   public set autoFocus(focus: boolean) {
     if (this._camera) {
       this._camera.setAutoFocus(focus);
     }
-    this._autoFocus = focus;
   }
 
   _togglingCamera = false;
@@ -387,25 +514,25 @@ export class CameraPlus extends CameraPlusBase {
       this._camera.setSaveToGallery(!!options.saveToGallery);
       switch (options.quality) {
         case CameraVideoQuality.HIGHEST:
-          this._camera.setQuality(co.fitcom.fancycamera.FancyCamera.Quality.HIGHEST.getValue());
+          this._camera.setQuality(com.github.triniwiz.fancycamera.Quality.HIGHEST);
           break;
         case CameraVideoQuality.LOWEST:
-          this._camera.setQuality(co.fitcom.fancycamera.FancyCamera.Quality.LOWEST.getValue());
+          this._camera.setQuality(com.github.triniwiz.fancycamera.Quality.LOWEST);
           break;
         case CameraVideoQuality.MAX_2160P:
-          this._camera.setQuality(co.fitcom.fancycamera.FancyCamera.Quality.MAX_2160P.getValue());
+          this._camera.setQuality(com.github.triniwiz.fancycamera.Quality.MAX_2160P);
           break;
         case CameraVideoQuality.MAX_1080P:
-          this._camera.setQuality(co.fitcom.fancycamera.FancyCamera.Quality.MAX_1080P.getValue());
+          this._camera.setQuality(com.github.triniwiz.fancycamera.Quality.MAX_1080P);
           break;
         case CameraVideoQuality.MAX_720P:
-          this._camera.setQuality(co.fitcom.fancycamera.FancyCamera.Quality.MAX_720P.getValue());
+          this._camera.setQuality(com.github.triniwiz.fancycamera.Quality.MAX_720P);
           break;
         case CameraVideoQuality.QVGA:
-          this._camera.setQuality(co.fitcom.fancycamera.FancyCamera.Quality.QVGA.getValue());
+          this._camera.setQuality(com.github.triniwiz.fancycamera.Quality.QVGA);
           break;
         default:
-          this._camera.setQuality(co.fitcom.fancycamera.FancyCamera.Quality.MAX_480P.getValue());
+          this._camera.setQuality(com.github.triniwiz.fancycamera.Quality.MAX_480P);
           break;
       }
       // -1 uses profile value;
@@ -554,9 +681,14 @@ export class CameraPlus extends CameraPlusBase {
   /**
    * Toggles the flash mode of the camera.
    */
+
   public toggleFlash() {
     if (this._camera) {
-      this._camera.toggleFlash();
+      if (this._camera.getFlashMode() != com.github.triniwiz.fancycamera.CameraFlashMode.OFF) {
+        this._camera.setFlashMode(com.github.triniwiz.fancycamera.CameraFlashMode.ON)
+      } else {
+        this._camera.setFlashMode(com.github.triniwiz.fancycamera.CameraFlashMode.OFF)
+      }
     }
   }
 
@@ -670,8 +802,8 @@ export class CameraPlus extends CameraPlusBase {
    */
   public getCurrentCamera(): 'front' | 'rear' {
     if (!this._camera) return 'rear';
-    switch (this._camera.getCameraPosition()) {
-      case co.fitcom.fancycamera.FancyCamera.CameraPosition.FRONT.getValue():
+    switch (this._camera.getPosition()) {
+      case com.github.triniwiz.fancycamera.CameraPosition.FRONT:
         return 'front';
       default:
         return 'rear';
@@ -710,7 +842,7 @@ export class CameraPlus extends CameraPlusBase {
     if (!this._camera) {
       return false;
     }
-    return this._camera.hasFlash();
+    return this._camera.getHasFlash();
   }
 
   /**
@@ -718,7 +850,7 @@ export class CameraPlus extends CameraPlusBase {
    */
   public getFlashMode() {
     if (this.hasFlash()) {
-      if (this._camera.flashEnabled()) {
+      if (this._camera.getFlashMode() != com.github.triniwiz.fancycamera.CameraFlashMode.OFF) {
         return 'on';
       }
       return 'off';

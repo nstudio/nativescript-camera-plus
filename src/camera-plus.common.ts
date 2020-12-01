@@ -84,6 +84,52 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
    */
   public static confirmScreenDismissedEvent = 'confirmScreenDismissedEvent';
 
+   /**
+   * *ANDROID ONLY*  A string to represent the camera preview aspect ratio e.g 4:3, 1:1 ,16:9 to check if the device supports the ratio use {@link getGetSupportedRatios}
+   */
+  @GetSetProperty()
+  public ratio: string;
+
+  /**
+   *  *ANDROID ONLY*  Camera zoom uses a float 0 - 1.
+   *  0 being no zoom
+   *  1 being max zoom
+   */
+  @GetSetProperty()
+  public zoom: number = 0;
+
+  
+  /**
+   *  *ANDROID ONLY* Camera white balance
+   */
+  @GetSetProperty()
+  public whitebalance: WhiteBalance | string = WhiteBalance.Auto;
+
+
+  /**
+   *  *ANDROID ONLY* A string representing the size of picture {@link takePicture} will output. Available sizes can be fetched using {@link getAvailablePictureSizes}
+   */
+  @GetSetProperty()
+  public pictureSize: string = '0x0';
+
+
+/**
+ *  *ANDROID ONLY*
+ * @param ratio string
+ * @returns returns an array of supported picture sizes supported by the current camera
+ */
+  getAvailablePictureSizes(ratio: string): { width: number, height: number }[] {
+    return [];
+  }
+
+   /**
+   * *ANDROID ONLY* 
+   * @returns retuns an array of strings representing the preview sizes supported by the current device.
+   */
+  getGetSupportedRatios(): string[] {
+    return [];
+  }
+
   /**
    * If true the default take picture event will present a confirmation dialog. Default is true.
    */
@@ -377,6 +423,17 @@ export interface IVideoOptions {
   androidMaxVideoBitRate?: number;
   androidMaxFrameRate?: number;
   androidMaxAudioBitRate?: number;
+}
+
+export enum WhiteBalance {
+  Auto = 'auto',
+  Sunny = 'sunny',
+  Cloudy = 'cloudy',
+  Shadow = 'shadow',
+  Twilight = 'twilight',
+  Fluorescent = 'fluorescent',
+  Incandescent = 'incandescent',
+  WarmFluorescent = 'warm-fluorescent',
 }
 
 export function GetSetProperty() {
