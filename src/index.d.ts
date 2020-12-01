@@ -69,6 +69,7 @@ export declare class CameraPlus extends ContentView {
 
 
   /**
+   * @default 4:3
    * *ANDROID ONLY*  A string to represent the camera preview aspect ratio e.g 4:3, 1:1 ,16:9 to check if the device supports the ratio use {@link getGetSupportedRatios}
    */
   ratio: string;
