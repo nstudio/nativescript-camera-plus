@@ -248,7 +248,7 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
    * * ANDROID ONLY * - will prompt the user for runtime permission to use the device Camera.
    */
   requestCameraPermissions(explanationText?: string): Promise<boolean> {
-    return new Promise((resolve, reject) => resolve());
+    return new Promise((resolve, reject) => resolve(false));
   }
 
   /**
@@ -276,7 +276,7 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
    * * ANDROID ONLY * - will prompt the user for runtime permission to record audio for video recording.
    */
   requestAudioPermissions(explanationText?: string): Promise<boolean> {
-    return new Promise((resolve, reject) => resolve());
+    return new Promise((resolve, reject) => resolve(false));
   }
 
   /**
