@@ -2,9 +2,13 @@ allprojects {
     repositories {
         maven { url "https://jitpack.io" }
         google()
+        maven { url "https://dl.bintray.com/triniwiz/maven" }
     }
 }
+
 dependencies {
-   implementation "com.android.support:exifinterface:+"
-	implementation 'com.github.triniwiz:fancycamera:1.2.3'
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation('com.github.triniwiz:fancycamera:3.0.0-alpha13'){
+        transitive = true
+    }
 }
