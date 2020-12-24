@@ -8,7 +8,7 @@ allprojects {
 
 dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation('com.github.triniwiz:fancycamera:3.0.0-alpha15'){
+    implementation('com.github.triniwiz:fancycamera:3.0.0-alpha16'){
         transitive = true
     }
 }

@@ -199,20 +199,20 @@ export class CameraPlus extends CameraPlusBase {
       switch (this._camera.getWhiteBalance()) {
         case com.github.triniwiz.fancycamera.WhiteBalance.Cloudy:
           return WhiteBalance.Cloudy;
-          case com.github.triniwiz.fancycamera.WhiteBalance.Fluorescent:
+        case com.github.triniwiz.fancycamera.WhiteBalance.Fluorescent:
           return WhiteBalance.Fluorescent;
-          case com.github.triniwiz.fancycamera.WhiteBalance.Incandescent:
+        case com.github.triniwiz.fancycamera.WhiteBalance.Incandescent:
           return WhiteBalance.Incandescent;
-          case com.github.triniwiz.fancycamera.WhiteBalance.Shadow:
+        case com.github.triniwiz.fancycamera.WhiteBalance.Shadow:
           return WhiteBalance.Shadow;
-          case com.github.triniwiz.fancycamera.WhiteBalance.Sunny:
+        case com.github.triniwiz.fancycamera.WhiteBalance.Sunny:
           return WhiteBalance.Sunny;
-          case com.github.triniwiz.fancycamera.WhiteBalance.Twilight:
+        case com.github.triniwiz.fancycamera.WhiteBalance.Twilight:
           return WhiteBalance.Twilight;
-          case com.github.triniwiz.fancycamera.WhiteBalance.WarmFluorescent:
+        case com.github.triniwiz.fancycamera.WhiteBalance.WarmFluorescent:
           return WhiteBalance.WarmFluorescent;
-          default:
-            return WhiteBalance.Auto;
+        default:
+          return WhiteBalance.Auto;
       }
     }
     return WhiteBalance.Auto;
@@ -459,10 +459,15 @@ export class CameraPlus extends CameraPlusBase {
         CLog('Application does not have permission to use Camera.');
         return;
       }
-      this._camera.setSaveToGallery(!!options.saveToGallery);
-      this._camera.setAutoSquareCrop(!!options.autoSquareCrop);
-      this._lastCameraOptions.push(options);
-      this._camera.takePhoto();
+
+      if (!!options.useCameraOptions && typeof options.width === 'number' && typeof options.height === 'number') {
+        (this._camera as any).setOverridePhotoWidth(options.width);
+        (this._camera as any).setOverridePhotoHeight(options.height);
+      }
+        this._camera.setSaveToGallery(!!options.saveToGallery);
+        this._camera.setAutoSquareCrop(!!options.autoSquareCrop);
+        this._lastCameraOptions.push(options);
+        this._camera.takePhoto();
     }
   }
 
