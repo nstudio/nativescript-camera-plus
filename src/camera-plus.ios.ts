@@ -594,17 +594,37 @@ export class MySwifty extends SwiftyCamViewController {
 
   public savePhoto() {
     if (this._photoToSave) {
-      if ((this._snapPicOptions && this._snapPicOptions.saveToGallery) || this._owner.get().saveToGallery) {
-        UIImageWriteToSavedPhotosAlbum(this._photoToSave, null, null, null);
-      }
       const asset = new ImageAsset(this._photoToSave);
+      const useCameraOptions = this._snapPicOptions ? this._snapPicOptions.useCameraOptions : false;
+      const handleSuccess = () => {
+        this._owner.get().sendEvent(CameraPlus.photoCapturedEvent, asset);
+        this.resetPreview();
+      };
+      if (!useCameraOptions) {
+        if ((this._snapPicOptions && this._snapPicOptions.saveToGallery) || this._owner.get().saveToGallery) {
+          UIImageWriteToSavedPhotosAlbum(this._photoToSave, null, null, null);
+        }
+      }
       if (this._snapPicOptions) {
         if (typeof this._snapPicOptions.keepAspectRatio === 'boolean') asset.options.keepAspectRatio = this._snapPicOptions.keepAspectRatio;
         if (typeof this._snapPicOptions.height === 'number') asset.options.height = this._snapPicOptions.height;
         if (typeof this._snapPicOptions.width === 'number') asset.options.width = this._snapPicOptions.width;
       }
-      this._owner.get().sendEvent(CameraPlus.photoCapturedEvent, asset);
-      this.resetPreview();
+      if (!useCameraOptions) {
+        handleSuccess();
+      } else {
+        if ((this._snapPicOptions && this._snapPicOptions.saveToGallery) || this._owner.get().saveToGallery) {
+          asset.getImageAsync((image, error) => {
+            if (image) {
+              UIImageWriteToSavedPhotosAlbum(image, null, null, null);
+              handleSuccess();
+            } else {
+              CLog(`Failed to save image: ${error}`);
+            }
+          });
+        }
+      }
+
     }
   }
 

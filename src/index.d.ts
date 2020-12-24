@@ -289,6 +289,7 @@ export interface ICameraOptions {
   autoSquareCrop?: boolean;
   confirmRetakeText?: string;
   confirmSaveText?: string;
+  useCameraOptions?: boolean;
 }
 
 export declare enum CameraVideoQuality {
