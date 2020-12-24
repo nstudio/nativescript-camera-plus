@@ -599,7 +599,7 @@ export class MySwifty extends SwiftyCamViewController {
       const handleSuccess = () => {
         this._owner.get().sendEvent(CameraPlus.photoCapturedEvent, asset);
         this.resetPreview();
-      }
+      };
       if (!useCameraOptions) {
         if ((this._snapPicOptions && this._snapPicOptions.saveToGallery) || this._owner.get().saveToGallery) {
           UIImageWriteToSavedPhotosAlbum(this._photoToSave, null, null, null);
@@ -611,13 +611,13 @@ export class MySwifty extends SwiftyCamViewController {
         if (typeof this._snapPicOptions.width === 'number') asset.options.width = this._snapPicOptions.width;
       }
       if (!useCameraOptions) {
-        handleSuccess()
+        handleSuccess();
       } else {
         if ((this._snapPicOptions && this._snapPicOptions.saveToGallery) || this._owner.get().saveToGallery) {
           asset.getImageAsync((image, error) => {
             if (image) {
               UIImageWriteToSavedPhotosAlbum(image, null, null, null);
-              handleSuccess
+              handleSuccess();
             } else {
               CLog(`Failed to save image: ${error}`);
             }

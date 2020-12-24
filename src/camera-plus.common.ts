@@ -84,10 +84,10 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
    */
   public static confirmScreenDismissedEvent = 'confirmScreenDismissedEvent';
 
-   /**
-    * @default 4:3
-   * *ANDROID ONLY*  A string to represent the camera preview aspect ratio e.g 4:3, 1:1 ,16:9 to check if the device supports the ratio use {@link getGetSupportedRatios}
-   */
+  /**
+   * @default 4:3
+  * *ANDROID ONLY*  A string to represent the camera preview aspect ratio e.g 4:3, 1:1 ,16:9 to check if the device supports the ratio use {@link getGetSupportedRatios}
+  */
   @GetSetProperty()
   public ratio: string;
 
@@ -114,19 +114,19 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
   public pictureSize: string = '0x0';
 
 
-/**
- *  *ANDROID ONLY*
- * @param ratio string
- * @returns returns an array of supported picture sizes supported by the current camera
- */
+  /**
+   *  *ANDROID ONLY*
+   * @param ratio string
+   * @returns returns an array of supported picture sizes supported by the current camera
+   */
   getAvailablePictureSizes(ratio: string): { width: number, height: number }[] {
     return [];
   }
 
-   /**
-   * *ANDROID ONLY*
-   * @returns retuns an array of strings representing the preview sizes supported by the current device.
-   */
+  /**
+  * *ANDROID ONLY*
+  * @returns retuns an array of strings representing the preview sizes supported by the current device.
+  */
   getGetSupportedRatios(): string[] {
     return [];
   }
@@ -240,12 +240,12 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
   /**
    * Toggles the device camera (front/back).
    */
-  toggleCamera(): void {}
+  toggleCamera(): void { }
 
   /**
    * Toggles the active camera flash mode.
    */
-  toggleFlash(): void {}
+  toggleFlash(): void { }
 
   /**
    * Gets the flash mode
@@ -441,10 +441,10 @@ export enum WhiteBalance {
 export function GetSetProperty() {
   return (target, propertyKey: string) => {
     Object.defineProperty(target, propertyKey, {
-      get: function() {
+      get: function () {
         return this['_' + propertyKey];
       },
-      set: function(value) {
+      set: function (value) {
         if (this['_' + propertyKey] === value) {
           return;
         }

@@ -464,10 +464,10 @@ export class CameraPlus extends CameraPlusBase {
         (this._camera as any).setOverridePhotoWidth(options.width);
         (this._camera as any).setOverridePhotoHeight(options.height);
       }
-        this._camera.setSaveToGallery(!!options.saveToGallery);
-        this._camera.setAutoSquareCrop(!!options.autoSquareCrop);
-        this._lastCameraOptions.push(options);
-        this._camera.takePhoto();
+      this._camera.setSaveToGallery(!!options.saveToGallery);
+      this._camera.setAutoSquareCrop(!!options.autoSquareCrop);
+      this._lastCameraOptions.push(options);
+      this._camera.takePhoto();
     }
   }
 
