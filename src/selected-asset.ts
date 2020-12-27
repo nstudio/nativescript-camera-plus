@@ -5,8 +5,6 @@
  * Version 1.1.0                                       			   team@nStudio.io
  **********************************************************************************/
 
-/// <reference path="./node_modules/@nativescript/types-android/index.d.ts" />
-
 import { Application, ImageAsset, ImageSource } from '@nativescript/core';
 
 interface ArrayBufferStatic extends ArrayBufferConstructor {
@@ -15,7 +13,7 @@ interface ArrayBufferStatic extends ArrayBufferConstructor {
 
 // Snapshot-friendly functions
 const MediaStore = () => android.provider.MediaStore;
-const DocumentsContract = () => (android.provider as any).DocumentsContract;
+const DocumentsContract = () => android.provider.DocumentsContract;
 const BitmapFactory = () => android.graphics.BitmapFactory;
 
 export class SelectedAsset extends ImageAsset {
@@ -108,7 +106,7 @@ export class SelectedAsset extends ImageAsset {
         const id = DocumentsContract().getDocumentId(uri);
         const contentUri = android.content.ContentUris.withAppendedId(
           android.net.Uri.parse('content://downloads/public_downloads'),
-          long(id)
+          long(id as any)
         );
 
         return SelectedAsset.getDataColumn(contentUri, null, null);
@@ -281,7 +279,7 @@ export class SelectedAsset extends ImageAsset {
 
       // buffer the data in 4KiB amounts
       const reader = new java.io.BufferedInputStream(stream, 4096);
-      reader.read(bytes as any, 0, (bytes as any).length);
+      reader.read(bytes, 0, bytes.length);
       return buffer;
     } finally {
       if (file) {

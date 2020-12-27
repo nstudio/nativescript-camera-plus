@@ -4,8 +4,6 @@
  * Version 1.1.0                                                    team@nStudio.io
  **********************************************************************************/
 
-/// <reference path="./node_modules/@nativescript/types-android/index.d.ts" />
-
 import * as permissions from 'nativescript-permissions';
 import {
   AndroidActivityResultEventData,
@@ -29,8 +27,12 @@ import {
 } from './camera-plus.common';
 import * as CamHelpers from './helpers';
 import { SelectedAsset } from './selected-asset';
+
 export * from './camera-plus.common';
 export { CameraVideoQuality, WhiteBalance } from './camera-plus.common';
+
+import fancycamera = com.github.triniwiz.fancycamera;
+
 const REQUEST_VIDEO_CAPTURE = 999;
 const WRAP_CONTENT = -2;
 const ALIGN_PARENT_TOP = 10;
@@ -65,7 +67,7 @@ const DEVICE_INFO_STRING = () => `Device: ${Device.manufacturer} ${Device.model}
 export class CameraPlus extends CameraPlusBase {
   // @GetSetProperty() public camera: android.hardware.Camera;
   // Snapshot-friendly, since the decorator will include the snapshot-unknown object "android"
-  private _camera: com.github.triniwiz.fancycamera.FancyCamera;
+  private _camera: fancycamera.FancyCamera;
   private _cameraId;
 
   @GetSetProperty()
@@ -133,6 +135,7 @@ export class CameraPlus extends CameraPlusBase {
     return this.enableVideo === true || CameraPlus.enableVideo;
   }
 
+  // @ts-ignore
   get ratio() {
     return this._camera ? this._camera.getRatio() : '4:3';
   }
@@ -143,6 +146,7 @@ export class CameraPlus extends CameraPlusBase {
     }
   }
 
+  // @ts-ignore
   get zoom() {
     return this._camera ? this._camera.getZoom() : 0;
   }
@@ -158,44 +162,28 @@ export class CameraPlus extends CameraPlusBase {
     if (this._camera) {
       switch (value) {
         case WhiteBalance.Cloudy:
-          this._camera.setWhiteBalance(
-            com.github.triniwiz.fancycamera.WhiteBalance.Cloudy
-          );
+          this._camera.setWhiteBalance(fancycamera.WhiteBalance.Cloudy);
           break;
         case WhiteBalance.Fluorescent:
-          this._camera.setWhiteBalance(
-            com.github.triniwiz.fancycamera.WhiteBalance.Fluorescent
-          );
+          this._camera.setWhiteBalance(fancycamera.WhiteBalance.Fluorescent);
           break;
         case WhiteBalance.Incandescent:
-          this._camera.setWhiteBalance(
-            com.github.triniwiz.fancycamera.WhiteBalance.Incandescent
-          );
+          this._camera.setWhiteBalance(fancycamera.WhiteBalance.Incandescent);
           break;
         case WhiteBalance.Shadow:
-          this._camera.setWhiteBalance(
-            com.github.triniwiz.fancycamera.WhiteBalance.Shadow
-          );
+          this._camera.setWhiteBalance(fancycamera.WhiteBalance.Shadow);
           break;
         case WhiteBalance.Sunny:
-          this._camera.setWhiteBalance(
-            com.github.triniwiz.fancycamera.WhiteBalance.Sunny
-          );
+          this._camera.setWhiteBalance(fancycamera.WhiteBalance.Sunny);
           break;
         case WhiteBalance.Twilight:
-          this._camera.setWhiteBalance(
-            com.github.triniwiz.fancycamera.WhiteBalance.Twilight
-          );
+          this._camera.setWhiteBalance(fancycamera.WhiteBalance.Twilight);
           break;
         case WhiteBalance.WarmFluorescent:
-          this._camera.setWhiteBalance(
-            com.github.triniwiz.fancycamera.WhiteBalance.WarmFluorescent
-          );
+          this._camera.setWhiteBalance(fancycamera.WhiteBalance.WarmFluorescent);
           break;
         default:
-          this._camera.setWhiteBalance(
-            com.github.triniwiz.fancycamera.WhiteBalance.Auto
-          );
+          this._camera.setWhiteBalance(fancycamera.WhiteBalance.Auto);
           break;
       }
     }
@@ -204,19 +192,19 @@ export class CameraPlus extends CameraPlusBase {
   get whiteBalance(): WhiteBalance | string {
     if (this._camera) {
       switch (this._camera.getWhiteBalance()) {
-        case com.github.triniwiz.fancycamera.WhiteBalance.Cloudy:
+        case fancycamera.WhiteBalance.Cloudy:
           return WhiteBalance.Cloudy;
-        case com.github.triniwiz.fancycamera.WhiteBalance.Fluorescent:
+        case fancycamera.WhiteBalance.Fluorescent:
           return WhiteBalance.Fluorescent;
-        case com.github.triniwiz.fancycamera.WhiteBalance.Incandescent:
+        case fancycamera.WhiteBalance.Incandescent:
           return WhiteBalance.Incandescent;
-        case com.github.triniwiz.fancycamera.WhiteBalance.Shadow:
+        case fancycamera.WhiteBalance.Shadow:
           return WhiteBalance.Shadow;
-        case com.github.triniwiz.fancycamera.WhiteBalance.Sunny:
+        case fancycamera.WhiteBalance.Sunny:
           return WhiteBalance.Sunny;
-        case com.github.triniwiz.fancycamera.WhiteBalance.Twilight:
+        case fancycamera.WhiteBalance.Twilight:
           return WhiteBalance.Twilight;
-        case com.github.triniwiz.fancycamera.WhiteBalance.WarmFluorescent:
+        case fancycamera.WhiteBalance.WarmFluorescent:
           return WhiteBalance.WarmFluorescent;
         default:
           return WhiteBalance.Auto;
@@ -225,22 +213,27 @@ export class CameraPlus extends CameraPlusBase {
     return WhiteBalance.Auto;
   }
 
-  getAvailablePictureSizes(ratio: string): { width: number, height: number }[] {
+  /**
+   * @param ratio get the sizes for a given ratio, i.e. '16:9'.
+   */
+  public getAvailablePictureSizes(ratio: string): { width: number; height: number }[] {
     const sizes = [];
     if (this._camera && typeof ratio === 'string') {
-      const nativeSizes: any = this._camera.getAvailablePictureSizes(ratio);
-      for (const size of nativeSizes) {
+      const nativeSizes = this._camera.getAvailablePictureSizes(ratio);
+      for (let i = 0; i < nativeSizes.length; i++) {
+        const size = nativeSizes[i];
         sizes.push({ width: size.getWidth(), height: size.getHeight() });
       }
     }
     return sizes;
   }
 
-  getGetSupportedRatios(): string[] {
+  public getSupportedRatios(): string[] {
     const ratios = [];
     if (this._camera) {
-      const nativeRatios: any = this._camera.getGetSupportedRatios();
-      for (const ratio of nativeRatios) {
+      const nativeRatios = this._camera.getGetSupportedRatios();
+      for (let i = 0; i < nativeRatios.length; i++) {
+        const ratio = nativeRatios[i];
         ratios.push(ratio);
       }
     }
@@ -268,15 +261,15 @@ export class CameraPlus extends CameraPlusBase {
     // create the Android RelativeLayout
     Application.android.on('activityRequestPermissions', this._permissionListener);
     this._nativeView = new android.widget.RelativeLayout(this._context);
-    this._camera = new com.github.triniwiz.fancycamera.FancyCamera(this._context);
-    (this._camera as any).setLayoutParams(
+    this._camera = new fancycamera.FancyCamera(this._context);
+    this._camera.setLayoutParams(
       new android.view.ViewGroup.LayoutParams(
         android.view.ViewGroup.LayoutParams.MATCH_PARENT,
         android.view.ViewGroup.LayoutParams.MATCH_PARENT
       )
     );
 
-    this._nativeView.addView(this._camera as any);
+    this._nativeView.addView(this._camera);
     return this._nativeView;
   }
 
@@ -302,11 +295,10 @@ export class CameraPlus extends CameraPlusBase {
   public initNativeView() {
     super.initNativeView();
     this.on(View.layoutChangedEvent, this._onLayoutChangeListener);
-    const listenerImpl = (com as any).github.triniwiz.fancycamera.CameraEventListenerUI.extend({
+    const listenerImpl = (fancycamera.CameraEventListenerUI as any).extend({
       owner: null,
-      onReady(): void { },
-      onCameraCloseUI(): void {
-      },
+      onReady(): void {},
+      onCameraCloseUI(): void {},
       onCameraError(message: string, ex: java.lang.Exception): void {
         console.log('onCameraError', message);
         ex.printStackTrace();
@@ -367,22 +359,12 @@ export class CameraPlus extends CameraPlusBase {
             return;
           }
 
-          const asset = CamHelpers.assetFromPath(
-            file.getAbsolutePath(),
-            reqWidth,
-            reqHeight,
-            shouldKeepAspectRatio
-          );
+          const asset = CamHelpers.assetFromPath(file.getAbsolutePath(), reqWidth, reqHeight, shouldKeepAspectRatio);
 
           owner.sendEvent(CameraPlus.photoCapturedEvent, asset);
           return;
         } else {
-          const asset = CamHelpers.assetFromPath(
-            file.getAbsolutePath(),
-            reqWidth,
-            reqHeight,
-            shouldKeepAspectRatio
-          );
+          const asset = CamHelpers.assetFromPath(file.getAbsolutePath(), reqWidth, reqHeight, shouldKeepAspectRatio);
           owner.sendEvent(CameraPlus.photoCapturedEvent, asset);
           return;
         }
@@ -415,8 +397,7 @@ export class CameraPlus extends CameraPlusBase {
           owner.isRecording = false;
         }
       },
-      onCameraAnalysisUI(imageAnalysis: com.github.triniwiz.fancycamera.ImageAnalysis): void {
-      },
+      onCameraAnalysisUI(imageAnalysis: fancycamera.ImageAnalysis): void {},
     });
     const listener = new listenerImpl();
     listener.owner = new WeakRef(this);
@@ -440,11 +421,11 @@ export class CameraPlus extends CameraPlusBase {
     if (this._camera) {
       switch (id) {
         case CAMERA_FACING_FRONT:
-          this._camera.setPosition(com.github.triniwiz.fancycamera.CameraPosition.FRONT);
+          this._camera.setPosition(fancycamera.CameraPosition.FRONT);
           this._cameraId = CAMERA_FACING_FRONT;
           break;
         default:
-          this._camera.setPosition(com.github.triniwiz.fancycamera.CameraPosition.BACK);
+          this._camera.setPosition(fancycamera.CameraPosition.BACK);
           this._cameraId = CAMERA_FACING_BACK;
           break;
       }
@@ -526,25 +507,25 @@ export class CameraPlus extends CameraPlusBase {
       this._camera.setSaveToGallery(!!options.saveToGallery);
       switch (options.quality) {
         case CameraVideoQuality.HIGHEST:
-          this._camera.setQuality(com.github.triniwiz.fancycamera.Quality.HIGHEST);
+          this._camera.setQuality(fancycamera.Quality.HIGHEST);
           break;
         case CameraVideoQuality.LOWEST:
-          this._camera.setQuality(com.github.triniwiz.fancycamera.Quality.LOWEST);
+          this._camera.setQuality(fancycamera.Quality.LOWEST);
           break;
         case CameraVideoQuality.MAX_2160P:
-          this._camera.setQuality(com.github.triniwiz.fancycamera.Quality.MAX_2160P);
+          this._camera.setQuality(fancycamera.Quality.MAX_2160P);
           break;
         case CameraVideoQuality.MAX_1080P:
-          this._camera.setQuality(com.github.triniwiz.fancycamera.Quality.MAX_1080P);
+          this._camera.setQuality(fancycamera.Quality.MAX_1080P);
           break;
         case CameraVideoQuality.MAX_720P:
-          this._camera.setQuality(com.github.triniwiz.fancycamera.Quality.MAX_720P);
+          this._camera.setQuality(fancycamera.Quality.MAX_720P);
           break;
         case CameraVideoQuality.QVGA:
-          this._camera.setQuality(com.github.triniwiz.fancycamera.Quality.QVGA);
+          this._camera.setQuality(fancycamera.Quality.QVGA);
           break;
         default:
-          this._camera.setQuality(com.github.triniwiz.fancycamera.Quality.MAX_480P);
+          this._camera.setQuality(fancycamera.Quality.MAX_480P);
           break;
       }
       // -1 uses profile value;
@@ -618,7 +599,7 @@ export class CameraPlus extends CameraPlusBase {
           }
 
           // not in platform-declaration typings
-          intent.putExtra((android.content.Intent as any).EXTRA_MIME_TYPES, mimetypes);
+          intent.putExtra(android.content.Intent.EXTRA_MIME_TYPES, mimetypes);
 
           intent.setAction('android.intent.action.GET_CONTENT');
           // set the multiple picker mode
@@ -714,10 +695,10 @@ export class CameraPlus extends CameraPlusBase {
    */
   public toggleFlash() {
     if (this._camera) {
-      if (this._camera.getFlashMode() !== com.github.triniwiz.fancycamera.CameraFlashMode.OFF) {
-        this._camera.setFlashMode(com.github.triniwiz.fancycamera.CameraFlashMode.ON);
+      if (this._camera.getFlashMode() !== fancycamera.CameraFlashMode.OFF) {
+        this._camera.setFlashMode(fancycamera.CameraFlashMode.ON);
       } else {
-        this._camera.setFlashMode(com.github.triniwiz.fancycamera.CameraFlashMode.OFF);
+        this._camera.setFlashMode(fancycamera.CameraFlashMode.OFF);
       }
     }
   }
@@ -833,7 +814,7 @@ export class CameraPlus extends CameraPlusBase {
   public getCurrentCamera(): 'front' | 'rear' {
     if (!this._camera) return 'rear';
     switch (this._camera.getPosition()) {
-      case com.github.triniwiz.fancycamera.CameraPosition.FRONT:
+      case fancycamera.CameraPosition.FRONT:
         return 'front';
       default:
         return 'rear';
@@ -844,12 +825,7 @@ export class CameraPlus extends CameraPlusBase {
    * Check if the device has a camera
    */
   public isCameraAvailable() {
-    if (
-      Utils.ad
-        .getApplicationContext()
-        .getPackageManager()
-        .hasSystemFeature('android.hardware.camera')
-    ) {
+    if (Utils.ad.getApplicationContext().getPackageManager().hasSystemFeature('android.hardware.camera')) {
       return true;
     } else {
       return false;
@@ -880,7 +856,7 @@ export class CameraPlus extends CameraPlusBase {
    */
   public getFlashMode() {
     if (this.hasFlash()) {
-      if (this._camera.getFlashMode() !== com.github.triniwiz.fancycamera.CameraFlashMode.OFF) {
+      if (this._camera.getFlashMode() !== fancycamera.CameraFlashMode.OFF) {
         return 'on';
       }
       return 'off';
@@ -915,7 +891,7 @@ export class CameraPlus extends CameraPlusBase {
     this._flashBtn.setVisibility(android.view.View.VISIBLE);
 
     // reset the image in the button first
-    this._flashBtn.setImageResource((android as any).R.color.transparent);
+    this._flashBtn.setImageResource(android.R.color.transparent);
 
     const flashIcon = currentFlashMode === FLASH_MODE_OFF ? this.flashOffIcon : this.flashOnIcon;
     const imageDrawable = CamHelpers.getImageDrawable(flashIcon);

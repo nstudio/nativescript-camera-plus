@@ -4,8 +4,6 @@
  * Version 1.1.0                                                    team@nStudio.io
  **********************************************************************************/
 
-/// <reference path="./node_modules/@nativescript/types-ios/index.d.ts" />
-
 import { Color, Device, File, ImageAsset, knownFolders, path, Utils, View } from '@nativescript/core';
 import {
   CameraPlusBase,
@@ -817,8 +815,9 @@ export class CameraPlus extends CameraPlusBase {
 
   constructor() {
     super();
-    this._onLayoutChangeListener = this._onLayoutChangeFn.bind(this);
+
     CLog('CameraPlus constructor');
+    this._onLayoutChangeListener = this._onLayoutChangeFn.bind(this);
     this._swifty = MySwifty.initWithOwner(new WeakRef(this), CameraPlus.defaultCamera);
     this._swifty.shouldPrompToAppSettings = false;
 

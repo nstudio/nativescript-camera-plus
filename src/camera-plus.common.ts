@@ -100,7 +100,6 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
   @GetSetProperty()
   public zoom: number = 0;
 
-
   /**
    *  *ANDROID ONLY* Camera white balance
    */
@@ -114,13 +113,12 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
   @GetSetProperty()
   public pictureSize: string = '0x0';
 
-
   /**
    *  *ANDROID ONLY*
    * @param ratio string
    * @returns returns an array of supported picture sizes supported by the current camera
    */
-  getAvailablePictureSizes(ratio: string): { width: number, height: number }[] {
+  public getAvailablePictureSizes(ratio: string): { width: number, height: number }[] {
     return [];
   }
 
@@ -128,7 +126,7 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
   * *ANDROID ONLY*
   * @returns retuns an array of strings representing the preview sizes supported by the current device.
   */
-  getGetSupportedRatios(): string[] {
+  public getSupportedRatios(): string[] {
     return [];
   }
 

@@ -538,7 +538,7 @@ declare module com {
 	export module github {
 		export module triniwiz {
 			export module fancycamera {
-				export class FancyCamera {
+				export class FancyCamera extends globalAndroid.view.View {
 					public static class: java.lang.Class<com.github.triniwiz.fancycamera.FancyCamera>;
 					public static Companion: com.github.triniwiz.fancycamera.FancyCamera.Companion;
 					public getGetSupportedRatios(): native.Array<string>;

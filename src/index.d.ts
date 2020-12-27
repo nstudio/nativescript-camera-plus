@@ -84,7 +84,7 @@ export declare class CameraPlus extends ContentView {
 
   /**
    * @default 4:3
-   * *ANDROID ONLY*  A string to represent the camera preview aspect ratio e.g 4:3, 1:1 ,16:9 to check if the device supports the ratio use {@link getGetSupportedRatios}
+   * *ANDROID ONLY*  A string to represent the camera preview aspect ratio e.g 4:3, 1:1 ,16:9 to check if the device supports the ratio use {@link getSupportedRatios}
    */
   ratio: string;
 
@@ -106,19 +106,18 @@ export declare class CameraPlus extends ContentView {
    */
   pictureSize: string;
 
-
-/**
- *  *ANDROID ONLY*
- * @param ratio string
- * @returns returns an array of supported picture sizes supported by the current camera
- */
-  getAvailablePictureSizes(ratio: string): { width: number, height: number}[];
+  /**
+   * *ANDROID ONLY*
+   * @param ratio string
+   * @returns an array of supported picture sizes supported by the current camera.
+   */
+    getAvailablePictureSizes(ratio: string): { width: number, height: number}[];
 
   /**
    * *ANDROID ONLY*
-   * @returns retuns an array of strings representing the preview sizes supported by the current device.
+   * @returns an array of strings representing the preview sizes supported by the current device.
    */
-  getGetSupportedRatios(): string[];
+  getSupportedRatios(): string[];
 
   /**
    * If true the default take picture event will present a confirmation dialog. Default is true.
