@@ -47,15 +47,15 @@ ns plugin add @nstudio/nativescript-camera-plus
 ```
 
 **Note :- Android**
- Please add the following to your app.gradle
- 
- ```gradle
+Please add the following to your app.gradle
+
+```gradle
 android {
 ...
-  compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+ compileOptions {
+       sourceCompatibility JavaVersion.VERSION_1_8
+       targetCompatibility JavaVersion.VERSION_1_8
+   }
 }
 ```
 

@@ -87,8 +87,8 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
 
   /**
    * @default 4:3
-  * *ANDROID ONLY*  A string to represent the camera preview aspect ratio e.g 4:3, 1:1 ,16:9 to check if the device supports the ratio use {@link getGetSupportedRatios}
-  */
+   * *ANDROID ONLY*  A string to represent the camera preview aspect ratio e.g 4:3, 1:1 ,16:9 to check if the device supports the ratio use {@link getGetSupportedRatios}
+   */
   @GetSetProperty()
   public ratio: string;
 
@@ -106,7 +106,6 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
   @GetSetProperty()
   public whiteBalance: WhiteBalance | string = WhiteBalance.Auto;
 
-
   /**
    *  *ANDROID ONLY* A string representing the size of picture {@link takePicture} will output. Available sizes can be fetched using {@link getAvailablePictureSizes}
    */
@@ -118,14 +117,14 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
    * @param ratio string
    * @returns returns an array of supported picture sizes supported by the current camera
    */
-  public getAvailablePictureSizes(ratio: string): { width: number, height: number }[] {
+  public getAvailablePictureSizes(ratio: string): { width: number; height: number }[] {
     return [];
   }
 
   /**
-  * *ANDROID ONLY*
-  * @returns retuns an array of strings representing the preview sizes supported by the current device.
-  */
+   * *ANDROID ONLY*
+   * @returns retuns an array of strings representing the preview sizes supported by the current device.
+   */
   public getSupportedRatios(): string[] {
     return [];
   }
@@ -239,12 +238,12 @@ export abstract class CameraPlusBase extends ContentView implements CameraPlusDe
   /**
    * Toggles the device camera (front/back).
    */
-  toggleCamera(): void { }
+  toggleCamera(): void {}
 
   /**
    * Toggles the active camera flash mode.
    */
-  toggleFlash(): void { }
+  toggleFlash(): void {}
 
   /**
    * Gets the flash mode

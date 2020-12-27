@@ -70,7 +70,7 @@ export class CaptureComponent {
   private logSupportRatios(): void {
     const supportedRatios = this.cam.getSupportedRatios();
     if (supportedRatios.length === 0) {
-      console.warn('Ratios supported: None found.')
+      console.warn('Ratios supported: None found.');
     } else {
       console.info('Ratios supported:' + supportedRatios.join(', '));
     }

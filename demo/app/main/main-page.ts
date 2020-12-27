@@ -48,7 +48,7 @@ function logAvailablePictureSizes(cam: CameraPlus): void {
 function logSupportRatios(cam: CameraPlus): void {
   const supportedRatios = cam.getSupportedRatios();
   if (supportedRatios.length === 0) {
-    console.warn('Ratios supported: None found.')
+    console.warn('Ratios supported: None found.');
   } else {
     console.info('Ratios supported:' + supportedRatios.join(', '));
   }

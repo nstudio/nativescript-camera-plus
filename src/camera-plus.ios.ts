@@ -614,9 +614,15 @@ export class MySwifty extends SwiftyCamViewController {
         }
       }
       if (this._snapPicOptions) {
-        if (typeof this._snapPicOptions.keepAspectRatio === 'boolean') asset.options.keepAspectRatio = this._snapPicOptions.keepAspectRatio;
-        if (typeof this._snapPicOptions.height === 'number') asset.options.height = this._snapPicOptions.height;
-        if (typeof this._snapPicOptions.width === 'number') asset.options.width = this._snapPicOptions.width;
+        if (typeof this._snapPicOptions.keepAspectRatio === 'boolean') {
+          asset.options.keepAspectRatio = this._snapPicOptions.keepAspectRatio;
+        }
+        if (typeof this._snapPicOptions.height === 'number') {
+          asset.options.height = this._snapPicOptions.height;
+        }
+        if (typeof this._snapPicOptions.width === 'number') {
+          asset.options.width = this._snapPicOptions.width;
+        }
       }
       if (!useCameraOptions) {
         handleSuccess();
@@ -632,7 +638,6 @@ export class MySwifty extends SwiftyCamViewController {
           });
         }
       }
-
     }
   }
 

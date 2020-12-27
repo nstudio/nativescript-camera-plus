@@ -81,7 +81,6 @@ export declare class CameraPlus extends ContentView {
    */
   debug: boolean;
 
-
   /**
    * @default 4:3
    * *ANDROID ONLY*  A string to represent the camera preview aspect ratio e.g 4:3, 1:1 ,16:9 to check if the device supports the ratio use {@link getSupportedRatios}
@@ -100,7 +99,6 @@ export declare class CameraPlus extends ContentView {
    */
   whiteBalance: WhiteBalance | string;
 
-
   /**
    *  *ANDROID ONLY* A string representing the size of picture {@link takePicture} will output. Available sizes can be fetched using {@link getAvailablePictureSizes}
    */
@@ -111,7 +109,7 @@ export declare class CameraPlus extends ContentView {
    * @param ratio string
    * @returns an array of supported picture sizes supported by the current camera.
    */
-    getAvailablePictureSizes(ratio: string): { width: number, height: number}[];
+  getAvailablePictureSizes(ratio: string): { width: number; height: number }[];
 
   /**
    * *ANDROID ONLY*
