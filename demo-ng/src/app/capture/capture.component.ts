@@ -29,10 +29,50 @@ export class CaptureComponent {
     this.logCamEvent('CameraPlus.cameraLoadedEvent', event);
     this.cam = event.object;
 
-    const flashMode = this.cam.getFlashMode();
-    // Turn flash on at startup
-    if (flashMode === 'off') {
-      this.cam.toggleFlash();
+    (async () => {
+      if (!this.cam.hasCameraPermission()) {
+        await this.cam.requestCameraPermissions();
+      }
+      this.cam.autoFocus = true;
+
+      const flashMode = this.cam.getFlashMode();
+      // Turn flash on at startup
+      if (flashMode === 'off') {
+        this.cam.toggleFlash();
+      }
+
+      this.logFlashMode();
+      this.logAvailablePictureSizes();
+      this.logSupportRatios();
+    })();
+  }
+
+  private logFlashMode(): void {
+    try {
+      const flashMode = this.cam.getFlashMode();
+      console.info(`Flash Mode: ${flashMode}`);
+    } catch (error) {
+      console.error(`Flash Mode: Failed to load: ${error.message}`);
+      console.error(error.stack);
+    }
+  }
+
+  private logAvailablePictureSizes(): void {
+    const ratio = '16:9';
+    const availableSizes = this.cam.getAvailablePictureSizes('16:9');
+    console.info(`Picture Sizes Available for ${ratio}:`);
+    for (const size of availableSizes) {
+      console.info(`Height: ${size.height}, Width: ${size.width}`);
+    }
+    console.info(`Total sizes available: ${availableSizes.length}`);
+  }
+
+  private logSupportRatios(): void {
+    const supportedRatios = this.cam.getSupportedRatios();
+    if (supportedRatios.length === 0) {
+      console.warn('Ratios supported: None found.')
+    } else {
+      console.info('Ratios supported:' + supportedRatios.join(', '));
     }
   }
 
