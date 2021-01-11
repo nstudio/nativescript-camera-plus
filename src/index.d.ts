@@ -98,7 +98,7 @@ export declare class CameraPlus extends ContentView {
  * @param ratio string
  * @returns returns an array of supported picture sizes supported by the current camera
  */
-  getAvailablePictureSizes(ratio: string): { width: number, height: number}[];
+  getAvailablePictureSizes(ratio: string): any[];
 
   /**
    * *ANDROID ONLY*
