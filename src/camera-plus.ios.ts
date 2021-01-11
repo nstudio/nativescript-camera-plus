@@ -828,9 +828,9 @@ export class CameraPlus extends CameraPlusBase {
     return this._swifty.view;
   }
 
-  private _updatePhotoQuality(){
+  private _updatePhotoQuality () {
     if (this._swifty) {
-      switch(this._pictureQuality){
+      switch (this._pictureQuality) {
         case "3840x2160":
           this._swifty.videoQuality = VideoQuality.Resolution3840x2160;
           this._pictureQuality = "3840x2160";
@@ -874,11 +874,11 @@ export class CameraPlus extends CameraPlusBase {
       "1280x720",
       "640x480",
       "352x288",
-      //"Photo", // TODO add support
+     // "Photo", // TODO add support
       "High",
       "Medium",
       "Low"
-    ]
+    ];
   }
 
   private _pictureQuality: string = "High";
