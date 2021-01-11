@@ -127,6 +127,7 @@ export class CameraPlus extends CameraPlusBase {
     return this.enableVideo === true || CameraPlus.enableVideo;
   }
 
+   // @ts-ignore
   get ratio() {
     return this._camera ? this._camera.getRatio() : '4:3';
   }
@@ -136,6 +137,7 @@ export class CameraPlus extends CameraPlusBase {
     }
   }
 
+   // @ts-ignore
   get zoom() {
     return this._camera ? this._camera.getZoom() : 0;
   }
