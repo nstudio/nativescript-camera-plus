@@ -220,12 +220,12 @@ export class CameraPlus extends CameraPlusBase {
     return WhiteBalance.Auto;
   }
 
-  getAvailablePictureSizes(ratio: string): { width: number, height: number }[] {
+  getAvailablePictureSizes(ratio: string): string[] {
     const sizes = [];
     if (this._camera && typeof ratio === 'string') {
       const nativeSizes: any = this._camera.getAvailablePictureSizes(ratio);
       for (const size of nativeSizes) {
-        sizes.push({ width: size.getWidth(), height: size.getHeight() });
+        sizes.push(`${size.getWidth()}x${size.getHeight()}`);
       }
     }
     return sizes;

@@ -88,17 +88,16 @@ export declare class CameraPlus extends ContentView {
 
 
   /**
-   *  *ANDROID ONLY* A string representing the size of picture {@link takePicture} will output. Available sizes can be fetched using {@link getAvailablePictureSizes}
+   * A string representing the size of picture {@link takePicture} will output. Available sizes can be fetched using {@link getAvailablePictureSizes}
    */
   pictureSize: string;
 
 
 /**
- *  *ANDROID ONLY*
  * @param ratio string
  * @returns returns an array of supported picture sizes supported by the current camera
  */
-  getAvailablePictureSizes(ratio: string): any[];
+  getAvailablePictureSizes(ratio: string): string[];
 
   /**
    * *ANDROID ONLY*
