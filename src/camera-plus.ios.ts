@@ -828,6 +828,25 @@ export class CameraPlus extends CameraPlusBase {
     return this._swifty.view;
   }
 
+  private _cropByPreview: boolean;
+
+  public get cropByPreview () {
+    return this._cropByPreview;
+  }
+
+  public set cropByPreview(value: boolean) {
+    if (typeof value === 'string') {
+      value = Boolean(value);
+    }
+    if (typeof value === 'boolean') {
+      if (this._swifty) {
+        this._swifty.cropByPreview = value;
+      }
+    }
+
+    this._cropByPreview = value;
+  }
+
   private _updatePhotoQuality () {
     if (this._swifty) {
       switch (this._pictureQuality) {
@@ -859,6 +878,10 @@ export class CameraPlus extends CameraPlusBase {
           this._swifty.videoQuality = VideoQuality.Low;
           this._pictureQuality = "Low";
           break;
+          case "Photo":
+            this._swifty.videoQuality = VideoQuality.Photo;
+            this._pictureQuality = "Photo";
+            break;
         default:
           this._swifty.videoQuality = VideoQuality.High;
           this._pictureQuality = "High";
@@ -874,7 +897,7 @@ export class CameraPlus extends CameraPlusBase {
       "1280x720",
       "640x480",
       "352x288",
-     // "Photo", // TODO add support
+      "Photo",
       "High",
       "Medium",
       "Low"
@@ -908,6 +931,9 @@ export class CameraPlus extends CameraPlusBase {
     CLog('initNativeView.');
     this.on(View.layoutChangedEvent, this._onLayoutChangeListener);
     this._updatePhotoQuality();
+    if (this.cropByPreview) {
+      this._swifty.cropByPreview = this.cropByPreview;
+    }
     this._swifty.viewWillAppear(true);
   }
 
