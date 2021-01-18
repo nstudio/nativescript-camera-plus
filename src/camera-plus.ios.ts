@@ -327,6 +327,10 @@ export class MySwifty extends SwiftyCamViewController {
   viewDidLoad() {
     CLog('MySwifty viewdidload');
     super.viewDidLoad();
+     const owner = this._owner && this._owner.get();
+     if (owner) {
+       owner._updatePhotoQuality();
+     }
     this.view.userInteractionEnabled = true;
     const doubleTapEnabled = this._owner.get().doubleTapCameraSwitch;
     this.doubleTapCameraSwitch = doubleTapEnabled;
@@ -847,7 +851,7 @@ export class CameraPlus extends CameraPlusBase {
     this._cropByPreview = value;
   }
 
-  private _updatePhotoQuality () {
+  _updatePhotoQuality () {
     if (this._swifty) {
       switch (this._pictureQuality) {
         case "3840x2160":
