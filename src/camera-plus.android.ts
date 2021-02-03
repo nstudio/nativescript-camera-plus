@@ -691,11 +691,8 @@ export class CameraPlus extends CameraPlusBase {
 
   public toggleFlash() {
     if (this._camera) {
-      if (this._camera.getFlashMode() !== com.github.triniwiz.fancycamera.CameraFlashMode.OFF) {
-        this._camera.setFlashMode(com.github.triniwiz.fancycamera.CameraFlashMode.ON);
-      } else {
-        this._camera.setFlashMode(com.github.triniwiz.fancycamera.CameraFlashMode.OFF);
-      }
+      // @ts-ignore
+      this._camera.toggleFlash();
     }
   }
 
