@@ -3,6 +3,11 @@
 </a>
 <h4 align="center">A NativeScript camera with all the bells and whistles which can be embedded inside a view. This plugin was sponsored by LiveShopper</h4>
 
+## HINT
+
+This repo and further development of this plugin has been moved to https://github.com/nstudio/nativescript-plugins/
+
+
 <p align="center">
 <a href="https://liveshopper.com">
     <img align="center" src="./src/images/liveshopper.png" alt="LiveShopper Logo"/>
